@@ -4,7 +4,8 @@ import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
-import 'package:shop_app/screens/otp/otp_screen.dart';
+import 'package:shop_app/global_manager.dart';
+import 'package:shop_app/services/graphql_service.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -18,7 +19,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
   final List<String?> errors = [];
   String? fullName;
-  String? address;
+  DateTime? birthday;
+  final TextEditingController _dateController = TextEditingController();
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -42,19 +44,29 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         children: [
           buildFullNameFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
-          buildAddressFormField(),
+          buildBirthdayFormField(),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
             text: "continue",
             press: () async {
               if (_formKey.currentState!.validate()) {
-                final storage = FlutterSecureStorage();
+                try {
+                  await GraphQLService().queryHandler("updateUserById", {
+                    "birthday": birthday,
+                    "full_name": fullName,
+                    "id": GlobalManager().userId
+                  });
+                  await GlobalManager().setParams(newProfileCompleted: true);
 
-                // Save token to storage
-                await storage.write(key: 'completedProfile', value: "true");
-
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                } catch (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'Error completing profile. Please try again.')),
+                  );
+                }
               }
             },
           ),
@@ -63,32 +75,43 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     );
   }
 
-  TextFormField buildAddressFormField() {
+  TextFormField buildBirthdayFormField() {
     return TextFormField(
-      onSaved: (newValue) => address = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kAddressNullError);
-        }
-        return null;
+      controller: _dateController,
+      onTap: () {
+        _selectDate(context);
+      },
+      onSaved: (newValue) {
+        // Convert the date to a string and save it, or save null if no date was selected
+        birthday = DateTime.tryParse(newValue ?? '');
       },
       validator: (value) {
-        if (value!.isEmpty) {
-          addError(error: kAddressNullError);
-          return "";
-        }
         return null;
       },
       decoration: InputDecoration(
-        labelText: "Address",
-        hintText: "Enter your address",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
+        labelText: "Birthday",
+        hintText: "Enter your birthday",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon:
-            CustomSurffixIcon(svgIcon: "assets/icons/Location point.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Calendar.svg"),
       ),
+      readOnly: true,
     );
+  }
+
+  _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: birthday ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null && picked != birthday) {
+      setState(() {
+        birthday = picked;
+        _dateController.text = "${picked.toLocal()}".split(' ')[0];
+      });
+    }
   }
 
   TextFormField buildFullNameFormField() {

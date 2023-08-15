@@ -4,6 +4,7 @@ import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/screens/otp/otp_screen.dart';
 import 'package:phone_number/phone_number.dart';
+import 'package:shop_app/services/opt_services.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -17,6 +18,7 @@ class _SignFormState extends State<SignForm> {
   final _formKey = new GlobalKey<FormState>();
   final List<String?> errors = [];
   String phoneNumber = "";
+  final otpServices = OTPServices();
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -74,7 +76,21 @@ class _SignFormState extends State<SignForm> {
                 }
               }
 
-              Navigator.pushNamed(context, OtpScreen.routeName);
+              try {
+                removeError(error: kInvalidPhoneNumberError);
+                await otpServices.sendOTPService(phoneNumber);
+                Navigator.pushNamed(
+                  context,
+                  OtpScreen.routeName,
+                  arguments: {'phoneNumber': phoneNumber},
+                );
+              } catch (error) {
+                print(error);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('Failed to send OTP. Please try again.')),
+                );
+              }
             },
           ),
         ],
@@ -94,9 +110,7 @@ class _SignFormState extends State<SignForm> {
       },
       decoration: InputDecoration(
         labelText: "Phone Number",
-        hintText: "Enter your phone number",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
+        hintText: "Enter your phone number including international prefix",
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
       ),

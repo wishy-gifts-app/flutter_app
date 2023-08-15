@@ -4,13 +4,16 @@ import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
 import 'package:shop_app/size_config.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import '../../../constants.dart';
+import 'package:shop_app/services/opt_services.dart';
+import 'package:otp_text_field/otp_field.dart';
+import 'package:otp_text_field/style.dart';
 
 class OtpForm extends StatefulWidget {
+  final String phoneNumber;
+
   const OtpForm({
     Key? key,
+    required this.phoneNumber,
   }) : super(key: key);
 
   @override
@@ -18,32 +21,9 @@ class OtpForm extends StatefulWidget {
 }
 
 class _OtpFormState extends State<OtpForm> {
-  FocusNode? pin2FocusNode;
-  FocusNode? pin3FocusNode;
-  FocusNode? pin4FocusNode;
-  bool? completedProfile = GlobalManager().completedProfile;
-
-  @override
-  void initState() {
-    super.initState();
-    pin2FocusNode = FocusNode();
-    pin3FocusNode = FocusNode();
-    pin4FocusNode = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    pin2FocusNode!.dispose();
-    pin3FocusNode!.dispose();
-    pin4FocusNode!.dispose();
-  }
-
-  void nextField(String value, FocusNode? focusNode) {
-    if (value.length == 1) {
-      focusNode!.requestFocus();
-    }
-  }
+  bool? completedProfile = GlobalManager().profileCompleted;
+  final otpServices = OTPServices();
+  String otpValue = "";
 
   @override
   Widget build(BuildContext context) {
@@ -51,86 +31,52 @@ class _OtpFormState extends State<OtpForm> {
       child: Column(
         children: [
           SizedBox(height: SizeConfig.screenHeight * 0.15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: getProportionateScreenWidth(60),
-                child: TextFormField(
-                  autofocus: true,
-                  obscureText: true,
-                  style: TextStyle(fontSize: 24),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  decoration: otpInputDecoration,
-                  onChanged: (value) {
-                    nextField(value, pin2FocusNode);
-                  },
-                ),
-              ),
-              SizedBox(
-                width: getProportionateScreenWidth(60),
-                child: TextFormField(
-                  focusNode: pin2FocusNode,
-                  obscureText: true,
-                  style: TextStyle(fontSize: 24),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  decoration: otpInputDecoration,
-                  onChanged: (value) => nextField(value, pin3FocusNode),
-                ),
-              ),
-              SizedBox(
-                width: getProportionateScreenWidth(60),
-                child: TextFormField(
-                  focusNode: pin3FocusNode,
-                  obscureText: true,
-                  style: TextStyle(fontSize: 24),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  decoration: otpInputDecoration,
-                  onChanged: (value) => nextField(value, pin4FocusNode),
-                ),
-              ),
-              SizedBox(
-                width: getProportionateScreenWidth(60),
-                child: TextFormField(
-                  focusNode: pin4FocusNode,
-                  obscureText: true,
-                  style: TextStyle(fontSize: 24),
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  decoration: otpInputDecoration,
-                  onChanged: (value) {
-                    if (value.length == 1) {
-                      pin4FocusNode!.unfocus();
-                      // Then you need to check is the code is correct or not
-                    }
-                  },
-                ),
-              ),
-            ],
+          OTPTextField(
+            length: 4,
+            width: MediaQuery.of(context).size.width,
+            fieldWidth: 50,
+            style: TextStyle(fontSize: 17),
+            textFieldAlignment: MainAxisAlignment.spaceAround,
+            fieldStyle: FieldStyle.box,
+            onCompleted: (pin) async {
+              setState(() {
+                otpValue = pin;
+              });
+              await handleOtpSubmission();
+            },
           ),
           SizedBox(height: SizeConfig.screenHeight * 0.15),
           DefaultButton(
             text: "Continue",
-            press: () async {
-              final storage = FlutterSecureStorage();
-
-              // Save token to storage
-              await storage.write(key: 'token', value: 'YOUR_TOKEN_VALUE');
-
-              if (mounted) {
-                Navigator.pushNamed(
-                    context,
-                    completedProfile == true
-                        ? HomeScreen.routeName
-                        : CompleteProfileScreen.routeName);
-              }
-            },
+            // press: handleOtpSubmission,
           )
         ],
       ),
     );
+  }
+
+  Future<void> handleOtpSubmission() async {
+    try {
+      final result =
+          await otpServices.verifyOTPService(widget.phoneNumber, otpValue);
+
+      await GlobalManager().setParams(
+          newToken: result.token,
+          newProfileCompleted: result.profileCompleted,
+          newUserId: result.userId);
+
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          result.profileCompleted == true
+              ? HomeScreen.routeName
+              : CompleteProfileScreen.routeName,
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error verifying OTP. Please try again.')),
+      );
+    }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:shop_app/screens/cart/cart_screen.dart';
 import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:shop_app/screens/details/details_screen.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
@@ -14,9 +13,11 @@ final Map<String, WidgetBuilder> routes = {
   SignInScreen.routeName: (context) => SignInScreen(),
   LoginSuccessScreen.routeName: (context) => LoginSuccessScreen(),
   CompleteProfileScreen.routeName: (context) => CompleteProfileScreen(),
-  OtpScreen.routeName: (context) => OtpScreen(),
+  OtpScreen.routeName: (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    return OtpScreen(phoneNumber: args['phoneNumber'] as String);
+  },
   HomeScreen.routeName: (context) => HomeScreen(),
   DetailsScreen.routeName: (context) => DetailsScreen(),
-  CartScreen.routeName: (context) => CartScreen(),
   ProfileScreen.routeName: (context) => ProfileScreen(),
 };

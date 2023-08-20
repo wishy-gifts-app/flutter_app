@@ -1,103 +1,92 @@
-import 'package:flutter/material.dart';
+import 'utils.dart';
 
 class Product {
   final int id;
   final String title, description;
-  final List<String> images;
-  final List<Color> colors;
-  final double rating, price;
-  final bool isFavourite, isPopular;
+  final double price;
+  final List<Variant> variants;
+  final List<ProductImage> images;
+  final String? vendorName;
+  final DateTime? likeCreatedAt; // Optional, if it can be null
+  final List<String> tags; // You can replace this with an appropriate type
 
   Product({
     required this.id,
-    required this.images,
-    required this.colors,
-    this.rating = 0.0,
-    this.isFavourite = false,
-    this.isPopular = false,
     required this.title,
-    required this.price,
     required this.description,
+    required this.images,
+    required this.price,
+    required this.variants,
+    this.vendorName,
+    this.likeCreatedAt,
+    required this.tags,
   });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: convertValue<int>(json, 'id', true),
+      title: convertValue<String>(json, 'title', true),
+      description: convertValue<String>(json, 'description', true),
+      price: 0,
+      images: json['images'] != null
+          ? (json['images'] as List<dynamic>)
+              .map((imageJson) => ProductImage.fromJson(imageJson))
+              .toList()
+          : [],
+      variants: (json['variants'] as List<dynamic>)
+          .map((variantJson) => Variant.fromJson(variantJson))
+          .toList(),
+      vendorName: convertValue<String>(json, 'vendorName', false),
+      tags: (json['tags'] as List<dynamic>)
+          .map((tag) => tag.toString())
+          .toList(), // You can adjust this based on the actual data structure
+    );
+  }
 }
 
-// Our demo Products
+class Variant {
+  final int id;
+  final String title;
+  final double weight, price;
+  final int inventoryQuantity;
 
-List<Product> demoProducts = [
-  Product(
-    id: 1,
-    images: [
-      "assets/images/ps4_console_white_1.png",
-      "assets/images/ps4_console_white_2.png",
-      "assets/images/ps4_console_white_3.png",
-      "assets/images/ps4_console_white_4.png",
-    ],
-    colors: [
-      Color(0xFFF6625E),
-      Color(0xFF836DB8),
-      Color(0xFFDECB9C),
-      Colors.white,
-    ],
-    title: "Wireless Controller for PS4™",
-    price: 64.99,
-    description: description,
-    rating: 4.8,
-    isFavourite: true,
-    isPopular: true,
-  ),
-  Product(
-    id: 2,
-    images: [
-      "assets/images/Image Popular Product 2.png",
-    ],
-    colors: [
-      Color(0xFFF6625E),
-      Color(0xFF836DB8),
-      Color(0xFFDECB9C),
-      Colors.white,
-    ],
-    title: "Nike Sport White - Man Pant",
-    price: 50.5,
-    description: description,
-    rating: 4.1,
-    isPopular: true,
-  ),
-  Product(
-    id: 3,
-    images: [
-      "assets/images/glap.png",
-    ],
-    colors: [
-      Color(0xFFF6625E),
-      Color(0xFF836DB8),
-      Color(0xFFDECB9C),
-      Colors.white,
-    ],
-    title: "Gloves XC Omega - Polygon",
-    price: 36.55,
-    description: description,
-    rating: 4.1,
-    isFavourite: true,
-    isPopular: true,
-  ),
-  Product(
-    id: 4,
-    images: [
-      "assets/images/wireless headset.png",
-    ],
-    colors: [
-      Color(0xFFF6625E),
-      Color(0xFF836DB8),
-      Color(0xFFDECB9C),
-      Colors.white,
-    ],
-    title: "Logitech Head",
-    price: 20.20,
-    description: description,
-    rating: 4.1,
-    isFavourite: true,
-  ),
-];
+  Variant({
+    required this.id,
+    required this.title,
+    required this.weight,
+    required this.price,
+    required this.inventoryQuantity,
+  });
 
-const String description =
-    "Wireless Controller for PS4™ gives you what you want in your gaming from over precision control your games to sharing …";
+  factory Variant.fromJson(Map<String, dynamic> json) {
+    return Variant(
+        id: convertValue<int>(json, 'id', true),
+        title: convertValue<String>(json, 'title', true),
+        weight: convertValue<double>(json, 'weight', true),
+        price: convertValue<double>(json, 'price', true),
+        // inventoryQuantity: convertValue<int>(json, 'inventoryQuantity', true),
+        inventoryQuantity: 0);
+  }
+}
+
+class ProductImage {
+  final int id;
+  final int? variantId;
+  final String url, alt;
+
+  ProductImage({
+    required this.id,
+    this.variantId,
+    required this.url,
+    required this.alt,
+  });
+
+  factory ProductImage.fromJson(Map<String, dynamic> json) {
+    return ProductImage(
+      id: convertValue<int>(json, 'id', true),
+      variantId: convertValue<int>(json, 'variantId', false),
+      url: convertValue<String>(json, 'url', true),
+      alt: convertValue<String>(json, 'alt', true),
+    );
+  }
+}

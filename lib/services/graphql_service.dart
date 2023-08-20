@@ -44,15 +44,63 @@ class GraphQLService {
     }
   }
 
+  Future<Map<String, dynamic>> runGraphQLQueryWithPagination(
+    String queryName,
+    String queryString,
+    Map<String, dynamic> variables,
+  ) async {
+    String? cursor;
+    bool hasNextPage = true;
+
+    final fetchData = () async {
+      final result = await runGraphQLQuery(
+          queryName, queryString, {...variables, "cursor": cursor});
+      final pageInfo = result['data'][queryName]['pageInfo'];
+
+      if (pageInfo['hasNextPage']) {
+        cursor = pageInfo['endCursor'];
+      } else {
+        hasNextPage = false;
+      }
+
+      return result['data'];
+    };
+
+    final data = await fetchData(); // Fetch the initial page
+    var nextPageData;
+    if (hasNextPage) {
+      nextPageData = fetchData();
+    }
+
+    final nextPage = () async {
+      if (!hasNextPage) {
+        return null;
+      }
+
+      return await nextPageData;
+    };
+
+    return {
+      'data': data[queryName]["results"],
+      'hasNextPage': hasNextPage,
+      'nextPage': nextPage,
+    };
+  }
+
   Future<Map<String, dynamic>> queryHandler(
       String queryName, Map<String, dynamic> variables,
-      {bool isMutation = false}) async {
+      {bool withPagination = false, bool isMutation = false}) async {
     final String? queryString = graphqlQueries[queryName];
 
     if (queryString == null) {
       throw Exception("Query named $queryName not found");
     }
 
-    return runGraphQLQuery(queryName, queryString, variables);
+    if (withPagination) {
+      return await runGraphQLQueryWithPagination(
+          queryName, queryString, variables);
+    } else {
+      return await runGraphQLQuery(queryName, queryString, variables);
+    }
   }
 }

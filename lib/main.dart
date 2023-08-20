@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
       title: 'Wishy',
       theme: theme(),
       home: SignInScreen(),
-      // We use routeName so that we dont need to remember the name
       initialRoute: SignInScreen.routeName,
       routes: routes,
     );

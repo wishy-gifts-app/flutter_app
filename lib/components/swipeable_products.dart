@@ -4,53 +4,88 @@ import 'package:shop_app/models/Product.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 
 class SwipeableCardWidget extends StatefulWidget {
-  final List<Product> products;
   final Function(String) onSwipeRight;
   final Function(String) onSwipeLeft;
   final Function(String) onSwipeUp;
+  final Function() nextPage;
 
   SwipeableCardWidget({
-    required this.products,
     required this.onSwipeRight,
     required this.onSwipeLeft,
     required this.onSwipeUp,
+    required this.nextPage,
   });
 
   @override
   _SwipeableCardWidgetState createState() => _SwipeableCardWidgetState();
 }
 
+List<SwipeItem> buildSwipeItems(
+  List<Product> products,
+  Function(String) onSwipeRight,
+  Function(String) onSwipeLeft,
+  Function(String) onSwipeUp,
+) {
+  List<SwipeItem> swipeItems = [];
+  for (var product in products) {
+    swipeItems.add(SwipeItem(
+      content: product,
+      likeAction: () {
+        onSwipeRight(product.id.toString());
+      },
+      nopeAction: () {
+        onSwipeLeft(product.id.toString());
+      },
+      superlikeAction: () {
+        onSwipeUp(product.id.toString());
+      },
+    ));
+  }
+  return swipeItems;
+}
+
 class _SwipeableCardWidgetState extends State<SwipeableCardWidget> {
   List<SwipeItem> _swipeItems = [];
   MatchEngine? _matchEngine;
+  List<Product> products = [];
+
+  Future<void> setProductsItems() async {
+    final products = await widget.nextPage();
+
+    if (products != null) {
+      final result = buildSwipeItems(
+        products,
+        widget.onSwipeRight,
+        widget.onSwipeLeft,
+        widget.onSwipeUp,
+      );
+
+      if (mounted) {
+        setState(() {
+          _swipeItems = result;
+          _matchEngine = MatchEngine(swipeItems: _swipeItems);
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    for (var product in widget.products) {
-      _swipeItems.add(SwipeItem(
-        content: product,
-        likeAction: () {
-          widget.onSwipeRight(product.id.toString());
-        },
-        nopeAction: () {
-          widget.onSwipeLeft(product.id.toString());
-        },
-        superlikeAction: () {
-          widget.onSwipeUp(product.id.toString());
-        },
-      ));
-    }
-    _matchEngine = MatchEngine(swipeItems: _swipeItems);
+    setProductsItems();
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      if (_swipeItems.length == 0) {
+        return Center(
+          child: CircularProgressIndicator(), // Display loading indicator
+        );
+      }
+
       return SwipeCards(
-        onStackFinished: () {
-          print("Stack Finished");
-        },
+        onStackFinished: setProductsItems,
         matchEngine: _matchEngine!,
         upSwipeAllowed: true,
         itemBuilder: (BuildContext context, int index) {

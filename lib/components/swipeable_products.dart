@@ -7,7 +7,7 @@ class SwipeableCardWidget extends StatefulWidget {
   final Function(String) onSwipeRight;
   final Function(String) onSwipeLeft;
   final Function(String) onSwipeUp;
-  final Function() nextPage;
+  final Future<List<Product>?> Function() nextPage;
 
   SwipeableCardWidget({
     required this.onSwipeRight,

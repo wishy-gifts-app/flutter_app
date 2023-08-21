@@ -1,6 +1,9 @@
-T convertValue<T>(dynamic json, String key, bool required) {
+T convertValue<T>(dynamic json, String key, bool required,
+    {T? defaultValue = null}) {
   final value = json[key];
-  if (required && value == null) {
+  if (value == null && defaultValue != null) {
+    return defaultValue;
+  } else if (required && value == null) {
     throw ArgumentError('${key} is required but is null');
   }
 

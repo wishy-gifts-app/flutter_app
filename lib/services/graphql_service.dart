@@ -34,7 +34,7 @@ class GraphQLService {
       final responseBody = jsonDecode(response.body);
       await GlobalManager()
           .setParams(newToken: response.headers["auth"] ?? token);
-      print(responseBody);
+
       return responseBody;
     } catch (error) {
       print("Error sending GraphQL query: $error");

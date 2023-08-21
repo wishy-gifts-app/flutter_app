@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/rounded_icon_btn.dart';
-import 'package:shop_app/models/Product.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -8,27 +7,26 @@ import '../../../size_config.dart';
 class ColorDots extends StatelessWidget {
   const ColorDots({
     Key? key,
-    required this.product,
+    required this.values,
   }) : super(key: key);
 
-  final Product product;
+  final List<Color> values;
 
   @override
   Widget build(BuildContext context) {
-    // Now this is fixed and only for demo
     int selectedColor = 3;
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
       child: Row(
         children: [
-          // ...List.generate(
-          //   product.colors.length,
-          //   (index) => ColorDot(
-          //     color: product.colors[index],
-          //     isSelected: index == selectedColor,
-          //   ),
-          // ),
+          ...List.generate(
+            values.length,
+            (index) => ColorDot(
+              color: values[index],
+              isSelected: index == selectedColor,
+            ),
+          ),
           Spacer(),
           RoundedIconBtn(
             icon: Icons.remove,

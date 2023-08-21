@@ -27,7 +27,7 @@ class Product {
       id: convertValue<int>(json, 'id', true),
       title: convertValue<String>(json, 'title', true),
       description: convertValue<String>(json, 'description', true),
-      price: 0,
+      price: convertValue<double>(json, 'price', true, defaultValue: 0),
       images: json['images'] != null
           ? (json['images'] as List<dynamic>)
               .map((imageJson) => ProductImage.fromJson(imageJson))
@@ -47,6 +47,7 @@ class Product {
 class Variant {
   final int id;
   final String title;
+  final String? size, color, material, style;
   final double weight, price;
   final int inventoryQuantity;
 
@@ -56,6 +57,10 @@ class Variant {
     required this.weight,
     required this.price,
     required this.inventoryQuantity,
+    this.size,
+    this.style,
+    this.color,
+    this.material,
   });
 
   factory Variant.fromJson(Map<String, dynamic> json) {
@@ -64,6 +69,10 @@ class Variant {
         title: convertValue<String>(json, 'title', true),
         weight: convertValue<double>(json, 'weight', true),
         price: convertValue<double>(json, 'price', true),
+        color: convertValue<String>(json, 'color', false),
+        size: convertValue<String>(json, 'size', false),
+        material: convertValue<String>(json, 'material', false),
+        style: convertValue<String>(json, 'style', false),
         // inventoryQuantity: convertValue<int>(json, 'inventoryQuantity', true),
         inventoryQuantity: 0);
   }

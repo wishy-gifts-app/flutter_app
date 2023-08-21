@@ -30,7 +30,7 @@ class PopularProducts extends StatelessWidget {
     // Implement your logic here
   }
 
-  Future<List<Product?>> fetchData() async {
+  Future<List<Product>?> fetchData() async {
     final formatResponse = (dynamic result) => (result as List<dynamic>)
         .map((item) => new Product.fromJson(item))
         .toList();
@@ -41,7 +41,7 @@ class PopularProducts extends StatelessWidget {
       final nextPageData = await _paginationServices!["nextPage"]();
       return nextPageData != null
           ? formatResponse(nextPageData['products'])
-          : [];
+          : null;
     }
   }
 

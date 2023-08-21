@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/size_config.dart';
 
+const variantOptions = [
+  "colors",
+  "sizes",
+  "styles",
+  "materials",
+];
+
 const kPrimaryColor = Colors.black;
 const kPrimaryLightColor = Color(0xFFFFECDF);
 const kPrimaryGradientColor = LinearGradient(
@@ -30,7 +37,7 @@ const String kInvalidEmailError = "Please Enter Valid Email";
 const String kPassNullError = "Please Enter your password";
 const String kShortPassError = "Password is too short";
 const String kMatchPassError = "Passwords don't match";
-const String kNamelNullError = "Please Enter your name";
+const String kNameNullError = "Please Enter your name";
 const String kPhoneNumberNullError = "Please Enter your phone number";
 const String kAddressNullError = "Please Enter your address";
 const String kInvalidPhoneNumberError = "Invalid phone number";

@@ -44,6 +44,10 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
+            size
+            color
+            material
+            style
           }
           images {
             id

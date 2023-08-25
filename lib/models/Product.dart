@@ -26,7 +26,7 @@ class Product {
     return Product(
       id: convertValue<int>(json, 'id', true),
       title: convertValue<String>(json, 'title', true),
-      description: convertValue<String>(json, 'description', true),
+      description: convertValue<String>(json, 'description', false),
       price: convertValue<double>(json, 'price', true, defaultValue: 0),
       images: json['images'] != null
           ? (json['images'] as List<dynamic>)
@@ -67,7 +67,7 @@ class Variant {
     return Variant(
         id: convertValue<int>(json, 'id', true),
         title: convertValue<String>(json, 'title', true),
-        weight: convertValue<double>(json, 'weight', true),
+        weight: convertValue<double>(json, 'weight', false),
         price: convertValue<double>(json, 'price', true),
         color: convertValue<String>(json, 'color', false),
         size: convertValue<String>(json, 'size', false),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/rounded_icon_btn.dart';
 
-import '../../../constants.dart';
-import '../../../size_config.dart';
+import '../constants.dart';
+import '../size_config.dart';
 
-class ColorDots extends StatelessWidget {
+class ColorDots extends StatefulWidget {
   const ColorDots({
     Key? key,
     required this.values,
@@ -13,30 +12,42 @@ class ColorDots extends StatelessWidget {
   final List<Color> values;
 
   @override
+  _ColorDotsState createState() => _ColorDotsState();
+}
+
+class _ColorDotsState extends State<ColorDots> {
+  late int selectedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedColor = 0; // Initialize the selected color
+  }
+
+  void handleChange(int index) {
+    setState(() {
+      selectedColor = index; // Update the selected color on tap
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    int selectedColor = 3;
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
       child: Row(
         children: [
-          ...List.generate(
-            values.length,
-            (index) => ColorDot(
-              color: values[index],
-              isSelected: index == selectedColor,
-            ),
-          ),
+          Text("Colors:"),
           Spacer(),
-          RoundedIconBtn(
-            icon: Icons.remove,
-            press: () {},
-          ),
-          SizedBox(width: getProportionateScreenWidth(20)),
-          RoundedIconBtn(
-            icon: Icons.add,
-            showShadow: true,
-            press: () {},
+          ...List.generate(
+            widget.values.length,
+            (index) => GestureDetector(
+              onTap: () => handleChange(index),
+              child: ColorDot(
+                color: widget.values[index],
+                isSelected: index == selectedColor,
+              ),
+            ),
           ),
         ],
       ),

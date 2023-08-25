@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/variant_picker.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/screens/details/components/color_dots.dart';
+import 'package:shop_app/components/color_dots.dart';
 import 'package:string_to_color/string_to_color.dart';
 
 Map<String, dynamic> groupVariants(List<Variant> variants) {
@@ -75,6 +76,14 @@ Map<String, dynamic>? getVariantsDataWithChildren(List<Variant> variants) {
 
 dynamic getVariantWidget = (String type, dynamic values) {
   switch (type) {
+    case "colors":
+      return ColorDots(values: values);
+    case "sizes":
+      return VariantPicker(type: type, values: values);
+    case "colors":
+      return ColorDots(values: values);
+    case "colors":
+      return ColorDots(values: values);
     case "colors":
       return ColorDots(values: values);
     default:

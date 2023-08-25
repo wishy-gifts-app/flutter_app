@@ -32,6 +32,8 @@ class GraphQLService {
       );
 
       final responseBody = jsonDecode(response.body);
+      print(response.statusCode);
+      if (response.statusCode != 200) throw requestBody;
       await GlobalManager()
           .setParams(newToken: response.headers["auth"] ?? token);
 
@@ -51,7 +53,6 @@ class GraphQLService {
   ) async {
     String? cursor;
     bool hasNextPage = true;
-
     final fetchData = () async {
       final result = await runGraphQLQuery(
           queryName, queryString, {...variables, "cursor": cursor});
@@ -63,10 +64,9 @@ class GraphQLService {
         hasNextPage = false;
       }
 
-      return result['data'];
+      return result['data'][queryName]["results"];
     };
 
-    final data = await fetchData(); // Fetch the initial page
     var nextPageData;
     if (hasNextPage) {
       nextPageData = fetchData();
@@ -81,7 +81,6 @@ class GraphQLService {
     };
 
     return {
-      'data': data[queryName]["results"],
       'hasNextPage': hasNextPage,
       'nextPage': nextPage,
     };
@@ -89,7 +88,9 @@ class GraphQLService {
 
   Future<Map<String, dynamic>> queryHandler(
       String queryName, Map<String, dynamic> variables,
-      {bool withPagination = false, bool isMutation = false}) async {
+      {bool withPagination = false,
+      bool throwOnError = true,
+      String? errorMessage = null}) async {
     final String? queryString = graphqlQueries[queryName];
 
     if (queryString == null) {

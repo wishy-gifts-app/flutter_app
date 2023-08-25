@@ -1,69 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/product_card.dart';
 import 'package:shop_app/models/Product.dart';
-import 'package:swipe_cards/swipe_cards.dart';
+import 'package:shop_app/components/swipeable_card.dart';
+import 'package:shop_app/size_config.dart';
 
-class SwipeableCardWidget extends StatefulWidget {
-  final Function(String) onSwipeRight;
-  final Function(String) onSwipeLeft;
-  final Function(String) onSwipeUp;
+class SwipeableProducts extends StatefulWidget {
+  final bool isFullPage;
+  final Function(int) onSwipeRight;
+  final Function(int) onSwipeLeft;
+  final Function(int) onSwipeUp;
   final Future<List<Product>?> Function() nextPage;
+  final Widget Function(BuildContext context, Product product) cardBuilder;
+  final String emptyString;
 
-  SwipeableCardWidget({
+  SwipeableProducts({
     required this.onSwipeRight,
     required this.onSwipeLeft,
     required this.onSwipeUp,
     required this.nextPage,
+    required this.cardBuilder,
+    this.emptyString = "Sorry, but we don't have products yet",
+    this.isFullPage = true,
   });
 
   @override
-  _SwipeableCardWidgetState createState() => _SwipeableCardWidgetState();
+  _SwipeableProductsState createState() => _SwipeableProductsState();
 }
 
-List<SwipeItem> buildSwipeItems(
-  List<Product> products,
-  Function(String) onSwipeRight,
-  Function(String) onSwipeLeft,
-  Function(String) onSwipeUp,
-) {
-  List<SwipeItem> swipeItems = [];
-  for (var product in products) {
-    swipeItems.add(SwipeItem(
-      content: product,
-      likeAction: () {
-        onSwipeRight(product.id.toString());
-      },
-      nopeAction: () {
-        onSwipeLeft(product.id.toString());
-      },
-      superlikeAction: () {
-        onSwipeUp(product.id.toString());
-      },
-    ));
-  }
-  return swipeItems;
-}
-
-class _SwipeableCardWidgetState extends State<SwipeableCardWidget> {
-  List<SwipeItem> _swipeItems = [];
-  MatchEngine? _matchEngine;
+class _SwipeableProductsState extends State<SwipeableProducts> {
   List<Product> products = [];
+  bool isStateEmpty = false;
 
-  Future<void> setProductsItems() async {
-    final products = await widget.nextPage();
+  Future<void> fetchProductsItems() async {
+    final results = await widget.nextPage();
 
-    if (products != null) {
-      final result = buildSwipeItems(
-        products,
-        widget.onSwipeRight,
-        widget.onSwipeLeft,
-        widget.onSwipeUp,
-      );
-
-      if (mounted) {
+    if (mounted) {
+      if (results != null && results.length > 0) {
         setState(() {
-          _swipeItems = result;
-          _matchEngine = MatchEngine(swipeItems: _swipeItems);
+          products = results;
+          isStateEmpty = false;
+        });
+      } else {
+        setState(() {
+          isStateEmpty = products.length == 0;
         });
       }
     }
@@ -72,56 +50,61 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget> {
   @override
   void initState() {
     super.initState();
-    setProductsItems();
+    fetchProductsItems();
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (_swipeItems.length == 0) {
-        return Center(
-          child: CircularProgressIndicator(), // Display loading indicator
-        );
-      }
-
-      return SwipeCards(
-        onStackFinished: setProductsItems,
-        matchEngine: _matchEngine!,
-        upSwipeAllowed: true,
-        itemBuilder: (BuildContext context, int index) {
-          return Stack(
-            children: [
-              ProductCard(
-                product: _swipeItems[index].content as Product,
-                isFullScreen: true,
-                availableHeight: constraints.maxHeight,
+    if (products.length == 0) {
+      return Center(
+          child: Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(30)),
+        child: !isStateEmpty
+            ? CircularProgressIndicator()
+            : Text(
+                widget.emptyString!,
+                textAlign: TextAlign.center,
               ),
-              Positioned(
-                  right: 20, // Horizontal position
-                  bottom: 30, // Vertical position
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Add your action here
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white, // Background color
-                      foregroundColor: Colors.black, // Text color
-                      shape: CircleBorder(), // Button shape
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                          8.0), // You can adjust the value as needed
-                      child: Icon(
-                        Icons.card_giftcard,
-                        color: Colors.black,
-                        size: 40,
-                      ),
-                    ),
-                  )),
-            ],
-          );
-        },
-      );
-    });
+      ));
+    }
+
+    if (widget.isFullPage) {
+      return Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
+          child: SwipeableCardWidget(
+            onSwipeRight: widget.onSwipeRight,
+            onSwipeLeft: widget.onSwipeLeft,
+            onSwipeUp: widget.onSwipeUp,
+            items: products,
+            cardBuilder: widget.cardBuilder,
+          ));
+    } else {
+      return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(10),
+          ),
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: MediaQuery.of(context).size.width /
+                  (MediaQuery.of(context).size.height / 1.3),
+              mainAxisSpacing: 10.0,
+              crossAxisSpacing: 10.0,
+            ),
+            padding: EdgeInsets.all(5),
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              return SwipeableCardWidget(
+                onSwipeRight: widget.onSwipeRight,
+                onSwipeLeft: widget.onSwipeLeft,
+                onSwipeUp: widget.onSwipeUp,
+                items: [products[index]],
+                cardBuilder: widget.cardBuilder,
+              );
+            },
+          ));
+    }
   }
 }

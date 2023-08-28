@@ -7,6 +7,7 @@ import 'package:shop_app/size_config.dart';
 import 'package:shop_app/services/opt_services.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:shop_app/utils/router_utils.dart';
 
 class OtpForm extends StatefulWidget {
   final String phoneNumber;
@@ -66,11 +67,9 @@ class _OtpFormState extends State<OtpForm> {
           newUserId: result.userId);
 
       if (mounted) {
-        Navigator.pushNamed(
+        RouterUtils.routeToHomePage(
           context,
-          result.profileCompleted == true
-              ? HomeScreen.routeName
-              : CompleteProfileScreen.routeName,
+          result.profileCompleted,
         );
       }
     } catch (error) {

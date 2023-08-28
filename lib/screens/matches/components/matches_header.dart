@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
 
-class LikesHeader extends StatelessWidget {
+class MatchesHeader extends StatelessWidget {
   final double? height;
 
-  const LikesHeader({
+  const MatchesHeader({
     Key? key,
     this.height,
   }) : super(key: key);

@@ -6,18 +6,18 @@ import 'package:shop_app/services/graphql_service.dart';
 import '../../../size_config.dart';
 import 'package:shop_app/components/product_card.dart';
 
-class LikesProducts extends StatefulWidget {
+class MatchesProducts extends StatefulWidget {
   final bool isLike;
 
-  LikesProducts({
+  MatchesProducts({
     required this.isLike,
   });
 
   @override
-  _LikesProductsState createState() => _LikesProductsState();
+  _MatchesProductsState createState() => _MatchesProductsState();
 }
 
-class _LikesProductsState extends State<LikesProducts> {
+class _MatchesProductsState extends State<MatchesProducts> {
   Map<String, dynamic>? _paginationServices;
 
   Future<void> _initializeData() async {

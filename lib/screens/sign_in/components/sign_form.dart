@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
+import 'package:shop_app/global_manager.dart';
+import 'package:shop_app/utils/instagram_auth.dart';
 import 'package:shop_app/screens/otp/otp_screen.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:shop_app/services/opt_services.dart';
+import 'package:shop_app/utils/router_utils.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -19,6 +23,7 @@ class _SignFormState extends State<SignForm> {
   final List<String?> errors = [];
   String phoneNumber = "";
   final otpServices = OTPServices();
+  int selectedIcon = 1;
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -43,58 +48,115 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
+  Future<void> sendOPTNumber() async {
+    _formKey.currentState!.save();
+
+    if (phoneNumber.isEmpty) {
+      addError(error: kPhoneNumberNullError);
+      return;
+    } else {
+      try {
+        final isValid = await isValidPhoneNumber(phoneNumber);
+        if (!isValid) {
+          addError(error: kInvalidPhoneNumberError);
+          return;
+        }
+      } catch (error) {
+        addError(error: kInvalidPhoneNumberError);
+        return;
+      }
+    }
+
+    try {
+      removeError(error: kInvalidPhoneNumberError);
+      await otpServices.sendOTPService(phoneNumber);
+      Navigator.pushNamed(
+        context,
+        OtpScreen.routeName,
+        arguments: {'phoneNumber': phoneNumber},
+      );
+    } catch (error) {
+      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send OTP. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          buildPhoneNumberFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(40)),
-          DefaultButton(
-            text: "continue",
-            press: () async {
-              FocusScope.of(context).unfocus();
+      child: Column(children: [
+        // Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        //   InkWell(
+        //     onTap: () async {
+        //       setState(() {
+        //         selectedIcon = 0;
+        //       });
 
-              _formKey.currentState!.save();
-
-              if (phoneNumber.isEmpty) {
-                addError(error: kPhoneNumberNullError);
-                return;
-              } else {
-                try {
-                  final isValid = await isValidPhoneNumber(phoneNumber);
-                  if (!isValid) {
-                    addError(error: kInvalidPhoneNumberError);
-                    return;
-                  }
-                } catch (error) {
-                  addError(error: kInvalidPhoneNumberError);
-                  return;
-                }
-              }
-
-              try {
-                removeError(error: kInvalidPhoneNumberError);
-                await otpServices.sendOTPService(phoneNumber);
-                Navigator.pushNamed(
-                  context,
-                  OtpScreen.routeName,
-                  arguments: {'phoneNumber': phoneNumber},
-                );
-              } catch (error) {
-                print(error);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('Failed to send OTP. Please try again.')),
-                );
-              }
-            },
+        //       try {
+        //         final result = await getInstagramToken();
+        //         await GlobalManager().setParams(
+        //             newProfileCompleted: result.profileCompleted,
+        //             newToken: result.token,
+        //             newUserId: result.userId);
+        //         if (mounted) {
+        //           RouterUtils.routeToHomePage(
+        //             context,
+        //             result.profileCompleted,
+        //           );
+        //         }
+        //       } catch (error) {
+        //         print(error);
+        //         ScaffoldMessenger.of(context).showSnackBar(
+        //           SnackBar(
+        //               content: Text(
+        //                   'Failed to sign in with Instagram. Please try again.')),
+        //         );
+        //       }
+        //     },
+        //     child: SvgPicture.asset(
+        //       'assets/icons/instagram.svg',
+        //       height: 50.0,
+        //     ),
+        //   ),
+        //   InkWell(
+        //     onTap: () async {
+        //       setState(() {
+        //         selectedIcon = 1;
+        //       });
+        //     },
+        //     child: SvgPicture.asset(
+        //       'assets/icons/sms-icon.svg',
+        //       height: 50.0,
+        //     ),
+        //   )
+        // ]),
+        // SizedBox(height: getProportionateScreenHeight(60)),
+        Visibility(
+          visible: selectedIcon == 0,
+          child: Text(
+            'Continue with Instagram to get matches with your followings.',
+            textAlign: TextAlign.center,
           ),
-        ],
-      ),
+        ),
+        Visibility(
+            visible: selectedIcon == 1,
+            child: Column(children: [
+              buildPhoneNumberFormField(),
+              SizedBox(height: getProportionateScreenHeight(30)),
+              FormError(errors: errors),
+              SizedBox(height: getProportionateScreenHeight(40)),
+              DefaultButton(
+                text: "continue",
+                press: () async {
+                  FocusScope.of(context).unfocus();
+                  await sendOPTNumber();
+                },
+              ),
+            ])),
+      ]),
     );
   }
 

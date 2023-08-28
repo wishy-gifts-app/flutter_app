@@ -13,7 +13,7 @@ class Body extends StatelessWidget {
           children: [
             SizedBox(height: SizeConfig.screenHeight * 0.04),
             Text(
-              "Welcome Back",
+              "Welcome",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: getProportionateScreenWidth(28),
@@ -21,7 +21,7 @@ class Body extends StatelessWidget {
               ),
             ),
             Text(
-              "Sign in with your phone number",
+              "Sign in to your Wishy profile",
               textAlign: TextAlign.center,
             ),
             SizedBox(height: SizeConfig.screenHeight * 0.08),

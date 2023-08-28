@@ -1,6 +1,4 @@
-import 'package:shop_app/constants.dart';
-
-import 'mathces_header.dart';
+import 'matches_header.dart';
 import 'package:flutter/material.dart';
 import '../../../size_config.dart';
 import 'matches_product.dart';
@@ -14,9 +12,9 @@ class Body extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: getProportionateScreenHeight(10)),
-          LikesHeader(height: headerHeight),
+          MatchesHeader(height: headerHeight),
           Expanded(
-            child: LikesProducts(
+            child: MatchesProducts(
               isLike: false,
             ),
           ),

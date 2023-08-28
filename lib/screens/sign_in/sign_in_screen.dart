@@ -3,6 +3,7 @@ import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
 import 'package:shop_app/size_config.dart';
+import 'package:shop_app/utils/router_utils.dart';
 
 import 'components/body.dart';
 
@@ -28,11 +29,7 @@ class _SignInScreenState extends State<SignInScreen> {
     bool? profileCompleted = GlobalManager().profileCompleted;
 
     if (token != null && token.isNotEmpty) {
-      Navigator.pushReplacementNamed(
-          context,
-          profileCompleted == null || !profileCompleted
-              ? CompleteProfileScreen.routeName
-              : HomeScreen.routeName);
+      RouterUtils.routeToHomePage(context, profileCompleted);
     } else {
       setState(() {
         _loading = false; // Set loading to false if token is not found
@@ -44,7 +41,6 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    // If loading is true, show loader, else show actual content
     if (_loading) {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
     }

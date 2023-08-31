@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
 import 'package:shop_app/size_config.dart';
+import 'package:shop_app/utils/analytics.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -12,13 +13,18 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   bool _isCurrentPageActive = true;
 
+  void onPress() {
+    if (_isCurrentPageActive) {
+      _isCurrentPageActive = false;
+      Navigator.pushNamed(context, HomeScreen.routeName);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 2), () {
-      if (_isCurrentPageActive) {
-        Navigator.pushNamed(context, HomeScreen.routeName);
-      }
+      onPress();
     });
   }
 
@@ -49,10 +55,7 @@ class _BodyState extends State<Body> {
               width: SizeConfig.screenWidth,
               child: DefaultButton(
                 text: "Go to home",
-                press: () {
-                  _isCurrentPageActive = false;
-                  Navigator.pushNamed(context, HomeScreen.routeName);
-                },
+                press: onPress,
               ),
             ),
             Spacer(),

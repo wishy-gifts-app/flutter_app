@@ -6,6 +6,7 @@ import 'package:shop_app/screens/login_success/login_success_screen.dart';
 import 'package:shop_app/screens/matches/matches_screen.dart';
 import 'package:shop_app/screens/otp/otp_screen.dart';
 import 'package:shop_app/screens/profile/profile_screen.dart';
+import 'package:shop_app/screens/root_screen.dart';
 import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
 import 'package:shop_app/screens/likes/likes_screen.dart';
 
@@ -24,4 +25,5 @@ final Map<String, WidgetBuilder> routes = {
   MatchesScreen.routeName: (context) => MatchesScreen(),
   DetailsScreen.routeName: (context) => DetailsScreen(),
   ProfileScreen.routeName: (context) => ProfileScreen(),
+  RootScreen.routeName: (context) => RootScreen(),
 };

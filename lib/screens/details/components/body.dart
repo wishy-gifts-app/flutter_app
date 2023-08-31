@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/additional_details_dialog.dart';
 import 'package:shop_app/components/default_button.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/components/variants_form.dart';
 import 'package:shop_app/size_config.dart';
@@ -10,6 +11,7 @@ import 'top_rounded_container.dart';
 import 'product_images.dart';
 
 class Body extends StatelessWidget {
+  final situation = "product_details";
   final Product product;
 
   Body({Key? key, required this.product}) : super(key: key);
@@ -63,7 +65,13 @@ class Body extends StatelessWidget {
           top: getProportionateScreenWidth(15),
         ),
         child: DefaultButton(
-          text: "Add To Cart",
+          text: "Buy Now",
+          eventName: analyticEvents["CHECKOUT_PRESSED"]!,
+          eventData: {
+            "Product Id": product.id,
+            "Product Title": product.title,
+            "Situation": situation
+          }, //TODO Add parma in checkout
           press: () {},
         ),
       ),

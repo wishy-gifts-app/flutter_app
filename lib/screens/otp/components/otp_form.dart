@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/default_button.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
@@ -7,6 +8,7 @@ import 'package:shop_app/size_config.dart';
 import 'package:shop_app/services/opt_services.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:shop_app/utils/analytics.dart';
 import 'package:shop_app/utils/router_utils.dart';
 
 class OtpForm extends StatefulWidget {
@@ -49,7 +51,7 @@ class _OtpFormState extends State<OtpForm> {
           SizedBox(height: SizeConfig.screenHeight * 0.15),
           DefaultButton(
             text: "Continue",
-            // press: handleOtpSubmission,
+            press: handleOtpSubmission,
           )
         ],
       ),
@@ -65,6 +67,11 @@ class _OtpFormState extends State<OtpForm> {
           newToken: result.token,
           newProfileCompleted: result.profileCompleted,
           newUserId: result.userId);
+      AnalyticsService.registerSuperProperties({"User Id": result.userId});
+
+      AnalyticsService.trackEvent(
+        analyticEvents["OPT_SUBMITTED"]!,
+      );
 
       if (mounted) {
         RouterUtils.routeToHomePage(

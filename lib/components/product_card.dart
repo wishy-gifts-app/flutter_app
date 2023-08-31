@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/details/details_screen.dart';
-import '../size_config.dart';
+import 'package:shop_app/utils/analytics.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({
     Key? key,
     required this.product,
+    required this.situation,
     this.availableHeight,
     this.isFullScreen = false,
   }) : super(key: key);
@@ -15,6 +16,7 @@ class ProductCard extends StatefulWidget {
   final Product product;
   final bool isFullScreen;
   final double? availableHeight;
+  final String situation;
 
   @override
   _ProductCardState createState() => _ProductCardState();
@@ -23,11 +25,25 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   int _currentImageIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    AnalyticsService.trackEvent(analyticEvents["PRODUCT_VIEWED"]!, properties: {
+      'Product Id': widget.product.id,
+      'Product Title': widget.product.title,
+      "Situation": widget.situation
+    });
+
+    _sendImageViewedEvent();
+  }
+
   void _showPreviousImage() {
     if (_currentImageIndex > 0) {
       setState(() {
         _currentImageIndex--;
       });
+
+      _sendImageViewedEvent();
     }
   }
 
@@ -36,20 +52,39 @@ class _ProductCardState extends State<ProductCard> {
       setState(() {
         _currentImageIndex++;
       });
+
+      _sendImageViewedEvent();
     }
+  }
+
+  void _sendImageViewedEvent() {
+    AnalyticsService.trackEvent(analyticEvents["PRODUCT_IMAGE_VIEWED"]!,
+        properties: {
+          'Product Id': widget.product.id,
+          'Product Title': widget.product.title,
+          'Image Url': widget.product.images.isNotEmpty
+              ? widget.product.images[_currentImageIndex].url
+              : null,
+          "Situation": widget.situation
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        DetailsScreen.routeName,
-        arguments: ProductDetailsArguments(product: widget.product),
-      ),
+      onTap: () => {
+        AnalyticsService.trackEvent(analyticEvents["PRODUCT_DETAILS_PRESSED"]!,
+            properties: {
+              "Product Id": widget.product.id,
+              'Product Title': widget.product.title,
+              "Situation": widget.situation
+            }),
+        Navigator.pushNamed(
+          context,
+          DetailsScreen.routeName,
+          arguments: ProductDetailsArguments(product: widget.product),
+        )
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -114,7 +149,7 @@ class _ProductCardState extends State<ProductCard> {
                       fit: BoxFit.contain,
                     )
                   : Text(
-                      "Image not available", // You can customize the message here
+                      "Image not available",
                       style: TextStyle(color: Colors.black),
                     ),
             ),
@@ -170,20 +205,24 @@ class _ProductCardState extends State<ProductCard> {
               ),
             ),
             Positioned(
-                right: widget.isFullScreen ? 20 : 0, // Horizontal position
-                bottom: widget.isFullScreen ? 40 : 15, // Vertical position
+                right: widget.isFullScreen ? 20 : 0,
+                bottom: widget.isFullScreen ? 40 : 15,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Add your action here
+                    AnalyticsService.trackEvent(
+                        analyticEvents["CHECKOUT_PRESSED"]!,
+                        properties: {
+                          "Product Id": widget.product.id,
+                          "Situation": widget.situation
+                        });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white, // Background color
-                    foregroundColor: Colors.black, // Text color
-                    shape: CircleBorder(), // Button shape
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    shape: CircleBorder(),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(
-                        8.0), // You can adjust the value as needed
+                    padding: const EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.card_giftcard,
                       color: Colors.black,

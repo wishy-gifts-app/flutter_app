@@ -8,6 +8,22 @@ const variantOptions = [
   "materials",
 ];
 
+const analyticEvents = {
+  "START_APP_SESSION": "Start App Session",
+  "END_APP_SESSION": "End App Session",
+  "APP_PAGE_VIEWED": "App Page Viewed",
+  "PHONE_SIGN_IN_SUBMITTED": "Phone Sign In Submitted",
+  "OPT_SUBMITTED": "OPT Submitted",
+  "CHECKOUT_PRESSED": "Checkout Pressed",
+  "COMPLETE_PROFILE_SUBMITTED": "Complete Profile Submitted",
+  "PRODUCT_IMAGE_VIEWED": "Product Image Viewed",
+  "PRODUCT_VIEWED": "Product Viewed",
+  "PRODUCT_DETAILS_PRESSED": "Product Details Pressed",
+  "SWIPED_RIGHT": "Swiped Right",
+  "SWIPED_LEFT": "Swiped Left",
+  "SWIPED_UP": "Swiped Up",
+};
+
 const kPrimaryColor = Colors.black;
 const kPrimaryLightColor = Color(0xFFFFECDF);
 const kPrimaryGradientColor = LinearGradient(

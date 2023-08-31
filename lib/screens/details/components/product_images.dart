@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:shop_app/utils/analytics.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -18,9 +19,29 @@ class ProductImages extends StatefulWidget {
 }
 
 class _ProductImagesState extends State<ProductImages> {
+  final situation = "product_details";
   CarouselController _carouselController = CarouselController();
   ScrollController _scrollController = ScrollController();
   int selectedImage = 0;
+
+  void _sendImageViewedEvent() {
+    AnalyticsService.trackEvent(analyticEvents["PRODUCT_IMAGE_VIEWED"]!,
+        properties: {
+          'Product Id': widget.product.id,
+          'Product Title': widget.product.title,
+          'Image Url': widget.product.images.isNotEmpty
+              ? widget.product.images[selectedImage].url
+              : null,
+          "Situation": situation
+        });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _sendImageViewedEvent();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +71,7 @@ class _ProductImagesState extends State<ProductImages> {
                       duration: defaultDuration,
                       curve: Curves.easeInOut,
                     );
+                    _sendImageViewedEvent();
                   },
                 ),
                 items: widget.product.images.map((image) {
@@ -90,6 +112,7 @@ class _ProductImagesState extends State<ProductImages> {
         _carouselController.jumpToPage(
           index,
         );
+        _sendImageViewedEvent();
       },
       child: AnimatedContainer(
         duration: defaultDuration,

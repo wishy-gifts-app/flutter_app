@@ -15,7 +15,7 @@ class Body extends StatelessWidget {
           SizedBox(height: getProportionateScreenHeight(10)),
           HomeHeader(height: headerHeight),
           Expanded(
-            child: PopularProducts(height: headerHeight),
+            child: MainProducts(),
           ),
           SizedBox(height: getProportionateScreenWidth(10)),
         ],

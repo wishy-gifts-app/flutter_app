@@ -81,9 +81,12 @@ class _MatchesProductsState extends State<MatchesProducts> {
       return CircularProgressIndicator();
     }
 
+    final situation = "match_product_card";
+
     return Container(
         height: SizeConfig.screenHeight,
         child: new SwipeableProducts(
+          situation: situation,
           emptyString:
               "You don't have ${widget.isLike ? "liked" : "unliked"} products yet, start to swiping",
           onSwipeRight: (int id) => saveLike(id, widget.isLike, context),
@@ -93,6 +96,7 @@ class _MatchesProductsState extends State<MatchesProducts> {
           isFullPage: false,
           cardBuilder: (context, product) {
             return ProductCard(
+              situation: situation,
               product: product,
               isFullScreen: false,
             );

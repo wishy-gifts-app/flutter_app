@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/components/swipeable_card.dart';
 import 'package:shop_app/size_config.dart';
+import 'package:shop_app/utils/analytics.dart';
 
 class SwipeableProducts extends StatefulWidget {
   final bool isFullPage;
@@ -11,6 +13,7 @@ class SwipeableProducts extends StatefulWidget {
   final Future<List<Product>?> Function() nextPage;
   final Widget Function(BuildContext context, Product product) cardBuilder;
   final String emptyString;
+  final String situation;
 
   SwipeableProducts({
     required this.onSwipeRight,
@@ -18,6 +21,7 @@ class SwipeableProducts extends StatefulWidget {
     required this.onSwipeUp,
     required this.nextPage,
     required this.cardBuilder,
+    required this.situation,
     this.emptyString = "Sorry, but we don't have products yet",
     this.isFullPage = true,
   });
@@ -29,6 +33,24 @@ class SwipeableProducts extends StatefulWidget {
 class _SwipeableProductsState extends State<SwipeableProducts> {
   List<Product> products = [];
   bool isStateEmpty = false;
+
+  void onSwipeRight(int productId) {
+    widget.onSwipeRight(productId);
+    AnalyticsService.trackEvent(analyticEvents["SWIPED_RIGHT"]!,
+        properties: {"Product Id": productId, "Situation": widget.situation});
+  }
+
+  void onSwipeLeft(int productId) {
+    widget.onSwipeRight(productId);
+    AnalyticsService.trackEvent(analyticEvents["SWIPED_LEFT"]!,
+        properties: {"Product Id": productId, "Situation": widget.situation});
+  }
+
+  void onSwipeUp(int productId) {
+    widget.onSwipeRight(productId);
+    AnalyticsService.trackEvent(analyticEvents["SWIPED_UP"]!,
+        properties: {"Product Id": productId, "Situation": widget.situation});
+  }
 
   Future<void> fetchProductsItems() async {
     final results = await widget.nextPage();
@@ -74,9 +96,9 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
           padding:
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: SwipeableCardWidget(
-            onSwipeRight: widget.onSwipeRight,
-            onSwipeLeft: widget.onSwipeLeft,
-            onSwipeUp: widget.onSwipeUp,
+            onSwipeRight: onSwipeRight,
+            onSwipeLeft: onSwipeLeft,
+            onSwipeUp: onSwipeUp,
             items: products,
             cardBuilder: widget.cardBuilder,
           ));

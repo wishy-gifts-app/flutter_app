@@ -5,6 +5,7 @@ import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/screens/login_success/login_success_screen.dart';
 import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/services/graphql_service.dart';
+import 'package:shop_app/utils/analytics.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -35,6 +36,32 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
       });
   }
 
+  void onSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await GraphQLService().queryHandler("updateUserById", {
+          "birthday": birthday,
+          "full_name": fullName,
+          "id": GlobalManager().userId
+        });
+        await GlobalManager().setParams(newProfileCompleted: true);
+        AnalyticsService.trackEvent(
+            analyticEvents["COMPLETE_PROFILE_SUBMITTED"]!);
+
+        AnalyticsService.setUserProfile(GlobalManager().userId!, {
+          "Birthday": birthday,
+          "Name": fullName,
+        });
+        Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Error completing profile. Please try again.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -46,29 +73,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           buildBirthdayFormField(),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(40)),
-          DefaultButton(
-            text: "continue",
-            press: () async {
-              if (_formKey.currentState!.validate()) {
-                try {
-                  await GraphQLService().queryHandler("updateUserById", {
-                    "birthday": birthday,
-                    "full_name": fullName,
-                    "id": GlobalManager().userId
-                  });
-                  await GlobalManager().setParams(newProfileCompleted: true);
-
-                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-                } catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            'Error completing profile. Please try again.')),
-                  );
-                }
-              }
-            },
-          ),
+          DefaultButton(text: "continue", press: onSubmit),
         ],
       ),
     );
@@ -81,7 +86,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         _selectDate(context);
       },
       onSaved: (newValue) {
-        // Convert the date to a string and save it, or save null if no date was selected
         birthday = DateTime.tryParse(newValue ?? '');
       },
       validator: (value) {
@@ -132,8 +136,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
       decoration: InputDecoration(
         labelText: "Full Name",
         hintText: "Enter your full name",
-        // If  you are using latest version of flutter then label text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
       ),

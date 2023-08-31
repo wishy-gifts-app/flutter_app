@@ -5,14 +5,14 @@ import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/services/graphql_service.dart';
 import '../../../size_config.dart';
-import 'package:shop_app/components/swipeable_card.dart';
 
-class PopularProducts extends StatelessWidget {
-  final double height;
+class MainProducts extends StatefulWidget {
+  @override
+  _MainProductsState createState() => _MainProductsState();
+}
+
+class _MainProductsState extends State<MainProducts> {
   Map<String, dynamic>? _paginationServices;
-
-  PopularProducts({Key? key, this.height = 150.0})
-      : super(key: key); // Default value set to 150
 
   Future<dynamic> _initializeData() async {
     _paginationServices = await GraphQLService()
@@ -60,18 +60,19 @@ class PopularProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final situation = "main_product_card";
+
     return Container(
       height: SizeConfig.screenHeight,
       child: SwipeableProducts(
+        situation: situation,
         onSwipeRight: (int id) => saveLike(id, false, context),
         onSwipeLeft: (int id) => saveLike(id, false, context),
         onSwipeUp: _onSwipeUp,
         nextPage: fetchData,
         cardBuilder: (context, product) {
           return ProductCard(
-              product: product,
-              isFullScreen:
-                  true); // Replace CustomCard with your desired card widget
+              situation: situation, product: product, isFullScreen: true);
         },
       ),
     );

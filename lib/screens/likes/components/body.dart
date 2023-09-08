@@ -34,7 +34,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
           SizedBox(height: getProportionateScreenHeight(10)),
           LikesHeader(height: headerHeight),
           TabBar(
-            labelColor: Colors.black,
+            labelColor: kPrimaryColor,
             indicatorColor: kPrimaryColor,
             tabs: [
               Tab(text: "Liked"),

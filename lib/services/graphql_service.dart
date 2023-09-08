@@ -37,7 +37,7 @@ class GraphQLService {
       await GlobalManager()
           .setParams(newToken: response.headers["auth"] ?? token);
 
-      return responseBody;
+      return responseBody["data"][queryName];
     } catch (error) {
       print("Error sending GraphQL query: $error");
       throw error;
@@ -56,7 +56,7 @@ class GraphQLService {
     final fetchData = () async {
       final result = await runGraphQLQuery(
           queryName, queryString, {...variables, "cursor": cursor});
-      final pageInfo = result['data'][queryName]['pageInfo'];
+      final pageInfo = result['pageInfo'];
 
       if (pageInfo['hasNextPage']) {
         cursor = pageInfo['endCursor'];
@@ -64,7 +64,7 @@ class GraphQLService {
         hasNextPage = false;
       }
 
-      return result['data'][queryName]["results"];
+      return result["results"];
     };
 
     var nextPageData;

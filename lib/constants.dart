@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/size_config.dart';
 
 const variantOptions = [
-  "colors",
-  "sizes",
-  "styles",
-  "materials",
+  "color",
+  "size",
+  "style",
+  "material",
 ];
 
 const analyticEvents = {
@@ -32,7 +32,7 @@ const kPrimaryGradientColor = LinearGradient(
   colors: [Color(0xFFFFA53E), Color(0xFFFF7643)],
 );
 const kSecondaryColor = Color(0xFF979797);
-const kTextColor = Color(0xFF757575);
+const kTextColor = Colors.black;
 
 const kAnimationDuration = Duration(milliseconds: 200);
 

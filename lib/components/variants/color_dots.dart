@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:string_to_color/string_to_color.dart';
 
-import '../constants.dart';
-import '../size_config.dart';
+import '../../constants.dart';
+import '../../size_config.dart';
 
 class ColorDots extends StatefulWidget {
   const ColorDots({
     Key? key,
     required this.values,
+    required this.onVariantChange,
   }) : super(key: key);
 
-  final List<Color> values;
+  final List<String> values;
+  final Function(String, String) onVariantChange;
 
   @override
   _ColorDotsState createState() => _ColorDotsState();
@@ -21,13 +24,15 @@ class _ColorDotsState extends State<ColorDots> {
   @override
   void initState() {
     super.initState();
-    selectedColor = 0; // Initialize the selected color
+    selectedColor = 0;
   }
 
   void handleChange(int index) {
     setState(() {
-      selectedColor = index; // Update the selected color on tap
+      selectedColor = index;
     });
+
+    widget.onVariantChange("color", widget.values[index]);
   }
 
   @override
@@ -44,7 +49,8 @@ class _ColorDotsState extends State<ColorDots> {
             (index) => GestureDetector(
               onTap: () => handleChange(index),
               child: ColorDot(
-                color: widget.values[index],
+                color: ColorUtils.stringToColor(
+                    widget.values[index].toLowerCase()),
                 isSelected: index == selectedColor,
               ),
             ),

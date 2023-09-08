@@ -85,7 +85,7 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
         child: !isStateEmpty
             ? CircularProgressIndicator()
             : Text(
-                widget.emptyString!,
+                widget.emptyString,
                 textAlign: TextAlign.center,
               ),
       ));

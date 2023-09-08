@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/additional_details_dialog.dart';
 import 'package:shop_app/components/default_button.dart';
+import 'package:shop_app/components/variants/variants_widget.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/components/variants_form.dart';
 import 'package:shop_app/size_config.dart';
 
 import 'product_description.dart';
-import 'top_rounded_container.dart';
+import '../../../components/top_rounded_container.dart';
 import 'product_images.dart';
 
 class Body extends StatelessWidget {
@@ -20,8 +20,6 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final variantsWithChildren = getVariantsDataWithChildren(product.variants);
-
     return ListView(
       children: [
         ProductImages(product: product),
@@ -42,9 +40,11 @@ class Body extends StatelessWidget {
                   );
                 },
               ),
-              if (variantsWithChildren != null)
-                buildVariantsSectionWithButton(
-                    variantsWithChildren, secondColor)
+              if (product.variants.length > 1)
+                VariantsWidget(
+                    productId: product.id,
+                    productTitle: product.title,
+                    productVariants: product.variants)
               else
                 buildButton(secondColor)
             ],
@@ -70,28 +70,12 @@ class Body extends StatelessWidget {
           eventData: {
             "Product Id": product.id,
             "Product Title": product.title,
-            "Situation": situation
+            "Situation": situation,
+            "Variants Exist": false
           }, //TODO Add parma in checkout
           press: () {},
         ),
       ),
-    );
-  }
-
-  TopRoundedContainer buildVariantsSectionWithButton(
-      Map<String, dynamic> variantsWithChildren, Color color) {
-    Color nextColor = color == firstColor ? secondColor : firstColor;
-    return TopRoundedContainer(
-      color: color,
-      child: Column(children: [
-        getVariantWidget(
-            variantsWithChildren["type"], variantsWithChildren["values"]),
-        if (variantsWithChildren["child"] != null)
-          buildVariantsSectionWithButton(
-              variantsWithChildren["child"], nextColor)
-        else
-          buildButton(nextColor)
-      ]),
     );
   }
 }

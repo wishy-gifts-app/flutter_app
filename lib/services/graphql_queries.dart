@@ -120,5 +120,47 @@ const Map<String, String> graphqlQueries = {
         id
       }
     }
-"""
+""",
+  'saveOrder': """
+    mutation saveOrder(
+      \$product_id: Int!, 
+      \$variant_id: Int!, 
+      \$user_id: Int!,
+    ) {
+      saveOrder(product_id: \$product_id, user_id: \$user_id, variant_id: \$variant_id) {
+        id
+      }
+    }
+""",
+  'updateOrderById': """
+    mutation updateOrderById(
+      \$id: Int!,    
+      \$recipient_user_id: Int,
+      \$price: Int,
+      \$is_order_completed: Boolean,
+      \$for_date: Date,
+    ) {
+      updateOrderById(id: \$id, is_order_completed: \$is_order_completed, price: \$price, for_date: \$for_date) {
+        id
+      }
+    }
+""",
+  'saveUserAddress': """
+    mutation saveUserAddress(
+      \$user_id: Int!,
+      \$country: String!,
+      \$state: String!,
+      \$city: String!,
+      \$street_address: String!,
+      \$street_number: String!,
+      \$zip_code: String!,
+      \$apartment: String,
+      \$extra_details: String,
+    ) {
+      saveUserAddress(user_id: \$user_id, country: \$country, state: \$state, city: \$city, zip_code: \$zip_code,
+      street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, extra_details: \$extra_details ) {
+        id
+      }
+    }
+""",
 };

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/variants/variants_modal.dart';
+import 'package:shop_app/components/variants/variants_widget.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/details/details_screen.dart';
+import 'package:shop_app/size_config.dart';
 import 'package:shop_app/utils/analytics.dart';
 
 class ProductCard extends StatefulWidget {
@@ -67,6 +70,19 @@ class _ProductCardState extends State<ProductCard> {
               : null,
           "Situation": widget.situation
         });
+  }
+
+  void _onCheckoutPressed() {
+    if (widget.product.variants.length > 1) {
+      showVariantsModal(context, widget.product);
+    } else {
+      AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
+          properties: {
+            "Product Id": widget.product.id,
+            "Situation": widget.situation,
+            "Variants Exist": false
+          });
+    }
   }
 
   @override
@@ -150,7 +166,6 @@ class _ProductCardState extends State<ProductCard> {
                     )
                   : Text(
                       "Image not available",
-                      style: TextStyle(color: Colors.black),
                     ),
             ),
             if (widget.product.images.isNotEmpty)
@@ -193,12 +208,10 @@ class _ProductCardState extends State<ProductCard> {
                 children: [
                   Text(
                     "\$ ${widget.product.price}",
-                    style: TextStyle(color: Colors.black),
                   ),
                   SizedBox(height: 10),
                   Text(
                     widget.product.title,
-                    style: TextStyle(color: Colors.black),
                     maxLines: 2,
                   ),
                 ],
@@ -209,12 +222,7 @@ class _ProductCardState extends State<ProductCard> {
                 bottom: widget.isFullScreen ? 40 : 15,
                 child: ElevatedButton(
                   onPressed: () {
-                    AnalyticsService.trackEvent(
-                        analyticEvents["CHECKOUT_PRESSED"]!,
-                        properties: {
-                          "Product Id": widget.product.id,
-                          "Situation": widget.situation
-                        });
+                    _onCheckoutPressed();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

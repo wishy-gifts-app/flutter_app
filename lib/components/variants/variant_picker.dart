@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-
-import '../constants.dart';
-import '../size_config.dart';
+import '../../constants.dart';
+import '../../size_config.dart';
 
 class VariantPicker extends StatefulWidget {
   final String type;
   final List<dynamic> values;
-  final ValueChanged<int>? onVariantChange;
+  final Function(String, String) onVariantChange;
 
   const VariantPicker({
     Key? key,
     required this.type,
     required this.values,
-    this.onVariantChange,
+    required this.onVariantChange,
   }) : super(key: key);
 
   @override
@@ -40,9 +39,7 @@ class _VariantPickerState extends State<VariantPicker> {
                   setState(() {
                     selectedIndex = index;
                   });
-                  if (widget.onVariantChange != null) {
-                    widget.onVariantChange!(index);
-                  }
+                  widget.onVariantChange(widget.type, widget.values[index]);
                 },
                 child: VariantDot(
                   value: widget.values[index],

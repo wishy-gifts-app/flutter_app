@@ -23,7 +23,7 @@ class AdditionalDetailsDialog extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            Text(description), // Display the product description
+            Text(description),
             SizedBox(height: 20),
             DefaultButton(
               text: "Back",

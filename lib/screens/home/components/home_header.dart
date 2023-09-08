@@ -20,16 +20,12 @@ class HomeHeader extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text("Buying for yourself"), // Text 'Buy'
-                IconButton(
-                  icon: Icon(Icons.edit), // Edit icon
-                  onPressed: () {
-                    // Edit action
-                  },
-                ),
-              ],
+            Text(
+              "Wishy",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: getProportionateScreenWidth(16),
+              ),
             ),
             IconButton(
               icon: Icon(Icons.filter_list), // Filter icon

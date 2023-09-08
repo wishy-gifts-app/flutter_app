@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
 import 'package:shop_app/size_config.dart';
-import 'package:shop_app/utils/analytics.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -47,7 +46,6 @@ class _BodyState extends State<Body> {
               style: TextStyle(
                 fontSize: getProportionateScreenWidth(30),
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
               ),
             ),
             Spacer(),

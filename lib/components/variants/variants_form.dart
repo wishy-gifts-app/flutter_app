@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/variant_picker.dart';
+import 'package:shop_app/components/variants/variant_picker.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/components/color_dots.dart';
-import 'package:string_to_color/string_to_color.dart';
+import 'package:shop_app/components/variants/color_dots.dart';
 
 Map<String, dynamic> groupVariants(List<Variant> variants) {
-  List<Color> colors = [];
+  List<String> colors = [];
   List<String> styles = [];
   List<String> materials = [];
   List<String> sizes = [];
 
   variants.forEach((element) {
     if (element.color != null && element.color != "") {
-      Color color = ColorUtils.stringToColor(element.color!.toLowerCase());
-
-      if (!colors.contains(color)) colors.add(color);
+      if (!colors.contains(element.color)) colors.add(element.color!);
     }
     if (element.style != null &&
         element.style != "" &&
@@ -35,10 +32,10 @@ Map<String, dynamic> groupVariants(List<Variant> variants) {
   });
 
   return {
-    'colors': colors.length == 0 ? null : colors,
-    'styles': styles.length == 0 ? null : styles,
-    'materials': materials.length == 0 ? null : materials,
-    'sizes': sizes.length == 0 ? null : sizes,
+    'color': colors.length == 0 ? null : colors,
+    'style': styles.length == 0 ? null : styles,
+    'material': materials.length == 0 ? null : materials,
+    'size': sizes.length == 0 ? null : sizes,
   };
 }
 
@@ -74,18 +71,23 @@ Map<String, dynamic>? getVariantsDataWithChildren(List<Variant> variants) {
   return groupVariantsWithChildren;
 }
 
-dynamic getVariantWidget = (String type, dynamic values) {
+dynamic getVariantWidget =
+    (String type, dynamic values, Function(String, String) onVariantChange) {
   switch (type) {
-    case "colors":
-      return ColorDots(values: values);
-    case "sizes":
-      return VariantPicker(type: type, values: values);
-    case "colors":
-      return ColorDots(values: values);
-    case "colors":
-      return ColorDots(values: values);
-    case "colors":
-      return ColorDots(values: values);
+    case "color":
+      return ColorDots(
+        values: values,
+        onVariantChange: onVariantChange,
+      );
+    case "size":
+      return VariantPicker(
+          type: type, values: values, onVariantChange: onVariantChange);
+    case "style":
+      return VariantPicker(
+          type: type, values: values, onVariantChange: onVariantChange);
+    case "material":
+      return VariantPicker(
+          type: type, values: values, onVariantChange: onVariantChange);
     default:
       return Container();
   }

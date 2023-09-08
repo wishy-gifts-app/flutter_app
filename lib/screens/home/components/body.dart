@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
 import 'home_header.dart';
-import 'popular_product.dart';
+import 'main_products.dart';
 
 class Body extends StatelessWidget {
   final double headerHeight = 60.0;

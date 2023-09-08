@@ -65,16 +65,38 @@ class Variant {
 
   factory Variant.fromJson(Map<String, dynamic> json) {
     return Variant(
-        id: convertValue<int>(json, 'id', true),
-        title: convertValue<String>(json, 'title', true),
-        weight: convertValue<double>(json, 'weight', false),
-        price: convertValue<double>(json, 'price', true),
-        color: convertValue<String>(json, 'color', false),
-        size: convertValue<String>(json, 'size', false),
-        material: convertValue<String>(json, 'material', false),
-        style: convertValue<String>(json, 'style', false),
-        // inventoryQuantity: convertValue<int>(json, 'inventoryQuantity', true),
-        inventoryQuantity: 0);
+      id: convertValue<int>(json, 'id', true),
+      title: convertValue<String>(json, 'title', true),
+      weight: convertValue<double>(json, 'weight', false),
+      price: convertValue<double>(json, 'price', true),
+      color: convertValue<String>(json, 'color', false),
+      size: convertValue<String>(json, 'size', false),
+      material: convertValue<String>(json, 'material', false),
+      style: convertValue<String>(json, 'style', false),
+      inventoryQuantity: convertValue<int>(json, 'inventory_quantity', true),
+    );
+  }
+
+  Map<String, dynamic> _toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'weight': weight,
+      'price': price,
+      'color': color,
+      'size': size,
+      'material': material,
+      'style': style,
+      'inventoryQuantity': inventoryQuantity
+    };
+  }
+
+  dynamic get(String propertyName) {
+    var _mapRep = _toMap();
+    if (_mapRep.containsKey(propertyName)) {
+      return _mapRep[propertyName];
+    }
+    throw ArgumentError('property not found');
   }
 }
 

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/utils/instagram_auth.dart';
 import 'package:shop_app/screens/otp/otp_screen.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:shop_app/services/opt_services.dart';
-import 'package:shop_app/utils/router_utils.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';

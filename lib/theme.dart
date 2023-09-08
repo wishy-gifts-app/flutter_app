@@ -4,6 +4,12 @@ import 'constants.dart';
 
 ThemeData theme() {
   return ThemeData(
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: kTextColor,
+      ),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.white),
     scaffoldBackgroundColor: Colors.white,
     fontFamily: "Muli",
     appBarTheme: appBarTheme(),
@@ -20,9 +26,9 @@ InputDecorationTheme inputDecorationTheme() {
     gapPadding: 10,
   );
   return InputDecorationTheme(
-    // If  you are using latest version of flutter then lable text and hint text shown like this
+    // If  you are using latest version of flutter then label text and hint text shown like this
     // if you r using flutter less then 1.20.* then maybe this is not working properly
-    // if we are define our floatingLabelBehavior in our theme then it's not applayed
+    // if we are define our floatingLabelBehavior in our theme then it's not app layed
     floatingLabelBehavior: FloatingLabelBehavior.always,
     contentPadding: EdgeInsets.symmetric(horizontal: 42, vertical: 20),
     enabledBorder: outlineInputBorder,

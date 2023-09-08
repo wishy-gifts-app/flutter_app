@@ -4,7 +4,10 @@
     "CustomSurffixIcon",
     "dotenv",
     "giftcard",
+    "Muli",
     "superlike",
-    "Swipeable"
+    "Swipeable",
+    "unfocus",
+    "Unliked"
   ]
 }

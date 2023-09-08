@@ -42,6 +42,10 @@ dependencies:
   amplitude_flutter: ^3.16.0
   flutter_smartlook: ^4.1.7
   mixpanel_flutter: ^2.1.1
+  buttons_tabbar: ^1.3.7+1
+  google_maps_flutter: ^2.3.0
+  flutter_google_places: ^0.3.0
+  collection: ^1.17.0
 
 dev_dependencies:
   flutter_test:

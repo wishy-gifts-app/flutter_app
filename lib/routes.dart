@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:shop_app/models/Product.dart';
+import 'package:shop_app/screens/checkout/checkout_screen.dart';
 import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
 import 'package:shop_app/screens/details/details_screen.dart';
 import 'package:shop_app/screens/home/home_screen.dart';
@@ -19,6 +21,11 @@ final Map<String, WidgetBuilder> routes = {
   OtpScreen.routeName: (context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
     return OtpScreen(phoneNumber: args['phoneNumber'] as String);
+  },
+  CheckoutScreen.routeName: (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    return CheckoutScreen(
+        variant: args['variant'] as Variant, orderId: args['orderId'] as int);
   },
   HomeScreen.routeName: (context) => HomeScreen(),
   LikesScreen.routeName: (context) => LikesScreen(),

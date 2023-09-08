@@ -92,7 +92,7 @@ class _SwipeableCardWidgetState extends State<SwipeableCardWidget> {
         margin: const EdgeInsets.all(15.0),
         padding: const EdgeInsets.all(3.0),
         decoration: BoxDecoration(border: Border.all(color: Colors.orange)),
-        child: Text('Super Like'),
+        child: Text('Request'),
       ),
     ));
   }

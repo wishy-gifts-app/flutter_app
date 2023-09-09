@@ -1,3 +1,5 @@
+import 'package:shop_app/models/utils.dart';
+
 class Address {
   final String country;
   final String state;
@@ -32,16 +34,16 @@ class Address {
     };
   }
 
-  static Address fromMap(Map<String, dynamic> map) {
+  factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      country: map['country'],
-      state: map['state'],
-      streetAddress: map['streetAddress'],
-      streetNumber: map['streetNumber'],
-      zipCode: map['zipCode'],
-      apartment: map['apartment'],
-      city: map['city'],
-      extraDetails: map['extraDetails'],
+      country: convertValue<String>(json, 'country', true),
+      state: convertValue<String>(json, 'state', true),
+      streetAddress: convertValue<String>(json, 'street_address', true),
+      streetNumber: convertValue<String>(json, 'street_number', true),
+      city: convertValue<String>(json, 'city', true),
+      zipCode: convertValue<String>(json, 'zip_code', false),
+      apartment: convertValue<String>(json, 'apartment', false),
+      extraDetails: convertValue<String>(json, 'extra_details', false),
     );
   }
 }

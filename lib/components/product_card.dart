@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/components/variants/variants_modal.dart';
 import 'package:shop_app/components/variants/variants_widget.dart';
 import 'package:shop_app/constants.dart';
+import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/models/Product.dart';
+import 'package:shop_app/screens/checkout/checkout_screen.dart';
 import 'package:shop_app/screens/details/details_screen.dart';
+import 'package:shop_app/services/graphql_service.dart';
 import 'package:shop_app/size_config.dart';
 import 'package:shop_app/utils/analytics.dart';
 
@@ -72,7 +75,7 @@ class _ProductCardState extends State<ProductCard> {
         });
   }
 
-  void _onCheckoutPressed() {
+  void _onCheckoutPressed() async {
     if (widget.product.variants.length > 1) {
       showVariantsModal(context, widget.product);
     } else {
@@ -82,6 +85,30 @@ class _ProductCardState extends State<ProductCard> {
             "Situation": widget.situation,
             "Variants Exist": false
           });
+
+      try {
+        final result = await GraphQLService().queryHandler("saveOrder", {
+          "product_id": widget.product.id,
+          "variant_id": widget.product.variants[0].id,
+          "user_id": GlobalManager().userId,
+        });
+        await GlobalManager().setParams(newProfileCompleted: true);
+
+        Navigator.pushNamed(
+          context,
+          CheckoutScreen.routeName,
+          arguments: {
+            'variant': widget.product.variants[0],
+            'orderId': result['id']
+          },
+        );
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Error processing your purchase. Please try again.')),
+        );
+      }
     }
   }
 

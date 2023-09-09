@@ -1,8 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/location_dialog_form.dart';
+import 'package:shop_app/constants.dart';
+import 'package:shop_app/models/Address.dart';
 import 'package:shop_app/size_config.dart';
+import 'package:shop_app/services/graphql_service.dart';
 
-class BuyForYourself extends StatelessWidget {
+class BuyForYourself extends StatefulWidget {
+  @override
+  _BuyForYourselfState createState() => _BuyForYourselfState();
+}
+
+class _BuyForYourselfState extends State<BuyForYourself> {
+  Map<String, dynamic>? _paginationServices;
+  List<Address>? _addresses;
+  int _selectedAddressIndex = 0;
+
+  Future<void> _initializeData() async {
+    final result = await GraphQLService()
+        .queryHandler("getUserAddresses", {"limit": 20}, withPagination: true);
+
+    if (mounted) {
+      setState(() {
+        _paginationServices = result;
+      });
+    }
+
+    final data = await fetchData();
+    if (mounted) {
+      setState(() {
+        _addresses = data;
+      });
+    }
+  }
+
+  void initState() {
+    _initializeData();
+    super.initState();
+  }
+
+  Future<List<Address>?> fetchData() async {
+    final formatResponse = (dynamic result) => (result as List<dynamic>)
+        .map((item) => Address.fromJson(item))
+        .toList();
+
+    final nextPageData = await _paginationServices!["nextPage"]();
+    return nextPageData != null ? formatResponse(nextPageData) : null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -10,10 +54,40 @@ class BuyForYourself extends StatelessWidget {
         SizedBox(
           height: getProportionateScreenHeight(10),
         ),
-        Text(
-          "You haven't added an address yet. Please provide one.",
-          textAlign: TextAlign.center,
-        ),
+        if (_addresses != null && _addresses!.length > 0)
+          Container(
+            height: 200, // specify the height you want
+            child: SingleChildScrollView(
+              child: Column(
+                children: _addresses!.asMap().entries.map((entry) {
+                  int idx = entry.key;
+                  Address address = entry.value;
+                  return ListTile(
+                    title: Text(address.country +
+                        " " +
+                        address.city +
+                        " " +
+                        address.streetAddress +
+                        " " +
+                        address.streetNumber),
+                    trailing: idx == _selectedAddressIndex
+                        ? Icon(Icons.check_circle, color: kPrimaryColor)
+                        : null,
+                    onTap: () {
+                      setState(() {
+                        _selectedAddressIndex = idx;
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        if (_addresses == null || _addresses!.isEmpty)
+          Text(
+            "You haven't added an address yet.",
+            textAlign: TextAlign.center,
+          ),
         IconButton(
           icon: Icon(
             Icons.add_location,
@@ -21,17 +95,17 @@ class BuyForYourself extends StatelessWidget {
           ),
           tooltip: "Add address",
           onPressed: () {
-            // Navigator.of(context).push(new MaterialPageRoute<Null>(
-            //     builder: (BuildContext context) {
-            //       return new LocationDialogForm();
-            //     },
-            //     fullscreenDialog: true));
-
             showDialog(
               context: context,
               builder: (context) =>
                   Dialog.fullscreen(child: LocationDialogForm()),
-            );
+            ).then((_) {
+              setState(() {
+                _selectedAddressIndex = 0;
+              });
+              _initializeData();
+            });
+            ;
           },
         ),
       ],

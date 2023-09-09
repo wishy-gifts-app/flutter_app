@@ -153,13 +153,37 @@ const Map<String, String> graphqlQueries = {
       \$city: String!,
       \$street_address: String!,
       \$street_number: String!,
-      \$zip_code: String!,
+      \$zip_code: String,
       \$apartment: String,
       \$extra_details: String,
     ) {
       saveUserAddress(user_id: \$user_id, country: \$country, state: \$state, city: \$city, zip_code: \$zip_code,
       street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, extra_details: \$extra_details ) {
         id
+      }
+    }
+""",
+  'getUserAddresses': """
+    query getUserAddresses(
+      \$limit: Int!,
+      \$cursor: String,
+    ) {
+      getUserAddresses(limit: \$limit, cursor: \$cursor) {
+        results {
+          id
+          country
+          state
+          city
+          zip_code
+          street_address
+          street_number
+          apartment
+          extra_details
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
       }
     }
 """,

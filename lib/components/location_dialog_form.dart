@@ -67,7 +67,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
         print(searchResponse.results.isNotEmpty);
 
         if (searchResponse.results.isNotEmpty) {
-          print(searchResponse.results.first.placeId);
           detail = await _places
               .getDetailsByPlaceId(searchResponse.results.first.placeId);
         }

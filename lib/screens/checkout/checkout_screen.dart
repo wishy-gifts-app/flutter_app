@@ -6,9 +6,9 @@ import 'components/body.dart';
 class CheckoutScreen extends StatelessWidget {
   static String routeName = "/checkout";
   final Variant variant;
-  final int orderId;
+  final int productId;
 
-  CheckoutScreen({required this.variant, required this.orderId});
+  CheckoutScreen({required this.variant, required this.productId});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class CheckoutScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Checkout'),
       ),
-      body: Body(),
+      body: Body(variant: variant, productId: productId),
     );
   }
 }

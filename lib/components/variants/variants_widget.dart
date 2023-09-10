@@ -57,25 +57,24 @@ class _VariantsWidgetState extends State<VariantsWidget> {
       }
     }
 
-    try {
-      final result = await GraphQLService().queryHandler("saveOrder", {
-        "product_id": widget.productId,
-        "variant_id": selectedVariant.id,
-        "user_id": GlobalManager().userId,
-      });
-      await GlobalManager().setParams(newProfileCompleted: true);
+    // try {
+    //   final result = await GraphQLService().queryHandler("saveOrder", {
+    //     "product_id": widget.productId,
+    //     "variant_id": selectedVariant.id,
+    //     "user_id": GlobalManager().userId,
+    //   });
 
-      Navigator.pushNamed(
-        context,
-        CheckoutScreen.routeName,
-        arguments: {'variant': selectedVariant, 'orderId': result['id']},
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Error processing your purchase. Please try again.')),
-      );
-    }
+    Navigator.pushNamed(
+      context,
+      CheckoutScreen.routeName,
+      arguments: {'variant': selectedVariant, 'productId': widget.productId},
+    );
+    // } catch (error) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //         content: Text('Error processing your purchase. Please try again.')),
+    //   );
+    // }
   }
 
   @override

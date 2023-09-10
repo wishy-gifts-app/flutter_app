@@ -25,7 +25,8 @@ final Map<String, WidgetBuilder> routes = {
   CheckoutScreen.routeName: (context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
     return CheckoutScreen(
-        variant: args['variant'] as Variant, orderId: args['orderId'] as int);
+        variant: args['variant'] as Variant,
+        productId: args['productId'] as int);
   },
   HomeScreen.routeName: (context) => HomeScreen(),
   LikesScreen.routeName: (context) => LikesScreen(),

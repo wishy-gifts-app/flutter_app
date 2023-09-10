@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
+import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/checkout/components/buy_as_gift_form.dart';
 import 'package:shop_app/screens/checkout/components/buy_for_yourself_form.dart';
 import 'package:shop_app/size_config.dart';
 
 class Body extends StatelessWidget {
+  final Variant variant;
+  final int productId;
+
+  Body({required this.variant, required this.productId});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -40,9 +46,7 @@ class Body extends StatelessWidget {
                 Text(
                   "By continuing your confirm that you agree \nwith our Term and Condition",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2, // I assume you meant `bodyText2` instead of `bodySmall`
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),

@@ -28,6 +28,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
   final _streetNumberController = TextEditingController();
   final _apartmentController = TextEditingController();
   final _extraDetailsController = TextEditingController();
+  final _postalCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   PlacesDetailsResponse? detail;
 
@@ -163,7 +164,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                           .getDetailsByPlaceId(prediction.placeId!);
                       final streetNumber =
                           getSpecificComponent(detail!, "street_number");
-                      print(1111);
+
                       if (streetNumber?.longName != null) {
                         _streetNumberController.text = streetNumber!.longName;
                         String addressWithoutStreetNumber = prediction
@@ -173,6 +174,12 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                         _addressController.text = addressWithoutStreetNumber;
                       } else {
                         _addressController.text = prediction.description!;
+                      }
+                      final zipCode =
+                          getSpecificComponent(detail!, "postal_code")
+                              ?.longName;
+                      if (zipCode != null) {
+                        _postalCodeController.text = zipCode;
                       }
                     }
                   },
@@ -219,6 +226,19 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                TextFormField(
+                  controller: _postalCodeController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Missing postal code';
+                    }
+
+                    return null;
+                  },
+                  decoration: InputDecoration(hintText: 'Postal Code'),
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 TextFormField(

@@ -153,7 +153,7 @@ const Map<String, String> graphqlQueries = {
       \$city: String!,
       \$street_address: String!,
       \$street_number: String!,
-      \$zip_code: String,
+      \$zip_code: String!,
       \$apartment: String,
       \$extra_details: String,
     ) {

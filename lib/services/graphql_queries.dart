@@ -110,6 +110,65 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'getUserOrders': """
+    query getUserOrders(
+      \$limit: Int!,
+      \$cursor: String,
+      \$is_order_completed: Boolean!,
+    ) {
+      getUserOrders(
+        limit: \$limit,
+        cursor: \$cursor,
+        is_order_completed: \$is_order_completed
+      ) {
+        results {
+          id,
+          user_id,
+          product_id,
+          variant_id,
+          recipient_user_id,
+          recipient_user_name,
+          for_date,
+          price,
+          is_order_completed,
+          is_order_approved,
+          is_in_delivery,
+          product {          
+            id
+            title
+            total_inventory
+            total_variants
+            description
+            shop_id
+            like_created_at
+            tags
+            variants {
+              id
+              title
+              weight
+              price
+              inventory_quantity
+              size
+              color
+              material
+              style
+            }
+            images {
+              id
+              variant_id
+              url
+              alt
+            }
+            vendor_name
+          }        
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  """,
   'saveLike': """
     mutation saveLike(
       \$product_id: Int!,    
@@ -184,6 +243,29 @@ const Map<String, String> graphqlQueries = {
           hasNextPage
           endCursor
         }
+      }
+    }
+""",
+  'userById': """
+    query userById(
+      \$id: Int!
+    ) {
+      userById(id: \$id) {
+        id
+        name
+        phone_number
+        email
+    }
+  }
+""",
+  'checkoutHandler': """
+    mutation checkoutHandler(
+      \$variant_id: Int!,
+      \$address_id: Int!,
+      \$quantity: Int!,
+    ) {
+      checkoutHandler(variant_id: \$variant_id, address_id: \$address_id, quantity: \$quantity) {
+        payment_url
       }
     }
 """,

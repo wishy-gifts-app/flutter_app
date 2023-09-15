@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/components/variants/variants_modal.dart';
-import 'package:shop_app/components/variants/variants_widget.dart';
 import 'package:shop_app/constants.dart';
-import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/screens/checkout/checkout_screen.dart';
 import 'package:shop_app/screens/details/details_screen.dart';
-import 'package:shop_app/services/graphql_service.dart';
-import 'package:shop_app/size_config.dart';
 import 'package:shop_app/utils/analytics.dart';
 
 class ProductCard extends StatefulWidget {
@@ -77,7 +73,8 @@ class _ProductCardState extends State<ProductCard> {
 
   void _onCheckoutPressed() async {
     if (widget.product.variants.length > 1) {
-      showVariantsModal(context, widget.product);
+      showVariantsModal(context, widget.product.id, widget.product.title,
+          widget.product.variants);
     } else {
       AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
           properties: {
@@ -85,13 +82,6 @@ class _ProductCardState extends State<ProductCard> {
             "Situation": widget.situation,
             "Variants Exist": false
           });
-
-      // try {
-      //   final result = await GraphQLService().queryHandler("saveOrder", {
-      //     "product_id": widget.product.id,
-      //     "variant_id": widget.product.variants[0].id,
-      //     "user_id": GlobalManager().userId,
-      //   });
 
       Navigator.pushNamed(
         context,
@@ -101,13 +91,6 @@ class _ProductCardState extends State<ProductCard> {
           'productId': widget.product.id
         },
       );
-      // } catch (error) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(
-      //         content:
-      //             Text('Error processing your purchase. Please try again.')),
-      //   );
-      // }
     }
   }
 
@@ -167,15 +150,13 @@ class _ProductCardState extends State<ProductCard> {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: _currentImageIndex == index
-                                    ? kPrimaryColor // Change the color of the active circle
-                                    : Colors
-                                        .grey, // Change the color of the inactive circles
+                                    ? kPrimaryColor
+                                    : Colors.grey,
                                 width: 2,
                               ),
                               color: _currentImageIndex == index
-                                  ? kPrimaryColor // Fill the active circle
-                                  : Colors
-                                      .transparent, // Leave the inactive circles empty
+                                  ? kPrimaryColor
+                                  : Colors.transparent,
                             ),
                           ),
                         );

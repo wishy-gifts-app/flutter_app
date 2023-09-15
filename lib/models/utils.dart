@@ -30,6 +30,15 @@ T convertValue<T>(dynamic json, String key, bool required,
       return value as T;
     }
     throw ArgumentError('Value is not of type bool');
+  } else if (T == DateTime) {
+    if (value == null) {
+      return DateTime.fromMillisecondsSinceEpoch(0) as T;
+    }
+    try {
+      return DateTime.parse(value.toString()) as T;
+    } catch (e) {
+      throw ArgumentError('Failed to parse DateTime from value');
+    }
   } else {
     throw ArgumentError('Unsupported type: ${T.toString()}');
   }

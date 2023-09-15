@@ -3,7 +3,8 @@ import 'package:shop_app/components/variants/variants_widget.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/size_config.dart';
 
-void showVariantsModal(BuildContext context, Product product) {
+void showVariantsModal(BuildContext context, int productId, String productTitle,
+    List<Variant> variants) {
   showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -26,9 +27,9 @@ void showVariantsModal(BuildContext context, Product product) {
                   ),
                 )),
             VariantsWidget(
-                productId: product.id,
-                productTitle: product.title,
-                productVariants: product.variants)
+                productId: productId,
+                productTitle: productTitle,
+                productVariants: variants)
           ],
         );
       });

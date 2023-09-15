@@ -1,6 +1,7 @@
 import 'package:shop_app/models/utils.dart';
 
 class Address {
+  final int id;
   final String country;
   final String state;
   final String city;
@@ -11,6 +12,7 @@ class Address {
   final String? extraDetails;
 
   Address({
+    required this.id,
     required this.country,
     required this.state,
     required this.streetAddress,
@@ -23,6 +25,7 @@ class Address {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'country': country,
       'state': state,
       'streetAddress': streetAddress,
@@ -36,6 +39,7 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
+      id: convertValue<int>(json, 'id', true),
       country: convertValue<String>(json, 'country', true),
       state: convertValue<String>(json, 'state', true),
       streetAddress: convertValue<String>(json, 'street_address', true),

@@ -25,20 +25,20 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
         ProfilePic(),
         SizedBox(height: 10),
         TabBar(
-          labelColor: Colors.black,
+          labelColor: kPrimaryColor,
           indicatorColor: kPrimaryColor,
           controller: _controller,
           tabs: [
-            Tab(text: "Personal Info"),
             Tab(text: "Orders"),
+            Tab(text: "Personal Info"),
           ],
         ),
         Expanded(
           child: TabBarView(
             controller: _controller,
             children: [
-              PersonalInfoTab(),
               OrdersTab(),
+              PersonalInfoTab(),
             ],
           ),
         ),

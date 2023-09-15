@@ -1,28 +1,185 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/history_product_card.dart';
+import 'package:shop_app/components/order_state.dart';
+import 'package:shop_app/components/product_card.dart';
+import 'package:shop_app/constants.dart';
+import 'package:shop_app/models/Order.dart';
+import 'package:shop_app/services/graphql_service.dart';
+import 'package:shop_app/size_config.dart';
 
-class OrdersTab extends StatelessWidget {
+class OrdersTab extends StatefulWidget {
+  @override
+  _OrdersTabState createState() => _OrdersTabState();
+}
+
+class _OrdersTabState extends State<OrdersTab> {
+  int selectedOrderIndex = 0;
+  Map<String, dynamic>? _paginationActiveServices;
+  Map<String, dynamic>? _paginationHistoryServices;
+  List<Order> activeOrders = [];
+  List<Order> historyOrders = [];
+  ScrollController _activeOrdersController = ScrollController();
+  ScrollController _historyOrdersController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _activeOrdersController.addListener(() {
+      if (_activeOrdersController.position.pixels ==
+          _activeOrdersController.position.maxScrollExtent) {
+        fetchActiveData();
+      }
+    });
+
+    _historyOrdersController.addListener(() {
+      if (_historyOrdersController.position.pixels ==
+          _historyOrdersController.position.maxScrollExtent) {
+        fetchHistoryData();
+      }
+    });
+
+    fetchActiveData();
+    fetchHistoryData();
+  }
+
+  Future<dynamic> _initializeData() async {
+    _paginationActiveServices = await GraphQLService().queryHandler(
+        "getUserOrders", {"limit": 5, "is_order_completed": false},
+        withPagination: true);
+    _paginationHistoryServices = await GraphQLService().queryHandler(
+        "getUserOrders", {"limit": 5, "is_order_completed": true},
+        withPagination: true);
+  }
+
+  Future<void> fetchActiveData() async {
+    List<Order>? products;
+    final formatResponse = (dynamic result) =>
+        (result as List<dynamic>).map((item) => Order.fromJson(item)).toList();
+    if (_paginationActiveServices == null) {
+      await _initializeData();
+    }
+
+    final nextPageData = await _paginationActiveServices!["nextPage"]();
+    products = nextPageData != null ? formatResponse(nextPageData) : null;
+
+    if (mounted) {
+      if (products != null && products.isNotEmpty) {
+        setState(() {
+          activeOrders.addAll(products!);
+        });
+      }
+    }
+  }
+
+  Future<void> fetchHistoryData() async {
+    List<Order>? products;
+    final formatResponse = (dynamic result) =>
+        (result as List<dynamic>).map((item) => Order.fromJson(item)).toList();
+    if (_paginationHistoryServices == null) {
+      await _initializeData();
+    }
+
+    final nextPageData = await _paginationHistoryServices!["nextPage"]();
+    products = nextPageData != null ? formatResponse(nextPageData) : null;
+
+    if (mounted) {
+      if (products != null && products.isNotEmpty) {
+        setState(() {
+          historyOrders.addAll(products!);
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Add your existing orders' display logic here
-    return Column(
-      children: [
-        // Check if there's an existing order, and display its details
-        // ...
-
-        // History Section with swipeable cards
-        Expanded(
-          child: ListView.builder(
-            itemCount: 4, // Or fetch the number of items from your data source
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text("Order $index"),
-                subtitle: Text("Order details go here"),
-                // Add onTap or other actions based on requirements
-              );
-            },
-          ),
-        ),
-      ],
-    );
+    return CustomScrollView(slivers: [
+      SliverList(
+          delegate: SliverChildListDelegate(
+        [
+          SizedBox(height: getProportionateScreenHeight(20)),
+          if (activeOrders.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Active Orders',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            Container(
+              height: 260,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                controller: _activeOrdersController,
+                children: activeOrders.map((order) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedOrderIndex = activeOrders.indexOf(order);
+                      });
+                    },
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: 170,
+                          decoration: BoxDecoration(
+                            border: activeOrders.indexOf(order) ==
+                                    selectedOrderIndex
+                                ? Border.all(color: kPrimaryColor, width: 2.0)
+                                : null,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: HistoryProductCard(
+                            product: order.product,
+                            variantId: order.variantId,
+                            price: order.price,
+                            recipientUserName: order.recipientUserName,
+                          ),
+                        )),
+                  );
+                }).toList(),
+              ),
+            ),
+            OrderStatusStepper(
+              isOrderCompleted:
+                  activeOrders[selectedOrderIndex].isOrderCompleted,
+              isInDelivery: activeOrders[selectedOrderIndex].isInDelivery,
+              isOrderApproved: activeOrders[selectedOrderIndex].isOrderApproved,
+            ),
+          ],
+          if (historyOrders.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('History Orders',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  childAspectRatio: MediaQuery.of(context).size.width /
+                      (MediaQuery.of(context).size.height / 1.5),
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: _historyOrdersController,
+                  crossAxisCount: 2,
+                  children: historyOrders.map((order) {
+                    return HistoryProductCard(
+                      product: order.product,
+                      variantId: order.variantId,
+                      price: order.price,
+                      recipientUserName: order.recipientUserName,
+                    );
+                  }).toList(),
+                )),
+          ],
+          if (activeOrders.isEmpty && historyOrders.isEmpty)
+            Text(
+              "You don't have orders yet, return to home",
+              textAlign: TextAlign.center,
+            )
+        ],
+      ))
+    ]);
   }
 }

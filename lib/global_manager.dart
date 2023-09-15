@@ -5,6 +5,7 @@ class GlobalManager {
 
   String? token;
   int? userId;
+  String? username;
   bool? profileCompleted;
 
   factory GlobalManager() {
@@ -17,12 +18,14 @@ class GlobalManager {
     final storage = FlutterSecureStorage();
     token = await storage.read(key: 'token');
     userId = int.tryParse(await storage.read(key: 'user_id') ?? "");
+    username = await storage.read(key: 'username');
     String? completedProfileStr = await storage.read(key: 'profile_completed');
     profileCompleted = completedProfileStr == 'true';
   }
 
   Future<void> setParams({
     String? newToken,
+    String? newUsername,
     int? newUserId,
     bool? newProfileCompleted,
   }) async {
@@ -36,6 +39,11 @@ class GlobalManager {
     if (newUserId != null) {
       userId = newUserId;
       await storage.write(key: 'user_id', value: newUserId.toString());
+    }
+
+    if (newUsername != null) {
+      username = newUsername;
+      await storage.write(key: 'username', value: newUsername);
     }
 
     if (newProfileCompleted != null) {

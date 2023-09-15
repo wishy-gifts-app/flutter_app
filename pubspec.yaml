@@ -46,6 +46,9 @@ dependencies:
   google_maps_flutter: ^2.3.0
   flutter_google_places: ^0.3.0
   collection: ^1.17.0
+  email_validator: ^2.1.17
+  flutter_initicon: ^3.0.0+1
+  easy_stepper: ^0.6.0
 
 dev_dependencies:
   flutter_test:

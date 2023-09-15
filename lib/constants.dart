@@ -25,7 +25,7 @@ const analyticEvents = {
 };
 
 const kPrimaryColor = Colors.black;
-const kPrimaryLightColor = Color(0xFFFFECDF);
+const kPrimaryLightColor = Colors.grey;
 const kPrimaryGradientColor = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,

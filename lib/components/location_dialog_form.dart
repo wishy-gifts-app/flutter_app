@@ -57,21 +57,21 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       final currentStreetNumber =
           getSpecificComponent(detail!, "street_number")?.longName;
 
-      if (currentStreetNumber != _streetNumberController.text) {
-        String updatedAddress =
-            "${_addressController.text} ${_streetNumberController.text}";
+      // if (currentStreetNumber != _streetNumberController.text) {
+      //   String updatedAddress =
+      //       "${_addressController.text} ${_streetNumberController.text}";
 
-        GoogleMapsPlaces _places =
-            GoogleMapsPlaces(apiKey: dotenv.get("GOOGLE_MAPS_API_KEY"));
-        PlacesSearchResponse searchResponse =
-            await _places.searchByText(updatedAddress);
-        print(searchResponse.results.isNotEmpty);
+      //   GoogleMapsPlaces _places =
+      //       GoogleMapsPlaces(apiKey: dotenv.get("GOOGLE_MAPS_API_KEY"));
+      //   PlacesSearchResponse searchResponse =
+      //       await _places.searchByText(updatedAddress);
+      //   print(searchResponse.results.isNotEmpty);
 
-        if (searchResponse.results.isNotEmpty) {
-          detail = await _places
-              .getDetailsByPlaceId(searchResponse.results.first.placeId);
-        }
-      }
+      //   if (searchResponse.results.isNotEmpty) {
+      //     detail = await _places
+      //         .getDetailsByPlaceId(searchResponse.results.first.placeId);
+      //   }
+      // }
 
       final country = getSpecificComponent(detail!, "country")?.longName;
       final state =
@@ -80,7 +80,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       final city = getSpecificComponent(
           detail!, ["administrative_area_level_2", "locality"])?.longName;
       final streetAddress = getSpecificComponent(detail!, "route")?.longName;
-      final zipCode = getSpecificComponent(detail!, "postal_code")?.longName;
+      final zipCode = _postalCodeController.text;
       final streetNumber = _streetNumberController.text;
       final apartment = _apartmentController.text;
       final extraDetails = _extraDetailsController.text;

@@ -66,13 +66,16 @@ class _MainProductsState extends State<MainProducts> {
       height: SizeConfig.screenHeight,
       child: SwipeableProducts(
         situation: situation,
-        onSwipeRight: (int id) => saveLike(id, false, context),
+        onSwipeRight: (int id) => saveLike(id, true, context),
         onSwipeLeft: (int id) => saveLike(id, false, context),
         onSwipeUp: _onSwipeUp,
         nextPage: fetchData,
-        cardBuilder: (context, product) {
+        cardBuilder: (context, product, isInFront) {
           return ProductCard(
-              situation: situation, product: product, isFullScreen: true);
+              situation: situation,
+              product: product,
+              isFullScreen: true,
+              isInFront: isInFront);
         },
       ),
     );

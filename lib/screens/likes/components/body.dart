@@ -5,24 +5,8 @@ import 'package:flutter/material.dart';
 import '../../../size_config.dart';
 import 'likes_product.dart';
 
-class Body extends StatefulWidget {
-  @override
-  _BodyState createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
+class Body extends StatelessWidget {
   final double headerHeight = 60.0;
-  final likedTab = new LikesProducts(
-    isLike: true,
-  );
-  final unlikedTab = new LikesProducts(
-    isLike: false,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +17,10 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
         children: [
           SizedBox(height: getProportionateScreenHeight(10)),
           LikesHeader(height: headerHeight),
-          TabBar(
-            labelColor: kPrimaryColor,
-            indicatorColor: kPrimaryColor,
-            tabs: [
-              Tab(text: "Liked"),
-              Tab(text: "Unliked"),
-            ],
-          ),
-          Expanded(child: TabBarView(children: [likedTab, unlikedTab])),
+          Expanded(
+              child: LikesProducts(
+            isLike: true,
+          )),
         ],
       ),
     );

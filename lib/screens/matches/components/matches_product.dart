@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/swipe_left_card.dart';
 import 'package:shop_app/components/swipeable_products.dart';
 import 'package:shop_app/global_manager.dart';
 import 'package:shop_app/models/Product.dart';
@@ -85,15 +86,14 @@ class _MatchesProductsState extends State<MatchesProducts> {
 
     return Container(
         height: SizeConfig.screenHeight,
-        child: new SwipeableProducts(
+        child: new SwipeableLeftProducts(
           situation: situation,
           emptyString:
               "You don't have ${widget.isLike ? "liked" : "unliked"} products yet, start to swiping",
-          onSwipeRight: (int id) => saveLike(id, widget.isLike, context),
-          onSwipeLeft: (int id) => saveLike(id, widget.isLike, context),
+          onSwipeRight: (int id) => saveLike(id, true, context),
+          onSwipeLeft: (int id) => saveLike(id, false, context),
           onSwipeUp: _onSwipeUp,
           nextPage: fetchData,
-          isFullPage: false,
           cardBuilder: (context, product) {
             return ProductCard(
               situation: situation,

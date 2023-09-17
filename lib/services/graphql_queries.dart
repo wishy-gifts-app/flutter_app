@@ -4,16 +4,16 @@ const Map<String, String> graphqlQueries = {
       \$id: Int!,    
       \$phone_number: String,
       \$name: String,
+      \$email: String,
       \$gender: String,
-      \$address: String,
       \$birthday: Date
     ) {
       updateUserById(
         id: \$id,
         phone_number: \$phone_number,
         name: \$name,
+        email: \$email,
         gender: \$gender,
-        address: \$address,
         birthday: \$birthday
       ) {
         id

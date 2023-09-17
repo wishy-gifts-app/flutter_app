@@ -45,7 +45,6 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     for (Variant variant in widget.productVariants) {
       bool matches = true;
       for (String key in variants.keys) {
-        print(key);
         if (variant.get(key) != variants[key]) {
           matches = false;
           break;

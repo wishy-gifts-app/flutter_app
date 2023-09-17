@@ -16,6 +16,8 @@ ThemeData theme() {
     textTheme: textTheme(),
     inputDecorationTheme: inputDecorationTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,
+    colorScheme: ColorScheme.fromSwatch()
+        .copyWith(secondary: kSecondaryColor, primary: kPrimaryColor),
   );
 }
 

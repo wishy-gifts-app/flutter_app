@@ -18,28 +18,13 @@ class CompleteProfileForm extends StatefulWidget {
 
 class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
-  // final List<String?> errors = [];
   String? fullName;
   String? email;
-  // DateTime? birthday;
-  // final TextEditingController _dateController = TextEditingController();
-
-  // void addError({String? error}) {
-  //   if (!errors.contains(error))
-  //     setState(() {
-  //       errors.add(error);
-  //     });
-  // }
-
-  // void removeError({String? error}) {
-  //   if (errors.contains(error))
-  //     setState(() {
-  //       errors.remove(error);
-  //     });
-  // }
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
       try {
         await GraphQLService().queryHandler("updateUserById",
             {"email": email, "name": fullName, "id": GlobalManager().userId});

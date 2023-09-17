@@ -19,7 +19,6 @@ class HistoryProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(recipientUserName!.isEmpty);
     final variant = product.variants.firstWhere(
       (element) => element.id == variantId,
     );

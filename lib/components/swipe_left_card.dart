@@ -66,7 +66,7 @@ class _SwipeableLeftProductsState extends State<SwipeableLeftProducts>
 
       if (fetchedProducts != null) {
         setState(() {
-          products = fetchedProducts;
+          products.addAll(fetchedProducts);
         });
       }
     }

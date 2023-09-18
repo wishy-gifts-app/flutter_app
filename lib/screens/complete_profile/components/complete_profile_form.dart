@@ -26,7 +26,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
       _formKey.currentState!.save();
 
       try {
-        await GraphQLService().queryHandler("updateUserById",
+        await graphQLQueryHandler("updateUserById",
             {"email": email, "name": fullName, "id": GlobalManager().userId});
         await GlobalManager()
             .setParams(newProfileCompleted: true, newUsername: fullName);

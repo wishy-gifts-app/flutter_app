@@ -18,18 +18,20 @@ class BuyForYourself extends StatefulWidget {
 }
 
 class _BuyForYourselfState extends State<BuyForYourself> {
-  Map<String, dynamic>? _paginationServices;
+  GraphQLPaginationService _paginationServices = new GraphQLPaginationService(
+    queryName: "getUserAddresses",
+    variables: {"limit": 20},
+  );
   List<Address>? _addresses;
   int _selectedAddressIndex = 0;
 
   Future<void> onSubmit() async {
     try {
-      final result = await GraphQLService().queryHandler("checkoutHandler", {
+      final result = await graphQLQueryHandler("checkoutHandler", {
         "variant_id": widget.variantId,
         "address_id": _addresses![_selectedAddressIndex].id,
         "quantity": 1,
       });
-      print(result);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -38,36 +40,21 @@ class _BuyForYourselfState extends State<BuyForYourself> {
     }
   }
 
-  Future<void> _initializeData() async {
-    final result = await GraphQLService()
-        .queryHandler("getUserAddresses", {"limit": 20}, withPagination: true);
+  Future<void> fetchData() async {
+    final result = await _paginationServices.run();
 
-    if (mounted) {
+    if (mounted && result["data"] != null) {
       setState(() {
-        _paginationServices = result;
-      });
-    }
-
-    final data = await fetchData();
-    if (mounted) {
-      setState(() {
-        _addresses = data;
+        _addresses = (result["data"] as List<dynamic>)
+            .map((item) => Address.fromJson(item))
+            .toList();
       });
     }
   }
 
   void initState() {
-    _initializeData();
+    fetchData();
     super.initState();
-  }
-
-  Future<List<Address>?> fetchData() async {
-    final formatResponse = (dynamic result) => (result as List<dynamic>)
-        .map((item) => Address.fromJson(item))
-        .toList();
-
-    final nextPageData = await _paginationServices!["nextPage"]();
-    return nextPageData != null ? formatResponse(nextPageData) : null;
   }
 
   @override
@@ -126,7 +113,7 @@ class _BuyForYourselfState extends State<BuyForYourself> {
               setState(() {
                 _selectedAddressIndex = 0;
               });
-              _initializeData();
+              fetchData();
             });
             ;
           },

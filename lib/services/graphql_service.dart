@@ -4,104 +4,97 @@ import 'package:http/http.dart' as http;
 import 'package:shop_app/global_manager.dart';
 import 'graphql_queries.dart';
 
-class GraphQLService {
-  Future<Map<String, dynamic>> runGraphQLQuery(String queryName,
-      String queryString, Map<String, dynamic> variables) async {
-    final http.Client _client = http.Client();
+Future<Map<String, dynamic>> graphQLQueryHandler(
+    String queryName, Map<String, dynamic> variables) async {
+  final String? queryString = graphqlQueries[queryName];
 
-    final Map<String, dynamic> formattedVariables = {};
-    variables.forEach((key, value) {
-      if (value is DateTime) {
-        formattedVariables[key] = value.toIso8601String();
-      } else {
-        formattedVariables[key] = value;
-      }
-    });
-
-    final Map<String, dynamic> requestBody = {
-      "query": queryString,
-      "variables": formattedVariables,
-    };
-
-    try {
-      final token = GlobalManager().token;
-      final http.Response response = await _client.post(
-        Uri.parse(dotenv.get("GRAPHQL_API_URL")),
-        headers: {"Content-Type": "application/json", "auth": token!},
-        body: jsonEncode(requestBody),
-      );
-
-      final responseBody = jsonDecode(response.body);
-      print(response.statusCode);
-      if (response.statusCode != 200) throw requestBody;
-      await GlobalManager()
-          .setParams(newToken: response.headers["auth"] ?? token);
-
-      return responseBody["data"][queryName];
-    } catch (error) {
-      print("Error sending GraphQL query: $error");
-      throw error;
-    } finally {
-      _client.close();
-    }
+  if (queryString == null) {
+    throw Exception("Query named $queryName not found");
   }
 
-  Future<Map<String, dynamic>> runGraphQLQueryWithPagination(
-    String queryName,
-    String queryString,
-    Map<String, dynamic> variables,
-  ) async {
-    String? cursor;
-    bool hasNextPage = true;
-    final fetchData = () async {
-      final result = await runGraphQLQuery(
-          queryName, queryString, {...variables, "cursor": cursor});
-      final pageInfo = result['pageInfo'];
+  final http.Client _client = http.Client();
 
-      if (pageInfo['hasNextPage']) {
-        cursor = pageInfo['endCursor'];
-      } else {
-        hasNextPage = false;
-      }
+  final Map<String, dynamic> formattedVariables = {};
+  variables.forEach((key, value) {
+    if (value is DateTime) {
+      formattedVariables[key] = value.toIso8601String();
+    } else {
+      formattedVariables[key] = value;
+    }
+  });
 
-      return result["results"];
-    };
+  final Map<String, dynamic> requestBody = {
+    "query": queryString,
+    "variables": formattedVariables,
+  };
 
-    var nextPageData;
-    if (hasNextPage) {
-      nextPageData = fetchData();
+  try {
+    final token = GlobalManager().token;
+    final http.Response response = await _client.post(
+      Uri.parse(dotenv.get("GRAPHQL_API_URL")),
+      headers: {"Content-Type": "application/json", "auth": token!},
+      body: jsonEncode(requestBody),
+    );
+
+    final responseBody = jsonDecode(response.body);
+
+    if (response.statusCode != 200) throw requestBody;
+    await GlobalManager()
+        .setParams(newToken: response.headers["auth"] ?? token);
+
+    return responseBody["data"][queryName];
+  } catch (error) {
+    print("Error sending GraphQL query: $error");
+    throw error;
+  } finally {
+    _client.close();
+  }
+}
+
+class GraphQLPaginationService {
+  final String queryName;
+  final Map<String, dynamic> variables;
+  final bool infiniteScroll;
+  Future<List<dynamic>>? _nextPagePromise = null;
+  String? cursor;
+  bool _hasNextPage = true;
+
+  GraphQLPaginationService(
+      {required this.queryName,
+      required this.variables,
+      this.infiniteScroll = false});
+
+  Future<List<dynamic>> runGraphQLQueryWithPagination() async {
+    final result = await graphQLQueryHandler(
+        this.queryName, {...this.variables, "cursor": this.cursor});
+    final pageInfo = result['pageInfo'];
+
+    if (pageInfo['hasNextPage']) {
+      cursor = pageInfo['endCursor'];
+    } else {
+      cursor = null;
     }
 
-    final nextPage = () async {
-      if (!hasNextPage) {
-        return null;
-      }
+    return result["results"];
+  }
 
-      return await nextPageData;
-    };
+  Future<Map<String, dynamic>> run() async {
+    if (!this._hasNextPage) {
+      return {
+        "data": null,
+        "hasNextPage": this._hasNextPage,
+      };
+    }
+
+    final result = await runGraphQLQueryWithPagination();
+
+    if (!infiniteScroll && this.cursor == null) {
+      this._hasNextPage = false;
+    }
 
     return {
-      'hasNextPage': hasNextPage,
-      'nextPage': nextPage,
+      "data": result,
+      "hasNextPage": this._hasNextPage,
     };
-  }
-
-  Future<Map<String, dynamic>> queryHandler(
-      String queryName, Map<String, dynamic> variables,
-      {bool withPagination = false,
-      bool throwOnError = true,
-      String? errorMessage = null}) async {
-    final String? queryString = graphqlQueries[queryName];
-
-    if (queryString == null) {
-      throw Exception("Query named $queryName not found");
-    }
-
-    if (withPagination) {
-      return await runGraphQLQueryWithPagination(
-          queryName, queryString, variables);
-    } else {
-      return await runGraphQLQuery(queryName, queryString, variables);
-    }
   }
 }

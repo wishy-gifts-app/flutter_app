@@ -14,8 +14,13 @@ class OrdersTab extends StatefulWidget {
 
 class _OrdersTabState extends State<OrdersTab> {
   int selectedOrderIndex = 0;
-  Map<String, dynamic>? _paginationActiveServices;
-  Map<String, dynamic>? _paginationHistoryServices;
+  GraphQLPaginationService _paginationActiveServices = GraphQLPaginationService(
+      queryName: "getUserOrders",
+      variables: {"limit": 5, "is_order_completed": false});
+  GraphQLPaginationService _paginationHistoryServices =
+      GraphQLPaginationService(
+          queryName: "getUserOrders",
+          variables: {"limit": 5, "is_order_completed": true});
   List<Order> activeOrders = [];
   List<Order> historyOrders = [];
   ScrollController _activeOrdersController = ScrollController();
@@ -43,24 +48,12 @@ class _OrdersTabState extends State<OrdersTab> {
     fetchHistoryData();
   }
 
-  Future<dynamic> _initializeData() async {
-    _paginationActiveServices = await GraphQLService().queryHandler(
-        "getUserOrders", {"limit": 5, "is_order_completed": false},
-        withPagination: true);
-    _paginationHistoryServices = await GraphQLService().queryHandler(
-        "getUserOrders", {"limit": 5, "is_order_completed": true},
-        withPagination: true);
-  }
-
   Future<void> fetchActiveData() async {
     List<Order>? products;
     final formatResponse = (dynamic result) =>
         (result as List<dynamic>).map((item) => Order.fromJson(item)).toList();
-    if (_paginationActiveServices == null) {
-      await _initializeData();
-    }
-
-    final nextPageData = await _paginationActiveServices!["nextPage"]();
+    final result = await _paginationActiveServices.run();
+    final nextPageData = result["data"];
     products = nextPageData != null ? formatResponse(nextPageData) : null;
 
     if (mounted) {
@@ -76,11 +69,8 @@ class _OrdersTabState extends State<OrdersTab> {
     List<Order>? products;
     final formatResponse = (dynamic result) =>
         (result as List<dynamic>).map((item) => Order.fromJson(item)).toList();
-    if (_paginationHistoryServices == null) {
-      await _initializeData();
-    }
-
-    final nextPageData = await _paginationHistoryServices!["nextPage"]();
+    final result = await _paginationHistoryServices.run();
+    final nextPageData = result["data"];
     products = nextPageData != null ? formatResponse(nextPageData) : null;
 
     if (mounted) {

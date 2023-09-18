@@ -12,15 +12,10 @@ class MainProducts extends StatefulWidget {
 }
 
 class _MainProductsState extends State<MainProducts> {
-  Map<String, dynamic>? _paginationServices;
-
-  Future<dynamic> _initializeData() async {
-    _paginationServices = await GraphQLService()
-        .queryHandler("getProductsFeed", {"limit": 5}, withPagination: true);
-    final result = await _paginationServices!["nextPage"]();
-
-    return result;
-  }
+  GraphQLPaginationService _paginationService = new GraphQLPaginationService(
+      queryName: "getProductsFeed",
+      variables: {"limit": 5},
+      infiniteScroll: true);
 
   void _onSwipeUp(int id) {
     // Implement your logic here
@@ -30,19 +25,16 @@ class _MainProductsState extends State<MainProducts> {
     final formatResponse = (dynamic result) => (result as List<dynamic>)
         .map((item) => new Product.fromJson(item))
         .toList();
-    if (_paginationServices == null) {
-      final result = await _initializeData();
-      return formatResponse(result);
-    } else {
-      final nextPageData = await _paginationServices!["nextPage"]();
-      return nextPageData != null ? formatResponse(nextPageData) : null;
-    }
+
+    final result = await _paginationService.run();
+
+    return result["data"] != null ? formatResponse(result["data"]) : null;
   }
 
   Future<bool> saveLike(
       int productId, bool isLike, BuildContext context) async {
     try {
-      await GraphQLService().queryHandler("saveLike", {
+      await graphQLQueryHandler("saveLike", {
         "product_id": productId,
         "is_like": isLike,
         "user_id": GlobalManager().userId

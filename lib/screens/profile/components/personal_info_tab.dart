@@ -12,47 +12,39 @@ class PersonalInfoTab extends StatefulWidget {
 class _PersonalInfoTabState extends State<PersonalInfoTab> {
   List<Address>? _addresses;
   User? _userData;
+  GraphQLPaginationService _paginationServices = new GraphQLPaginationService(
+    queryName: "getUserAddresses",
+    variables: {"limit": 20},
+  );
 
   @override
   void initState() {
     super.initState();
-    _initializeData();
+    fetchData();
     fetchPersonalInfo();
   }
 
-  Future<void> _initializeData() async {
-    final result = await GraphQLService()
-        .queryHandler("getUserAddresses", {"limit": 20}, withPagination: true);
+  Future<void> fetchData() async {
+    final result = await _paginationServices.run();
 
-    final data = await fetchData(result);
-    if (mounted) {
+    if (mounted && result["data"] != null) {
       setState(() {
-        _addresses = data;
+        _addresses = (result["data"] as List<dynamic>)
+            .map((item) => Address.fromJson(item))
+            .toList();
       });
     }
   }
 
-  Future<List<Address>?> fetchData(
-      Map<String, dynamic>? paginationServices) async {
-    final formatResponse = (dynamic result) => (result as List<dynamic>)
-        .map((item) => Address.fromJson(item))
-        .toList();
-
-    final nextPageData = await paginationServices!["nextPage"]();
-    return nextPageData != null ? formatResponse(nextPageData) : null;
-  }
-
   Future<void> fetchPersonalInfo() async {
-    final result = await GraphQLService()
-        .queryHandler("userById", {"id": GlobalManager().userId});
+    final result =
+        await graphQLQueryHandler("userById", {"id": GlobalManager().userId});
 
     if (mounted) {
       setState(() {
         _userData = User.fromJson(result);
       });
     }
-
-    print(_userData);
   }
 
   @override

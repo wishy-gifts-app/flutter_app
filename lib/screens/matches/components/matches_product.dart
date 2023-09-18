@@ -19,24 +19,10 @@ class MatchesProducts extends StatefulWidget {
 }
 
 class _MatchesProductsState extends State<MatchesProducts> {
-  Map<String, dynamic>? _paginationServices;
-
-  Future<void> _initializeData() async {
-    final result = await GraphQLService().queryHandler(
-        "getLikedProducts", {"limit": 5, "is_like": widget.isLike},
-        withPagination: true);
-
-    if (mounted) {
-      print(result);
-      setState(() {
-        _paginationServices = result;
-      });
-      print(_paginationServices);
-    }
-  }
+  GraphQLPaginationService _paginationService = new GraphQLPaginationService(
+      queryName: "getProductsFeed", variables: {"limit": 5, "is_like": false});
 
   void initState() {
-    _initializeData();
     super.initState();
   }
 
@@ -49,8 +35,10 @@ class _MatchesProductsState extends State<MatchesProducts> {
         .map((item) => new Product.fromJson(item))
         .toList();
 
-    final nextPageData = await _paginationServices!["nextPage"]();
-    return nextPageData != null ? formatResponse(nextPageData) : null;
+    final nextPageData = await _paginationService.run();
+    return nextPageData["data"] != null
+        ? formatResponse(nextPageData["data"])
+        : null;
   }
 
   Future<bool> saveLike(
@@ -59,8 +47,7 @@ class _MatchesProductsState extends State<MatchesProducts> {
     BuildContext context,
   ) async {
     try {
-      final graphQLService = new GraphQLService();
-      graphQLService.queryHandler("saveLike", {
+      graphQLQueryHandler("saveLike", {
         "product_id": productId,
         "is_like": isLike,
         "user_id": GlobalManager().userId
@@ -78,10 +65,6 @@ class _MatchesProductsState extends State<MatchesProducts> {
 
   @override
   Widget build(BuildContext context) {
-    if (_paginationServices == null) {
-      return CircularProgressIndicator();
-    }
-
     final situation = "match_product_card";
 
     return Container(

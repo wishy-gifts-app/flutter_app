@@ -19,24 +19,12 @@ class LikesProducts extends StatefulWidget {
 }
 
 class _LikesProductsState extends State<LikesProducts> {
-  Map<String, dynamic>? _paginationServices;
-
-  Future<void> _initializeData() async {
-    final result = await GraphQLService().queryHandler(
-        "getLikedProducts", {"limit": 6, "is_like": widget.isLike},
-        withPagination: true);
-
-    if (mounted) {
-      print(result);
-      setState(() {
-        _paginationServices = result;
-      });
-      print(_paginationServices);
-    }
-  }
+  late GraphQLPaginationService _paginationServices;
 
   void initState() {
-    _initializeData();
+    _paginationServices = new GraphQLPaginationService(
+        queryName: "getLikedProducts",
+        variables: {"limit": 6, "is_like": widget.isLike});
     super.initState();
   }
 
@@ -49,8 +37,10 @@ class _LikesProductsState extends State<LikesProducts> {
         .map((item) => new Product.fromJson(item))
         .toList();
 
-    final nextPageData = await _paginationServices!["nextPage"]();
-    return nextPageData != null ? formatResponse(nextPageData) : null;
+    final nextPageData = await _paginationServices.run();
+    return nextPageData["data"] != null
+        ? formatResponse(nextPageData["data"])
+        : null;
   }
 
   Future<bool> saveLike(
@@ -59,8 +49,7 @@ class _LikesProductsState extends State<LikesProducts> {
     BuildContext context,
   ) async {
     try {
-      final graphQLService = new GraphQLService();
-      graphQLService.queryHandler("saveLike", {
+      graphQLQueryHandler("saveLike", {
         "product_id": productId,
         "is_like": isLike,
         "user_id": GlobalManager().userId
@@ -78,9 +67,6 @@ class _LikesProductsState extends State<LikesProducts> {
 
   @override
   Widget build(BuildContext context) {
-    if (_paginationServices == null) {
-      return CircularProgressIndicator();
-    }
     final String situation =
         widget.isLike ? "like_product_card" : "unlike_product_card";
 

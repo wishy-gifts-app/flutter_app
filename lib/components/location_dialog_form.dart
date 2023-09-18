@@ -57,22 +57,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       final currentStreetNumber =
           getSpecificComponent(detail!, "street_number")?.longName;
 
-      // if (currentStreetNumber != _streetNumberController.text) {
-      //   String updatedAddress =
-      //       "${_addressController.text} ${_streetNumberController.text}";
-
-      //   GoogleMapsPlaces _places =
-      //       GoogleMapsPlaces(apiKey: dotenv.get("GOOGLE_MAPS_API_KEY"));
-      //   PlacesSearchResponse searchResponse =
-      //       await _places.searchByText(updatedAddress);
-      //   print(searchResponse.results.isNotEmpty);
-
-      //   if (searchResponse.results.isNotEmpty) {
-      //     detail = await _places
-      //         .getDetailsByPlaceId(searchResponse.results.first.placeId);
-      //   }
-      // }
-
       final country = getSpecificComponent(detail!, "country")?.longName;
       final state =
           getSpecificComponent(detail!, ["administrative_area_level_1"])
@@ -86,7 +70,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       final extraDetails = _extraDetailsController.text;
 
       try {
-        await GraphQLService().queryHandler("saveUserAddress", {
+        await graphQLQueryHandler("saveUserAddress", {
           "country": country,
           "state": state,
           "city": city,

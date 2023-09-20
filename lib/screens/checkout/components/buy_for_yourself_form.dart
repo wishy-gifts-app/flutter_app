@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/location_dialog_form.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Address.dart';
-import 'package:shop_app/screens/checkout/components/payment_button.dart';
-import 'package:shop_app/size_config.dart';
-import 'package:shop_app/services/graphql_service.dart';
+import 'package:Wishy/components/location_dialog_form.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Address.dart';
+import 'package:Wishy/screens/checkout/components/payment_button.dart';
+import 'package:Wishy/size_config.dart';
+import 'package:Wishy/services/graphql_service.dart';
 
 class BuyForYourself extends StatefulWidget {
   final int variantId;

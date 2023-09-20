@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/models/Product.dart';
+import 'package:Wishy/models/Product.dart';
 
 import 'components/body.dart';
 

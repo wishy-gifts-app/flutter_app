@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/history_product_card.dart';
-import 'package:shop_app/components/order_state.dart';
-import 'package:shop_app/components/product_card.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Order.dart';
-import 'package:shop_app/services/graphql_service.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/components/history_product_card.dart';
+import 'package:Wishy/components/order_state.dart';
+import 'package:Wishy/components/product_card.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Order.dart';
+import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/size_config.dart';
 
 class OrdersTab extends StatefulWidget {
   @override

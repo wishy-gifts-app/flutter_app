@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/custom_surfix_icon.dart';
-import 'package:shop_app/components/default_button.dart';
-import 'package:shop_app/components/form_error.dart';
-import 'package:shop_app/screens/login_success/login_success_screen.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/services/graphql_service.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/components/custom_surfix_icon.dart';
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/form_error.dart';
+import 'package:Wishy/screens/login_success/login_success_screen.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:email_validator/email_validator.dart';
 
 import '../../../constants.dart';

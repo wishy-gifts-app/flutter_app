@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/screens/home/home_screen.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
 
 class AnalyticsService extends StatefulWidget {
   static late Mixpanel mixpanel;

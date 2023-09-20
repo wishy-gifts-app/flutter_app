@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/size_config.dart';
 
 class HistoryProductCard extends StatelessWidget {
   final Product product;
@@ -19,7 +19,7 @@ class HistoryProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final variant = product.variants.firstWhere(
+    final variant = product.variants?.firstWhere(
       (element) => element.id == variantId,
     );
 
@@ -71,9 +71,9 @@ class HistoryProductCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Text("\$ ${price}"),
-          if (product.variants.length > 1)
+          if (product.variants != null && product.variants!.length > 1)
             Text(
-              variant.title,
+              variant!.title,
               textAlign: TextAlign.center,
             ),
         ],

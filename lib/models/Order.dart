@@ -1,5 +1,5 @@
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/models/utils.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/models/utils.dart';
 
 class Order {
   final int id;

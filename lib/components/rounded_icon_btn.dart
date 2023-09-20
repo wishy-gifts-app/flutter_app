@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
+import 'package:Wishy/constants.dart';
 
 import '../size_config.dart';
 

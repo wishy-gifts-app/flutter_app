@@ -1,16 +1,16 @@
 import 'package:flutter/widgets.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/screens/checkout/checkout_screen.dart';
-import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
-import 'package:shop_app/screens/details/details_screen.dart';
-import 'package:shop_app/screens/home/home_screen.dart';
-import 'package:shop_app/screens/login_success/login_success_screen.dart';
-import 'package:shop_app/screens/matches/matches_screen.dart';
-import 'package:shop_app/screens/otp/otp_screen.dart';
-import 'package:shop_app/screens/profile/profile_screen.dart';
-import 'package:shop_app/screens/root_screen.dart';
-import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
-import 'package:shop_app/screens/likes/likes_screen.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/screens/checkout/checkout_screen.dart';
+import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
+import 'package:Wishy/screens/details/details_screen.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/screens/login_success/login_success_screen.dart';
+import 'package:Wishy/screens/matches/matches_screen.dart';
+import 'package:Wishy/screens/otp/otp_screen.dart';
+import 'package:Wishy/screens/profile/profile_screen.dart';
+import 'package:Wishy/screens/root_screen.dart';
+import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
+import 'package:Wishy/screens/likes/likes_screen.dart';
 
 // We use name route
 // All our routes will be available here

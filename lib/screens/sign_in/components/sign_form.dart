@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/custom_surfix_icon.dart';
-import 'package:shop_app/components/default_button.dart';
-import 'package:shop_app/components/form_error.dart';
-import 'package:shop_app/screens/otp/otp_screen.dart';
+import 'package:Wishy/components/custom_surfix_icon.dart';
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/form_error.dart';
+import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:phone_number/phone_number.dart';
-import 'package:shop_app/services/opt_services.dart';
+import 'package:Wishy/services/opt_services.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';

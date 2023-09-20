@@ -38,6 +38,7 @@ const Map<String, String> graphqlQueries = {
           shop_id
           like_created_at
           tags
+          is_like
           variants {
             id
             title
@@ -84,6 +85,7 @@ const Map<String, String> graphqlQueries = {
           shop_id
           like_created_at
           tags
+          is_like
           variants {
             id
             title

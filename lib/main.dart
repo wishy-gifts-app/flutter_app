@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shop_app/routes.dart';
-import 'package:shop_app/screens/root_screen.dart';
-import 'package:shop_app/theme.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/routes.dart';
+import 'package:Wishy/screens/root_screen.dart';
+import 'package:Wishy/theme.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/utils/analytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

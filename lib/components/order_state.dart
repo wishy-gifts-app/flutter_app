@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_stepper/easy_stepper.dart';
-import 'package:shop_app/constants.dart';
+import 'package:Wishy/constants.dart';
 
 class OrderStatusStepper extends StatelessWidget {
   final bool isOrderCompleted;

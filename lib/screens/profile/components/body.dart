@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/screens/profile/components/profile_pic.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/screens/profile/components/profile_pic.dart';
 import 'personal_info_tab.dart';
 import 'orders_tab.dart';
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/default_button.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/components/variants/variants_form.dart';
-import 'package:shop_app/screens/checkout/checkout_screen.dart';
-import 'package:shop_app/services/graphql_service.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/components/variants/variants_form.dart';
+import 'package:Wishy/screens/checkout/checkout_screen.dart';
+import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/size_config.dart';
 
 import '../../../components/top_rounded_container.dart';
 

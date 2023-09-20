@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/services/graphql_service.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:collection/collection.dart';
 
 AddressComponent? getSpecificComponent(PlacesDetailsResponse detail, key) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/variants/variants_widget.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/components/variants/variants_widget.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/size_config.dart';
 
 void showVariantsModal(BuildContext context, int productId, String productTitle,
     List<Variant> variants) {

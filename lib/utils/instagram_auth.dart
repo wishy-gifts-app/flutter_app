@@ -2,8 +2,8 @@
 // import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 // import 'dart:io';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
-// import 'package:shop_app/models/SignInResponse.dart';
-// import 'package:shop_app/services/instagram_auth_service.dart';
+// import 'package:Wishy/models/SignInResponse.dart';
+// import 'package:Wishy/services/instagram_auth_service.dart';
 
 // Future<SignInResponse> getInstagramToken() async {
 //   print(1111);

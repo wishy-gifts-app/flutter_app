@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shop_app/models/Product.dart';
+import 'package:Wishy/models/Product.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -17,6 +17,7 @@ class ProductDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(product.isLike);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -42,7 +43,7 @@ class ProductDescription extends StatelessWidget {
             ),
             child: SvgPicture.asset(
               "assets/icons/Heart Icon_2.svg",
-              color: Color(0xFFDBDEE4),
+              color: product.isLike == true ? Colors.red : Color(0xFFDBDEE4),
               height: getProportionateScreenWidth(16),
             ),
           ),

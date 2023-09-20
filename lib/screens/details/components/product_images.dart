@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/models/Product.dart';
+import 'package:Wishy/models/Product.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/utils/analytics.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';

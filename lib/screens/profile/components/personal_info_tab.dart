@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/models/Address.dart';
-import 'package:shop_app/models/User.dart';
-import 'package:shop_app/services/graphql_service.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/Address.dart';
+import 'package:Wishy/models/User.dart';
+import 'package:Wishy/services/graphql_service.dart';
 
 class PersonalInfoTab extends StatefulWidget {
   @override

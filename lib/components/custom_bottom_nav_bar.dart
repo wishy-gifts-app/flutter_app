@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shop_app/screens/home/home_screen.dart';
-import 'package:shop_app/screens/likes/likes_screen.dart';
-import 'package:shop_app/screens/matches/matches_screen.dart';
-import 'package:shop_app/screens/profile/profile_screen.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/screens/likes/likes_screen.dart';
+import 'package:Wishy/screens/matches/matches_screen.dart';
+import 'package:Wishy/screens/profile/profile_screen.dart';
 
 import '../constants.dart';
 import '../enums.dart';

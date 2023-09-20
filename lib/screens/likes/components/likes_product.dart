@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/swipe_left_card.dart';
-import 'package:shop_app/components/swipeable_products.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/services/graphql_service.dart';
+import 'package:Wishy/components/swipe_left_card.dart';
+import 'package:Wishy/components/swipeable_products.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/services/graphql_service.dart';
 import '../../../size_config.dart';
-import 'package:shop_app/components/product_card.dart';
+import 'package:Wishy/components/product_card.dart';
 
 class LikesProducts extends StatefulWidget {
   final bool isLike;

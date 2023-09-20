@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/utils/analytics.dart';
 
 import '../constants.dart';
 import '../size_config.dart';

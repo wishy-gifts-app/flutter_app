@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/screens/complete_profile/complete_profile_screen.dart';
-import 'package:shop_app/screens/home/home_screen.dart';
-import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
+import 'package:Wishy/size_config.dart';
 
 class RootScreen extends StatefulWidget {
   static String routeName = "/";

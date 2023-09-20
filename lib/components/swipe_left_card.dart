@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/size_config.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/size_config.dart';
+import 'package:Wishy/utils/analytics.dart';
 
 class SwipeableLeftProducts extends StatefulWidget {
   final Function(int) onSwipeRight;
@@ -104,9 +104,9 @@ class _SwipeableLeftProductsState extends State<SwipeableLeftProducts>
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: MediaQuery.of(context).size.width /
-              (MediaQuery.of(context).size.height / 1.3),
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 10.0,
+              (MediaQuery.of(context).size.height / 1.22),
+          mainAxisSpacing: 5.0,
+          crossAxisSpacing: 5.0,
         ),
         padding: EdgeInsets.all(5),
         itemCount: products.length,

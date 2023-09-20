@@ -4,11 +4,12 @@ class Product {
   final int id;
   final String title, description;
   final double price;
-  final List<Variant> variants;
+  final List<Variant>? variants;
   final List<ProductImage> images;
   final String? vendorName;
-  final DateTime? likeCreatedAt; // Optional, if it can be null
-  final List<String> tags; // You can replace this with an appropriate type
+  final DateTime? likeCreatedAt;
+  final bool? isLike;
+  final List<String> tags;
 
   Product({
     required this.id,
@@ -19,6 +20,7 @@ class Product {
     required this.variants,
     this.vendorName,
     this.likeCreatedAt,
+    this.isLike = null,
     required this.tags,
   });
 
@@ -27,15 +29,18 @@ class Product {
       id: convertValue<int>(json, 'id', true),
       title: convertValue<String>(json, 'title', true),
       description: convertValue<String>(json, 'description', false),
+      isLike: convertValue<bool>(json, 'is_like', false),
       price: convertValue<double>(json, 'price', true, defaultValue: 0),
       images: json['images'] != null
           ? (json['images'] as List<dynamic>)
               .map((imageJson) => ProductImage.fromJson(imageJson))
               .toList()
           : [],
-      variants: (json['variants'] as List<dynamic>)
-          .map((variantJson) => Variant.fromJson(variantJson))
-          .toList(),
+      variants: json['variants'] != null
+          ? (json['variants'] as List<dynamic>)
+              .map((variantJson) => Variant.fromJson(variantJson))
+              .toList()
+          : null,
       vendorName: convertValue<String>(json, 'vendorName', false),
       tags: (json['tags'] as List<dynamic>)
           .map((tag) => tag.toString())

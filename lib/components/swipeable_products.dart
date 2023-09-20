@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/size_config.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/size_config.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 
 List<SwipeItem> buildSwipeItems(List<Product> items, Function(int) onSwipeRight,

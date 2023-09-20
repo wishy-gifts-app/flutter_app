@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/default_button.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/global_manager.dart';
-import 'package:shop_app/size_config.dart';
-import 'package:shop_app/services/opt_services.dart';
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/size_config.dart';
+import 'package:Wishy/services/opt_services.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
-import 'package:shop_app/utils/analytics.dart';
-import 'package:shop_app/utils/router_utils.dart';
+import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/router_utils.dart';
 
 class OtpForm extends StatefulWidget {
   final String phoneNumber;

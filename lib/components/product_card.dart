@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/variants/variants_modal.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/screens/checkout/checkout_screen.dart';
-import 'package:shop_app/screens/details/details_screen.dart';
-import 'package:shop_app/utils/analytics.dart';
+import 'package:Wishy/components/variants/variants_modal.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/screens/checkout/checkout_screen.dart';
+import 'package:Wishy/screens/details/details_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ProductCard extends StatefulWidget {
@@ -69,9 +69,9 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void _onCheckoutPressed() async {
-    if (widget.product.variants.length > 1) {
+    if (widget.product.variants!.length > 1) {
       showVariantsModal(context, widget.product.id, widget.product.title,
-          widget.product.variants);
+          widget.product.variants!);
     } else {
       AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
           properties: {
@@ -84,7 +84,7 @@ class _ProductCardState extends State<ProductCard> {
         context,
         CheckoutScreen.routeName,
         arguments: {
-          'variant': widget.product.variants[0],
+          'variant': widget.product.variants![0],
           'productId': widget.product.id
         },
       );
@@ -181,22 +181,26 @@ class _ProductCardState extends State<ProductCard> {
                         ),
                       )),
                 Align(
-                  alignment: Alignment.center,
-                  child: widget.product.images.isNotEmpty &&
-                          _currentImageIndex < widget.product.images.length
-                      ? Image.network(
-                          widget.product.images[_currentImageIndex].url,
-                          fit: BoxFit.contain,
-                        )
-                      : Text(
-                          "Image not available",
-                        ),
-                ),
+                    alignment: widget.isFullScreen
+                        ? Alignment.center
+                        : Alignment(0, -0.7),
+                    child: widget.product.images.isNotEmpty &&
+                            _currentImageIndex < widget.product.images.length
+                        ? Image.network(
+                            widget.product.images[_currentImageIndex].url,
+                            fit: BoxFit.contain,
+                            height: widget.isFullScreen ? null : 130,
+                          )
+                        : Text(
+                            "Image not available",
+                          )),
                 if (widget.product.images.isNotEmpty)
                   Positioned.fill(
                     left: 0,
                     child: Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: widget.isFullScreen
+                          ? Alignment.centerLeft
+                          : Alignment(-1, -0.4),
                       child: IconButton(
                         icon: Icon(Icons.arrow_back),
                         onPressed: _showPreviousImage,
@@ -209,7 +213,9 @@ class _ProductCardState extends State<ProductCard> {
                   Positioned.fill(
                     right: 0,
                     child: Align(
-                      alignment: Alignment.centerRight,
+                      alignment: widget.isFullScreen
+                          ? Alignment.centerRight
+                          : Alignment(1, -0.4),
                       child: IconButton(
                         icon: Icon(Icons.arrow_forward),
                         onPressed: _showNextImage,
@@ -222,10 +228,10 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ),
                 Positioned(
-                  bottom: 30,
+                  bottom: widget.isFullScreen ? 30 : 60,
                   left: 20,
                   width: MediaQuery.of(context).size.width *
-                      (widget.isFullScreen ? 0.6 : 0.24),
+                      (widget.isFullScreen ? 0.6 : 0.36),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
@@ -233,7 +239,7 @@ class _ProductCardState extends State<ProductCard> {
                       Text(
                         "\$ ${widget.product.price}",
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 5),
                       Text(
                         widget.product.title,
                         maxLines: 2,
@@ -241,27 +247,58 @@ class _ProductCardState extends State<ProductCard> {
                     ],
                   ),
                 ),
-                Positioned(
-                    right: widget.isFullScreen ? 20 : 0,
-                    bottom: widget.isFullScreen ? 40 : 15,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _onCheckoutPressed();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: CircleBorder(),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.card_giftcard,
-                          color: Colors.black,
-                          size: widget.isFullScreen ? 50 : 25,
+                if (widget.product.variants == null)
+                  Positioned.fill(
+                    child: Align(
+                        alignment: Alignment(0, 0.8),
+                        child: Text("Out of stock",
+                            style: TextStyle(color: Colors.red))),
+                  ),
+                if (widget.product.variants != null) ...[
+                  Positioned(
+                      right: widget.isFullScreen ? 20 : 0,
+                      bottom: widget.isFullScreen ? 40 : 10,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _onCheckoutPressed();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          shape: CircleBorder(),
                         ),
-                      ),
-                    )),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.card_giftcard,
+                            color: Colors.black,
+                            size: widget.isFullScreen ? 50 : 25,
+                          ),
+                        ),
+                      )),
+                  if (!widget.isFullScreen)
+                    Positioned(
+                        left: 0,
+                        bottom: 10,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _onCheckoutPressed();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: CircleBorder(),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.message,
+                              color: Colors.black,
+                              size: widget.isFullScreen ? 50 : 25,
+                            ),
+                          ),
+                        ))
+                ],
               ],
             ),
           ),

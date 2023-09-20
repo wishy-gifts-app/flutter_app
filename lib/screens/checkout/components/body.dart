@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/screens/checkout/components/buy_as_gift_form.dart';
-import 'package:shop_app/screens/checkout/components/buy_for_yourself_form.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/screens/checkout/components/buy_as_gift_form.dart';
+import 'package:Wishy/screens/checkout/components/buy_for_yourself_form.dart';
+import 'package:Wishy/size_config.dart';
 
 class Body extends StatelessWidget {
   final Variant variant;

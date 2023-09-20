@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/variants/variant_picker.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/components/variants/color_dots.dart';
+import 'package:Wishy/components/variants/variant_picker.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/components/variants/color_dots.dart';
 
 Map<String, dynamic> groupVariants(List<Variant> variants) {
   List<String> colors = [];

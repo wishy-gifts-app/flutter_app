@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/additional_details_dialog.dart';
-import 'package:shop_app/components/default_button.dart';
-import 'package:shop_app/components/variants/variants_widget.dart';
-import 'package:shop_app/constants.dart';
-import 'package:shop_app/models/Product.dart';
-import 'package:shop_app/size_config.dart';
+import 'package:Wishy/components/additional_details_dialog.dart';
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/variants/variants_widget.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/size_config.dart';
 
 import 'product_description.dart';
 import '../../../components/top_rounded_container.dart';
@@ -40,11 +40,13 @@ class Body extends StatelessWidget {
                   );
                 },
               ),
-              if (product.variants.length > 1)
+              if (product.variants == null)
+                buildOutOfStock(secondColor)
+              else if (product.variants!.length > 1)
                 VariantsWidget(
                     productId: product.id,
                     productTitle: product.title,
-                    productVariants: product.variants)
+                    productVariants: product.variants!)
               else
                 buildButton(secondColor)
             ],
@@ -75,6 +77,23 @@ class Body extends StatelessWidget {
           }, //TODO Add parma in checkout
           press: () {},
         ),
+      ),
+    );
+  }
+
+  TopRoundedContainer buildOutOfStock(Color color) {
+    return TopRoundedContainer(
+      color: color,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: SizeConfig.screenWidth * 0.15,
+          right: SizeConfig.screenWidth * 0.15,
+          bottom: getProportionateScreenWidth(40),
+          top: getProportionateScreenWidth(15),
+        ),
+        child: Text("Out of stock",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red, fontSize: 25)),
       ),
     );
   }

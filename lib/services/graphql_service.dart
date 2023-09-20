@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop_app/global_manager.dart';
+import 'package:Wishy/global_manager.dart';
 import 'graphql_queries.dart';
 
 Future<Map<String, dynamic>> graphQLQueryHandler(

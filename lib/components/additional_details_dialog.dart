@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/components/default_button.dart';
+import 'package:Wishy/components/default_button.dart';
 
 class AdditionalDetailsDialog extends StatelessWidget {
   final String description;

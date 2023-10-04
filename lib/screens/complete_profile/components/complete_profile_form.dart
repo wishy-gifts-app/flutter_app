@@ -1,3 +1,4 @@
+import 'package:Wishy/utils/contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -20,12 +21,17 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
   String? fullName;
   String? email;
+  bool _givePermission = true;
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
       try {
+        if (_givePermission) {
+          await fetchContacts();
+        }
+
         await graphQLQueryHandler("updateUserById",
             {"email": email, "name": fullName, "id": GlobalManager().userId});
         await GlobalManager()
@@ -56,6 +62,20 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           buildFullNameFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildEmailFormField(),
+          SizedBox(height: getProportionateScreenHeight(30)),
+          CheckboxListTile(
+            title: Text(
+              "Give permission to get contacts for matching with them",
+              style: TextStyle(fontSize: 12),
+            ),
+            value: _givePermission,
+            onChanged: (bool? value) {
+              setState(() {
+                _givePermission = value!;
+              });
+            },
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(text: "continue", press: onSubmit),
         ],

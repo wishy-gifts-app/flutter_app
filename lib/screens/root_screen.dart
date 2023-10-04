@@ -1,3 +1,4 @@
+import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
@@ -24,17 +25,7 @@ class _RootScreenState extends State<RootScreen> {
     String? token = GlobalManager().token;
     bool? profileCompleted = GlobalManager().profileCompleted;
 
-    if (token == null || token.isEmpty) {
-      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
-    } else if (profileCompleted == null || !profileCompleted) {
-      Navigator.pushReplacementNamed(
-          context,
-          CompleteProfileScreen
-              .routeName); // Assuming '/home' is your home page route
-    } else {
-      Navigator.pushReplacementNamed(context,
-          HomeScreen.routeName); // Assuming '/home' is your home page route
-    }
+    RouterUtils.routeToHomePage(context, profileCompleted, token);
   }
 
   @override

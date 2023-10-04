@@ -8,19 +8,13 @@ import '../../../size_config.dart';
 import 'package:Wishy/components/product_card.dart';
 
 class MatchesProducts extends StatefulWidget {
-  final bool isLike;
-
-  MatchesProducts({
-    required this.isLike,
-  });
-
   @override
   _MatchesProductsState createState() => _MatchesProductsState();
 }
 
 class _MatchesProductsState extends State<MatchesProducts> {
   GraphQLPaginationService _paginationService = new GraphQLPaginationService(
-      queryName: "getProductsFeed", variables: {"limit": 5, "is_like": false});
+      queryName: "getMatchedProducts", variables: {"limit": 5});
 
   void initState() {
     super.initState();
@@ -71,8 +65,7 @@ class _MatchesProductsState extends State<MatchesProducts> {
         height: SizeConfig.screenHeight,
         child: new SwipeableLeftProducts(
           situation: situation,
-          emptyString:
-              "You don't have ${widget.isLike ? "liked" : "unliked"} products yet, start to swiping",
+          emptyString: "You don't have matches yet",
           onSwipeRight: (int id) => saveLike(id, true, context),
           onSwipeLeft: (int id) => saveLike(id, false, context),
           onSwipeUp: _onSwipeUp,

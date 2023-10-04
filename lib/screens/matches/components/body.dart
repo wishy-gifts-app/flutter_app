@@ -4,7 +4,7 @@ import '../../../size_config.dart';
 import 'matches_product.dart';
 
 class Body extends StatelessWidget {
-  final double headerHeight = 40.0;
+  final double headerHeight = 50.0;
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,7 @@ class Body extends StatelessWidget {
           SizedBox(height: getProportionateScreenHeight(20)),
           MatchesHeader(height: headerHeight),
           Expanded(
-            child: MatchesProducts(
-              isLike: false,
-            ),
+            child: MatchesProducts(),
           ),
         ],
       ),

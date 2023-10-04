@@ -12,7 +12,7 @@ class SignInResponse {
 
   factory SignInResponse.fromJson(Map<String, dynamic> json) {
     return SignInResponse(
-      token: convertValue<String>(json, 'auth', true),
+      token: convertValue<String>(json, 'token', true),
       profileCompleted: convertValue<bool>(json, 'profile_completed', true),
       userId: convertValue<int>(json, 'user_id', true),
     );

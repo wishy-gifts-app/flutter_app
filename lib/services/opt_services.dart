@@ -1,20 +1,10 @@
+import 'package:Wishy/models/SignInResponse.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class OtpVerificationResponse {
-  final String token;
-  final bool profileCompleted;
-  final int userId;
-
-  OtpVerificationResponse(
-      {required this.token,
-      required this.profileCompleted,
-      required this.userId});
-}
-
 class OTPServices {
-  Future<OtpVerificationResponse> verifyOTPService(
+  Future<SignInResponse> verifyOTPService(
       String phoneNumber, String otp) async {
     final response = await http.post(
       Uri.parse(dotenv.get("VERIFY_OPT_API_URL")),
@@ -29,11 +19,7 @@ class OTPServices {
     final data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return OtpVerificationResponse(
-        token: response.headers['auth'] ?? "",
-        profileCompleted: data['profile_completed'] as bool,
-        userId: data['user_id'] as int,
-      );
+      return SignInResponse.fromJson(data);
     } else {
       print('Failed to verify OTP, error_message: ${data["message"]}');
       throw Exception('Failed to verify OTP');

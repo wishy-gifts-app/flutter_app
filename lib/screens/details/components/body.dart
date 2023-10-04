@@ -34,7 +34,7 @@ class Body extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return AdditionalDetailsDialog(
-                        description: product.description,
+                        description: product.description ?? "",
                       );
                     },
                   );

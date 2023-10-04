@@ -54,7 +54,7 @@ class ProductDescription extends StatelessWidget {
             right: getProportionateScreenWidth(64),
           ),
           child: Text(
-            product.description,
+            product.description ?? "",
             maxLines: 3,
           ),
         ),

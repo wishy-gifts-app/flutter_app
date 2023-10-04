@@ -297,7 +297,22 @@ class _ProductCardState extends State<ProductCard> {
                               size: widget.isFullScreen ? 50 : 25,
                             ),
                           ),
-                        ))
+                        )),
+                  if (widget.product.followerId != null)
+                    Align(
+                        alignment: Alignment.topCenter,
+                        child: Material(
+                          elevation: 10.0,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              widget.product.followerName! + " likes too",
+                              textAlign: TextAlign.center,
+                              // style: TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        )),
                 ],
               ],
             ),

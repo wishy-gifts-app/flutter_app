@@ -22,6 +22,7 @@ const analyticEvents = {
   "SWIPED_RIGHT": "Swiped Right",
   "SWIPED_LEFT": "Swiped Left",
   "SWIPED_UP": "Swiped Up",
+  "INSTAGRAM_AUTH_SUBMITTED": "Instagram Auth Submitted",
 };
 
 const kPrimaryColor = Colors.black;

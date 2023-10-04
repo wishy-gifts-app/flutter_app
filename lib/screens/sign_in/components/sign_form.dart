@@ -1,9 +1,14 @@
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/instagram_auth.dart';
+import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:phone_number/phone_number.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/form_error.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
-import 'package:phone_number/phone_number.dart';
 import 'package:Wishy/services/opt_services.dart';
 
 import '../../../constants.dart';
@@ -65,7 +70,7 @@ class _SignFormState extends State<SignForm> {
 
     try {
       removeError(error: kInvalidPhoneNumberError);
-      await otpServices.sendOTPService(phoneNumber);
+      otpServices.sendOTPService(phoneNumber);
       Navigator.pushNamed(
         context,
         OtpScreen.routeName,
@@ -92,11 +97,19 @@ class _SignFormState extends State<SignForm> {
         //       });
 
         //       try {
-        //         final result = await getInstagramToken();
+        //         final result = await getInstagramToken(context);
+
         //         await GlobalManager().setParams(
-        //             newProfileCompleted: result.profileCompleted,
         //             newToken: result.token,
+        //             newProfileCompleted: result.profileCompleted,
         //             newUserId: result.userId);
+        //         AnalyticsService.registerSuperProperties(
+        //             {"User Id": result.userId});
+
+        //         AnalyticsService.trackEvent(
+        //           analyticEvents["INSTAGRAM_AUTH_SUBMITTED"]!,
+        //         );
+
         //         if (mounted) {
         //           RouterUtils.routeToHomePage(
         //             context,
@@ -104,7 +117,6 @@ class _SignFormState extends State<SignForm> {
         //           );
         //         }
         //       } catch (error) {
-        //         print(error);
         //         ScaffoldMessenger.of(context).showSnackBar(
         //           SnackBar(
         //               content: Text(
@@ -129,7 +141,7 @@ class _SignFormState extends State<SignForm> {
         //     ),
         //   )
         // ]),
-        // SizedBox(height: getProportionateScreenHeight(60)),
+        // SizedBox(height: getProportionateScreenHeight(50)),
         Visibility(
           visible: selectedIcon == 0,
           child: Text(

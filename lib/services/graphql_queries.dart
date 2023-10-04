@@ -112,6 +112,53 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'getMatchedProducts': """
+    query getMatchedProducts(
+      \$limit: Int!,
+      \$cursor: String,
+    ) {
+      getMatchedProducts(
+        limit: \$limit,
+        cursor: \$cursor,
+      ) {
+        results {
+          id
+          title
+          total_inventory
+          total_variants
+          description
+          shop_id
+          like_created_at
+          tags
+          is_like
+          follower_id
+          follower_name
+          variants {
+            id
+            title
+            weight
+            price
+            inventory_quantity
+            size
+            color
+            material
+            style
+          }
+          images {
+            id
+            variant_id
+            url
+            alt
+          }
+          vendor_name
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  """,
   'getUserOrders': """
     query getUserOrders(
       \$limit: Int!,

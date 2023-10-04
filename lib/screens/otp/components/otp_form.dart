@@ -73,9 +73,7 @@ class _OtpFormState extends State<OtpForm> {
 
       if (mounted) {
         RouterUtils.routeToHomePage(
-          context,
-          result.profileCompleted,
-        );
+            context, result.profileCompleted, result.token);
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(

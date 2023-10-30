@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:Wishy/global_manager.dart';
 import 'graphql_queries.dart';
 
-Future<Map<String, dynamic>> graphQLQueryHandler(
+Future<dynamic> graphQLQueryHandler(
     String queryName, Map<String, dynamic> variables) async {
   final String? queryString = graphqlQueries[queryName];
 

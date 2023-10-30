@@ -5,6 +5,7 @@ import '../../size_config.dart';
 class VariantPicker extends StatefulWidget {
   final String type;
   final List<dynamic> values;
+  final String? chosenVariant;
   final Function(String, String) onVariantChange;
 
   const VariantPicker({
@@ -12,6 +13,7 @@ class VariantPicker extends StatefulWidget {
     required this.type,
     required this.values,
     required this.onVariantChange,
+    this.chosenVariant,
   }) : super(key: key);
 
   @override
@@ -23,6 +25,10 @@ class _VariantPickerState extends State<VariantPicker> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.chosenVariant != null)
+      selectedIndex =
+          widget.values.indexWhere((item) => item == widget.chosenVariant);
+
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
@@ -31,16 +37,21 @@ class _VariantPickerState extends State<VariantPicker> {
         children: [
           Text("${widget.type}:"),
           SizedBox(height: getProportionateScreenWidth(10)),
-          Row(
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
             children: List.generate(
               widget.values.length,
               (index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                  widget.onVariantChange(widget.type, widget.values[index]);
-                },
+                onTap: widget.chosenVariant == null
+                    ? () {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                        widget.onVariantChange(
+                            widget.type, widget.values[index]);
+                      }
+                    : null,
                 child: VariantDot(
                   value: widget.values[index],
                   isSelected: index == selectedIndex,

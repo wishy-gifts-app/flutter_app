@@ -1,3 +1,4 @@
+import 'package:Wishy/screens/requests/requests_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
@@ -33,5 +34,6 @@ final Map<String, WidgetBuilder> routes = {
   MatchesScreen.routeName: (context) => MatchesScreen(),
   DetailsScreen.routeName: (context) => DetailsScreen(),
   ProfileScreen.routeName: (context) => ProfileScreen(),
+  RequestsScreen.routeName: (context) => RequestsScreen(),
   RootScreen.routeName: (context) => RootScreen(),
 };

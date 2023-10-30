@@ -72,13 +72,11 @@ class _LikesProductsState extends State<LikesProducts> {
 
     return Container(
         height: SizeConfig.screenHeight,
-        child: new SwipeableLeftProducts(
+        child: new SwipeableLeftProducts<Product>(
           situation: situation,
           emptyString:
               "You don't have ${widget.isLike ? "liked" : "unliked"} products yet, start to swiping",
-          onSwipeRight: (int id) => saveLike(id, true, context),
           onSwipeLeft: (int id) => saveLike(id, false, context),
-          onSwipeUp: _onSwipeUp,
           nextPage: fetchData,
           cardBuilder: (context, product) {
             return ProductCard(

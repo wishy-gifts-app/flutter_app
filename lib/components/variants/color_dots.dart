@@ -9,9 +9,11 @@ class ColorDots extends StatefulWidget {
     Key? key,
     required this.values,
     required this.onVariantChange,
+    this.chosenVariant,
   }) : super(key: key);
 
   final List<String> values;
+  final String? chosenVariant;
   final Function(String, String) onVariantChange;
 
   @override
@@ -37,6 +39,11 @@ class _ColorDotsState extends State<ColorDots> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.chosenVariant != null)
+      selectedColor =
+          widget.values.indexWhere((item) => item == widget.chosenVariant);
+    print(selectedColor);
+    print(widget.chosenVariant);
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
@@ -47,7 +54,9 @@ class _ColorDotsState extends State<ColorDots> {
           ...List.generate(
             widget.values.length,
             (index) => GestureDetector(
-              onTap: () => handleChange(index),
+              onTap: widget.chosenVariant == null
+                  ? () => handleChange(index)
+                  : null,
               child: ColorDot(
                 color: ColorUtils.stringToColor(
                     widget.values[index].toLowerCase()),

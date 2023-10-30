@@ -8,8 +8,9 @@ import 'package:Wishy/size_config.dart';
 
 class PaymentButton extends StatelessWidget {
   final onSubmit;
+  final bool enable;
 
-  PaymentButton({required this.onSubmit});
+  PaymentButton({required this.onSubmit, this.enable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +22,7 @@ class PaymentButton extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         SizedBox(height: getProportionateScreenHeight(20)),
-        DefaultButton(
-          text: "Go to payment",
-          press: onSubmit,
-        ),
+        DefaultButton(text: "Go to payment", press: onSubmit, enable: enable),
       ],
     );
   }

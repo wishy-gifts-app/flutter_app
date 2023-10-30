@@ -7,6 +7,7 @@ class GlobalManager {
   int? userId;
   String? username;
   bool? profileCompleted;
+  bool shouldNavigateToRequest = false;
 
   factory GlobalManager() {
     return _singleton;
@@ -51,5 +52,9 @@ class GlobalManager {
       await storage.write(
           key: 'profile_completed', value: newProfileCompleted.toString());
     }
+  }
+
+  void navigateToRequest(bool value) {
+    shouldNavigateToRequest = value;
   }
 }

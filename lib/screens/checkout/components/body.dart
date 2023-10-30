@@ -40,7 +40,7 @@ class Body extends StatelessWidget {
                       BuyForYourself(
                         variantId: variant.id,
                       ),
-                      BuyAsGift(),
+                      BuyAsGift(variantId: variant.id),
                     ],
                   ),
                 ),

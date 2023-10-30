@@ -1,15 +1,62 @@
+import 'package:Wishy/components/search_user.dart';
+import 'package:Wishy/screens/checkout/components/payment_button.dart';
+import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 
 class BuyAsGift extends StatelessWidget {
+  final int variantId;
+
+  BuyAsGift({
+    required this.variantId,
+  });
+
+  int? userId;
+  String? name, phoneNumber;
+  void _onUserSelected(int? userId) {
+    userId = userId;
+  }
+
+  void _onNameChanged(String? name) {
+    name = name;
+  }
+
+  void _onPhoneChanged(String? phone) {
+    phone = phone;
+  }
+
+  Future<void> onSubmit(BuildContext context) async {
+    try {
+      final result = await graphQLQueryHandler("checkoutHandler", {
+        "variant_id": variantId,
+        "user_id": userId,
+        "phone_number": phoneNumber,
+        "name": name,
+        "quantity": 1,
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'Unable to upload payment method. Please check your information and try again.'),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          decoration: InputDecoration(hintText: 'Recipient Name'),
+        SearchUserWidget(
+          onUserSelected: _onUserSelected,
+          onNameChanged: _onNameChanged,
+          onPhoneChanged: _onPhoneChanged,
         ),
-        TextField(
-          decoration: InputDecoration(hintText: 'Recipient Phone Number'),
+        SizedBox(height: getProportionateScreenHeight(100)),
+        PaymentButton(
+          onSubmit: () => onSubmit(
+            context,
+          ),
+          enable: userId != null || (phoneNumber != null && name != null),
         ),
       ],
     );

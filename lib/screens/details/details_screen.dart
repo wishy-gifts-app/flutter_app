@@ -9,7 +9,7 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProductDetailsArguments agrs =
+    final ProductDetailsArguments args =
         ModalRoute.of(context)!.settings.arguments as ProductDetailsArguments;
     return Scaffold(
       backgroundColor: Color(0xFFF5F6F9),
@@ -17,13 +17,20 @@ class DetailsScreen extends StatelessWidget {
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
         child: CustomAppBar(rating: 5),
       ),
-      body: Body(product: agrs.product),
+      body: Body(
+        product: args.product,
+        buttonText: args.buttonText,
+        variantId: args.variantId,
+      ),
     );
   }
 }
 
 class ProductDetailsArguments {
   final Product product;
+  final int? variantId;
+  final String buttonText;
 
-  ProductDetailsArguments({required this.product});
+  ProductDetailsArguments(
+      {required this.product, this.buttonText = "Buy Now", this.variantId});
 }

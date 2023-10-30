@@ -1,3 +1,4 @@
+import 'package:Wishy/screens/requests/requests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
@@ -62,10 +63,8 @@ class CustomBottomNavBar extends StatelessWidget {
               generateIconButton("assets/icons/matches.svg", MenuState.matches,
                   MatchesScreen.routeName, context,
                   height: 22),
-              IconButton(
-                icon: SvgPicture.asset("assets/icons/Chat bubble Icon.svg"),
-                onPressed: () {},
-              ),
+              generateIconButton("assets/icons/Chat bubble Icon.svg",
+                  MenuState.message, RequestsScreen.routeName, context),
               generateIconButton("assets/icons/User Icon.svg",
                   MenuState.profile, ProfileScreen.routeName, context),
             ],

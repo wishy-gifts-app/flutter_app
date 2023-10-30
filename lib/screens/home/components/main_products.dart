@@ -1,3 +1,4 @@
+import 'package:Wishy/components/request_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/product_card.dart';
 import 'package:Wishy/components/swipeable_products.dart';
@@ -17,8 +18,9 @@ class _MainProductsState extends State<MainProducts> {
       variables: {"limit": 5},
       infiniteScroll: true);
 
-  void _onSwipeUp(int id) {
-    // Implement your logic here
+  void _onSwipeUp(Product product) {
+    showRequestModal(
+        context, product.id, product.title, product.variants ?? []);
   }
 
   Future<List<Product>?> fetchData() async {

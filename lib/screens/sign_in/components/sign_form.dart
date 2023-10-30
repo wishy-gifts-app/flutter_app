@@ -1,9 +1,4 @@
-import 'package:Wishy/global_manager.dart';
-import 'package:Wishy/utils/analytics.dart';
-import 'package:Wishy/utils/instagram_auth.dart';
-import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';

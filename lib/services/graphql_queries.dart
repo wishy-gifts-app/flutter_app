@@ -307,15 +307,118 @@ const Map<String, String> graphqlQueries = {
     }
   }
 """,
+  'searchForFollower': """
+    query searchForFollower(
+      \$limit: Int!,
+      \$searchTerm: String!
+    ) {
+      searchForFollower(limit: \$limit, search_term: \$searchTerm) {
+        id
+        name
+        phone_number
+    }
+  }
+""",
   'checkoutHandler': """
     mutation checkoutHandler(
       \$variant_id: Int!,
-      \$address_id: Int!,
       \$quantity: Int!,
+      \$address_id: Int,
+      \$user_id: Int,
+      \$phone_number: Int,
+      \$name: Int,
     ) {
-      checkoutHandler(variant_id: \$variant_id, address_id: \$address_id, quantity: \$quantity) {
+      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, user_id: \$user_id, phone_number: \$phone_number, name: \$name) {
         payment_url
       }
     }
 """,
+  'requestProduct': """
+    mutation requestProduct(
+      \$variant_id: Int!,
+      \$product_id: Int!,
+      \$reason: String!,
+      \$recipient_id: Int,
+      \$name: String,
+      \$phone_number: String,
+    ) {
+      requestProduct(variant_id: \$variant_id, product_id: \$product_id, reason: \$reason, recipient_id: \$recipient_id, name: \$name, phone_number: \$phone_number) {
+        id
+      }
+    }
+""",
+  'getUserRequests': """
+    query getUserRequests(
+      \$limit: Int!,
+      \$cursor: String,
+    ) {
+      getUserRequests(
+        limit: \$limit,
+        cursor: \$cursor,
+      ) {
+        results {
+          id,
+          reason,
+          created_at,
+          product_id,
+          variant_id,
+          requester_id,
+          recipient_id,
+          other_user_name,
+          product {          
+            id
+            title
+            total_inventory
+            total_variants
+            description
+            shop_id
+            like_created_at
+            tags
+            variants {
+              id
+              title
+              weight
+              price
+              inventory_quantity
+              size
+              color
+              material
+              style
+            }
+            images {
+              id
+              variant_id
+              url
+              alt
+            }
+            vendor_name
+          }        
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  """,
+  'getAllTags': """
+    query getUserRequests(
+      \$limit: Int!,
+      \$cursor: String,
+    ) {
+      getUserRequests(
+        limit: \$limit,
+        cursor: \$cursor,
+      ) {
+        results {
+          id,
+          value,
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  """,
 };

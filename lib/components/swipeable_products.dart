@@ -5,15 +5,19 @@ import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 
-List<SwipeItem> buildSwipeItems(List<Product> items, Function(int) onSwipeRight,
-    Function(int) onSwipeLeft, Function(int) onSwipeUp, BuildContext context) {
+List<SwipeItem> buildSwipeItems(
+    List<Product> items,
+    Function(int) onSwipeRight,
+    Function(int) onSwipeLeft,
+    Function(Product) onSwipeUp,
+    BuildContext context) {
   List<SwipeItem> swipeItems = [];
   for (var item in items) {
     swipeItems.add(SwipeItem(
       content: item,
       likeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Liked saved"),
+          content: Text("Like saved"),
           duration: Duration(milliseconds: 500),
         ));
 
@@ -28,7 +32,7 @@ List<SwipeItem> buildSwipeItems(List<Product> items, Function(int) onSwipeRight,
         onSwipeLeft(item.id);
       },
       superlikeAction: () {
-        onSwipeUp(item.id);
+        onSwipeUp(item);
       },
     ));
   }
@@ -38,7 +42,7 @@ List<SwipeItem> buildSwipeItems(List<Product> items, Function(int) onSwipeRight,
 class SwipeableProducts extends StatefulWidget {
   final Function(int) onSwipeRight;
   final Function(int) onSwipeLeft;
-  final Function(int) onSwipeUp;
+  final Function(Product) onSwipeUp;
   final Future<List<Product>?> Function() nextPage;
   final Widget Function(BuildContext context, Product product, bool isInFront)
       cardBuilder;
@@ -83,10 +87,10 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
         properties: {"Product Id": productId, "Situation": widget.situation});
   }
 
-  void onSwipeUp(int productId) {
-    widget.onSwipeRight(productId);
+  void onSwipeUp(Product product) {
+    widget.onSwipeUp(product);
     AnalyticsService.trackEvent(analyticEvents["SWIPED_UP"]!,
-        properties: {"Product Id": productId, "Situation": widget.situation});
+        properties: {"Product Id": product.id, "Situation": widget.situation});
   }
 
   Future<void> fetchItems() async {
@@ -97,8 +101,8 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
         currentIndex.value = 0;
         setState(() {
           isStateEmpty = false;
-          _swipeItems = buildSwipeItems(results, widget.onSwipeRight,
-              widget.onSwipeLeft, widget.onSwipeUp, context);
+          _swipeItems = buildSwipeItems(
+              results, onSwipeRight, onSwipeLeft, onSwipeUp, context);
           _matchEngine = MatchEngine(swipeItems: _swipeItems);
         });
       } else {

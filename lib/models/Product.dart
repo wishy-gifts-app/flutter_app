@@ -1,6 +1,6 @@
 import 'utils.dart';
 
-class Product {
+class Product extends Identifiable {
   final int id;
   final String title;
   final double price;

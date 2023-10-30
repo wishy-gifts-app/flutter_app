@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/swipe_left_card.dart';
-import 'package:Wishy/components/swipeable_products.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -63,12 +62,10 @@ class _MatchesProductsState extends State<MatchesProducts> {
 
     return Container(
         height: SizeConfig.screenHeight,
-        child: new SwipeableLeftProducts(
+        child: new SwipeableLeftProducts<Product>(
           situation: situation,
           emptyString: "You don't have matches yet",
-          onSwipeRight: (int id) => saveLike(id, true, context),
           onSwipeLeft: (int id) => saveLike(id, false, context),
-          onSwipeUp: _onSwipeUp,
           nextPage: fetchData,
           cardBuilder: (context, product) {
             return ProductCard(

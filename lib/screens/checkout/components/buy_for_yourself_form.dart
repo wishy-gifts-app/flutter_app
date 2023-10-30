@@ -29,8 +29,8 @@ class _BuyForYourselfState extends State<BuyForYourself> {
     try {
       final result = await graphQLQueryHandler("checkoutHandler", {
         "variant_id": widget.variantId,
-        "address_id": _addresses![_selectedAddressIndex].id,
         "quantity": 1,
+        "address_id": _addresses![_selectedAddressIndex].id,
       });
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -121,6 +121,7 @@ class _BuyForYourselfState extends State<BuyForYourself> {
         SizedBox(height: getProportionateScreenHeight(100)),
         PaymentButton(
           onSubmit: onSubmit,
+          enable: _addresses != null && _addresses!.length > 0,
         ),
       ],
     );

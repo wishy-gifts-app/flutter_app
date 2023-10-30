@@ -51,3 +51,7 @@ T convertValue<T>(dynamic json, String key, bool required,
     throw ArgumentError('Unsupported type: ${T.toString()}');
   }
 }
+
+abstract class Identifiable {
+  int get id;
+}

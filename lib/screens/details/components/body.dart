@@ -1,3 +1,4 @@
+import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/additional_details_dialog.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -13,8 +14,15 @@ import 'product_images.dart';
 class Body extends StatelessWidget {
   final situation = "product_details";
   final Product product;
+  final int? variantId;
+  final String buttonText;
 
-  Body({Key? key, required this.product}) : super(key: key);
+  Body(
+      {Key? key,
+      required this.product,
+      this.buttonText = "Buy Now",
+      this.variantId})
+      : super(key: key);
   final firstColor = Colors.white;
   final secondColor = Color(0xFFF6F7F9);
 
@@ -46,9 +54,11 @@ class Body extends StatelessWidget {
                 VariantsWidget(
                     productId: product.id,
                     productTitle: product.title,
-                    productVariants: product.variants!)
+                    productVariants: product.variants!,
+                    buttonText: this.buttonText,
+                    variantId: this.variantId)
               else
-                buildButton(secondColor)
+                buildButton(secondColor, context)
             ],
           ),
         ),
@@ -56,7 +66,7 @@ class Body extends StatelessWidget {
     );
   }
 
-  TopRoundedContainer buildButton(Color color) {
+  TopRoundedContainer buildButton(Color color, BuildContext context) {
     return TopRoundedContainer(
       color: color,
       child: Padding(
@@ -67,15 +77,24 @@ class Body extends StatelessWidget {
           top: getProportionateScreenWidth(15),
         ),
         child: DefaultButton(
-          text: "Buy Now",
+          text: this.buttonText,
           eventName: analyticEvents["CHECKOUT_PRESSED"]!,
           eventData: {
             "Product Id": product.id,
             "Product Title": product.title,
             "Situation": situation,
             "Variants Exist": false
-          }, //TODO Add parma in checkout
-          press: () {},
+          },
+          press: () {
+            Navigator.pushNamed(
+              context,
+              CheckoutScreen.routeName,
+              arguments: {
+                'variant': product.variants![0],
+                'productId': product.id
+              },
+            );
+          },
         ),
       ),
     );

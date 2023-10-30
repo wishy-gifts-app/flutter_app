@@ -1,22 +1,19 @@
+import 'package:Wishy/models/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
 
-class SwipeableLeftProducts extends StatefulWidget {
-  final Function(int) onSwipeRight;
+class SwipeableLeftProducts<T extends Identifiable> extends StatefulWidget {
   final Function(int) onSwipeLeft;
-  final Function(int) onSwipeUp;
-  final Future<List<Product>?> Function() nextPage;
-  final Widget Function(BuildContext context, Product product) cardBuilder;
+  final Future<List<T>?> Function() nextPage;
+  final Widget Function(BuildContext context, T item) cardBuilder;
   final String emptyString;
   final String situation;
 
   SwipeableLeftProducts({
-    required this.onSwipeRight,
     required this.onSwipeLeft,
-    required this.onSwipeUp,
     required this.nextPage,
     required this.cardBuilder,
     required this.situation,
@@ -24,13 +21,14 @@ class SwipeableLeftProducts extends StatefulWidget {
   });
 
   @override
-  _SwipeableLeftProductsState createState() => _SwipeableLeftProductsState();
+  _SwipeableLeftProductsState<T> createState() =>
+      _SwipeableLeftProductsState<T>();
 }
 
-class _SwipeableLeftProductsState extends State<SwipeableLeftProducts>
-    with TickerProviderStateMixin {
+class _SwipeableLeftProductsState<T extends Identifiable>
+    extends State<SwipeableLeftProducts<T>> with TickerProviderStateMixin {
   late AnimationController _controller;
-  List<Product> products = [];
+  List<T> products = [];
   ScrollController _scrollController = ScrollController();
   bool isLoading = false;
 

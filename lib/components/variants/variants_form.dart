@@ -71,23 +71,32 @@ Map<String, dynamic>? getVariantsDataWithChildren(List<Variant> variants) {
   return groupVariantsWithChildren;
 }
 
-dynamic getVariantWidget =
-    (String type, dynamic values, Function(String, String) onVariantChange) {
+dynamic getVariantWidget = (String type, dynamic values,
+    Function(String, String) onVariantChange, String? chosenVariant) {
   switch (type) {
     case "color":
       return ColorDots(
-        values: values,
-        onVariantChange: onVariantChange,
-      );
+          values: values,
+          onVariantChange: onVariantChange,
+          chosenVariant: chosenVariant);
     case "size":
       return VariantPicker(
-          type: type, values: values, onVariantChange: onVariantChange);
+          type: type,
+          values: values,
+          onVariantChange: onVariantChange,
+          chosenVariant: chosenVariant);
     case "style":
       return VariantPicker(
-          type: type, values: values, onVariantChange: onVariantChange);
+          type: type,
+          values: values,
+          onVariantChange: onVariantChange,
+          chosenVariant: chosenVariant);
     case "material":
       return VariantPicker(
-          type: type, values: values, onVariantChange: onVariantChange);
+          type: type,
+          values: values,
+          onVariantChange: onVariantChange,
+          chosenVariant: chosenVariant);
     default:
       return Container();
   }

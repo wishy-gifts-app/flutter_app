@@ -1,4 +1,5 @@
 import 'package:Wishy/components/request_modal.dart';
+import 'package:Wishy/models/Tag.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/product_card.dart';
 import 'package:Wishy/components/swipeable_products.dart';
@@ -8,15 +9,31 @@ import 'package:Wishy/services/graphql_service.dart';
 import '../../../size_config.dart';
 
 class MainProducts extends StatefulWidget {
+  final Tag? selectedTag;
+
+  MainProducts({Key? key, this.selectedTag}) : super(key: key);
+
   @override
   _MainProductsState createState() => _MainProductsState();
 }
 
 class _MainProductsState extends State<MainProducts> {
-  GraphQLPaginationService _paginationService = new GraphQLPaginationService(
+  late GraphQLPaginationService _paginationService;
+
+  void _initializePaginationService() {
+    print(widget.selectedTag?.id);
+    _paginationService = new GraphQLPaginationService(
       queryName: "getProductsFeed",
-      variables: {"limit": 5},
-      infiniteScroll: true);
+      variables: {"limit": 5, "tag_id": widget.selectedTag?.id},
+      infiniteScroll: true,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePaginationService();
+  }
 
   void _onSwipeUp(Product product) {
     showRequestModal(

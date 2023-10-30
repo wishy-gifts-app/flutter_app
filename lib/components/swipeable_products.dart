@@ -50,6 +50,7 @@ class SwipeableProducts extends StatefulWidget {
   final String situation;
 
   SwipeableProducts({
+    Key? key,
     required this.onSwipeRight,
     required this.onSwipeLeft,
     required this.onSwipeUp,
@@ -57,7 +58,7 @@ class SwipeableProducts extends StatefulWidget {
     required this.cardBuilder,
     required this.situation,
     this.emptyString = "Sorry, but we don't have products yet",
-  });
+  }) : super(key: key);
 
   @override
   _SwipeableProductsState createState() => _SwipeableProductsState();

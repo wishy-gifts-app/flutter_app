@@ -23,11 +23,13 @@ const Map<String, String> graphqlQueries = {
   'getProductsFeed': """
     query getProductsFeed(
       \$limit: Int!,
-      \$cursor: String
+      \$cursor: String,
+      \$tag_id: Int
     ) {
       getProductsFeed(
         limit: \$limit,
-        cursor: \$cursor
+        cursor: \$cursor,
+        tag_id: \$tag_id
       ) {
         results {
           id
@@ -402,11 +404,11 @@ const Map<String, String> graphqlQueries = {
     }
   """,
   'getAllTags': """
-    query getUserRequests(
+    query getAllTags(
       \$limit: Int!,
       \$cursor: String,
     ) {
-      getUserRequests(
+      getAllTags(
         limit: \$limit,
         cursor: \$cursor,
       ) {

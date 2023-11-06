@@ -9,6 +9,7 @@ class Product extends Identifiable {
   final String? vendorName, description, followerName;
   final DateTime? likeCreatedAt;
   final bool? isLike;
+  final bool isAvailable;
   final int? followerId;
   final List<String> tags;
 
@@ -24,6 +25,7 @@ class Product extends Identifiable {
     this.isLike = null,
     this.followerId = null,
     this.followerName = null,
+    required this.isAvailable,
     required this.tags,
   });
 
@@ -33,6 +35,8 @@ class Product extends Identifiable {
       title: convertValue<String>(json, 'title', true),
       description: convertValue<String?>(json, 'description', false),
       isLike: convertValue<bool?>(json, 'is_like', false),
+      isAvailable:
+          convertValue<bool>(json, 'is_available', false, defaultValue: true),
       followerId: convertValue<int?>(json, 'follower_id', false),
       followerName: convertValue<String?>(json, 'follower_name', false),
       price: convertValue<double>(json, 'price', true, defaultValue: 0),

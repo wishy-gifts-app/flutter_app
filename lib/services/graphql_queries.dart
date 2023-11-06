@@ -41,6 +41,7 @@ const Map<String, String> graphqlQueries = {
           like_created_at
           tags
           is_like
+          is_available
           variants {
             id
             title
@@ -88,6 +89,7 @@ const Map<String, String> graphqlQueries = {
           like_created_at
           tags
           is_like
+          is_available
           variants {
             id
             title
@@ -135,6 +137,7 @@ const Map<String, String> graphqlQueries = {
           is_like
           follower_id
           follower_name
+          is_available
           variants {
             id
             title

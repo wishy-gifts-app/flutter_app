@@ -86,7 +86,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           SnackBar(content: Text('Your address has been successfully added')),
         );
 
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address. Please try again.')),
@@ -97,6 +97,10 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+      dotenv.get("GOOGLE_MAPS_API_KEY"),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Address'),
@@ -132,7 +136,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                       mode: Mode.overlay,
                       language: "en",
                       types: ["address"],
-                      components: [],
+                      components: [Component(Component.country, "us")],
                       strictbounds: false,
                       decoration: InputDecoration(
                         hintText: "Search",
@@ -141,6 +145,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                         focusedBorder: InputBorder.none,
                       ),
                     );
+
                     if (prediction != null) {
                       GoogleMapsPlaces _places = GoogleMapsPlaces(
                           apiKey: dotenv.get("GOOGLE_MAPS_API_KEY"));

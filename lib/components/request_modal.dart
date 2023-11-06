@@ -1,7 +1,9 @@
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
@@ -210,7 +212,13 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 }
 
 void showRequestModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants) {
+    List<Variant> variants) async {
+  if (!GlobalManager().isDeliveryAvailable!) {
+    await DeliveryAvailabilityDialog.show(context);
+
+    if (!GlobalManager().isDeliveryAvailable!) return;
+  }
+
   showModalBottomSheet<void>(
       isScrollControlled: true,
       context: context,

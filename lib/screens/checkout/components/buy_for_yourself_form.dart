@@ -41,6 +41,7 @@ class _BuyForYourselfState extends State<BuyForYourself> {
   }
 
   Future<void> fetchData() async {
+    _paginationServices.reset();
     final result = await _paginationServices.run();
 
     if (mounted && result["data"] != null) {
@@ -99,25 +100,22 @@ class _BuyForYourselfState extends State<BuyForYourself> {
             textAlign: TextAlign.center,
           ),
         IconButton(
-          icon: Icon(
-            Icons.add_location,
-            size: 50,
-          ),
-          tooltip: "Add address",
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) =>
-                  Dialog.fullscreen(child: LocationDialogForm()),
-            ).then((_) {
+            icon: Icon(
+              Icons.add_location,
+              size: 50,
+            ),
+            tooltip: "Add address",
+            onPressed: () async {
+              await showDialog<bool?>(
+                context: context,
+                builder: (context) =>
+                    Dialog.fullscreen(child: LocationDialogForm()),
+              );
               setState(() {
                 _selectedAddressIndex = 0;
               });
-              fetchData();
-            });
-            ;
-          },
-        ),
+              await fetchData();
+            }),
         SizedBox(height: getProportionateScreenHeight(100)),
         PaymentButton(
           onSubmit: onSubmit,

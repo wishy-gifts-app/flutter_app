@@ -1,3 +1,5 @@
+import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/additional_details_dialog.dart';
@@ -85,7 +87,13 @@ class Body extends StatelessWidget {
             "Situation": situation,
             "Variants Exist": false
           },
-          press: () {
+          press: () async {
+            if (!GlobalManager().isDeliveryAvailable!) {
+              await DeliveryAvailabilityDialog.show(context);
+
+              if (!GlobalManager().isDeliveryAvailable!) return;
+            }
+
             Navigator.pushNamed(
               context,
               CheckoutScreen.routeName,

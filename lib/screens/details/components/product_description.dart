@@ -1,3 +1,4 @@
+import 'package:Wishy/components/delivery_availability_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Wishy/models/Product.dart';
@@ -33,7 +34,7 @@ class ProductDescription extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Container(
             padding: EdgeInsets.all(getProportionateScreenWidth(15)),
-            width: getProportionateScreenWidth(64),
+            width: getProportionateScreenWidth(100),
             decoration: BoxDecoration(
               color: Color(0xFFF5F6F9),
               borderRadius: BorderRadius.only(
@@ -41,11 +42,19 @@ class ProductDescription extends StatelessWidget {
                 bottomLeft: Radius.circular(20),
               ),
             ),
-            child: SvgPicture.asset(
-              "assets/icons/Heart Icon_2.svg",
-              color: product.isLike == true ? Colors.red : Color(0xFFDBDEE4),
-              height: getProportionateScreenWidth(16),
-            ),
+            child: Row(children: [
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: DeliveryAvailabilityIcon()),
+              SizedBox(
+                width: getProportionateScreenWidth(10),
+              ),
+              SvgPicture.asset(
+                "assets/icons/Heart Icon_2.svg",
+                color: product.isLike == true ? Colors.red : Color(0xFFDBDEE4),
+                height: getProportionateScreenWidth(16),
+              ),
+            ]),
           ),
         ),
         Padding(

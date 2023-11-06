@@ -1,3 +1,7 @@
+import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/delivery_availability_icon.dart';
+import 'package:Wishy/components/request_modal.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/variants/variants_modal.dart';
 import 'package:Wishy/constants.dart';
@@ -68,7 +72,20 @@ class _ProductCardState extends State<ProductCard> {
         });
   }
 
+  void _onRequestPressed() {
+    showRequestModal(context, widget.product.id, widget.product.title,
+        widget.product.variants ?? []);
+  }
+
   void _onCheckoutPressed() async {
+    if (!GlobalManager().isDeliveryAvailable!) {
+      await DeliveryAvailabilityDialog.show(context);
+
+      if (!GlobalManager().isDeliveryAvailable!) {
+        return;
+      }
+    }
+
     if (widget.product.variants!.length > 1) {
       showVariantsModal(context, widget.product.id, widget.product.title,
           widget.product.variants!);
@@ -236,6 +253,8 @@ class _ProductCardState extends State<ProductCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
+                      DeliveryAvailabilityIcon(),
+                      SizedBox(height: 5),
                       Text(
                         "\$ ${widget.product.price}",
                       ),
@@ -250,7 +269,7 @@ class _ProductCardState extends State<ProductCard> {
                 if (widget.product.variants == null)
                   Positioned.fill(
                     child: Align(
-                        alignment: Alignment(0, 0.8),
+                        alignment: Alignment(0.8, 0.9),
                         child: Text("Out of stock",
                             style: TextStyle(color: Colors.red))),
                   ),
@@ -282,7 +301,7 @@ class _ProductCardState extends State<ProductCard> {
                         bottom: 10,
                         child: ElevatedButton(
                           onPressed: () {
-                            _onCheckoutPressed();
+                            _onRequestPressed();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,

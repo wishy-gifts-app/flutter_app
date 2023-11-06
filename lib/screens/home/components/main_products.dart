@@ -1,3 +1,4 @@
+import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/components/request_modal.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +47,19 @@ class _MainProductsState extends State<MainProducts> {
         .toList();
 
     final result = await _paginationService.run();
+    final formattedResult =
+        result["data"] != null ? formatResponse(result["data"]) : null;
 
-    return result["data"] != null ? formatResponse(result["data"]) : null;
+    if (formattedResult != null &&
+        GlobalManager().isDeliveryAvailable == null) {
+      if (formattedResult[0].isAvailable) {
+        GlobalManager().setDeliveryAvailability(true);
+      } else {
+        await DeliveryAvailabilityDialog.show(context);
+      }
+    }
+
+    return formattedResult;
   }
 
   Future<bool> saveLike(

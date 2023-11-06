@@ -97,4 +97,9 @@ class GraphQLPaginationService {
       "hasNextPage": this._hasNextPage,
     };
   }
+
+  void reset() {
+    cursor = null;
+    _hasNextPage = true;
+  }
 }

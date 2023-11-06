@@ -1,3 +1,5 @@
+import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/constants.dart';
@@ -84,6 +86,14 @@ class _VariantsWidgetState extends State<VariantsWidget> {
   void _onBuyPressed(BuildContext context) async {
     Variant selectedVariant =
         getSelectedVariant(widget.productVariants, variants);
+
+    if (!GlobalManager().isDeliveryAvailable!) {
+      await DeliveryAvailabilityDialog.show(context);
+
+      if (!GlobalManager().isDeliveryAvailable!) {
+        return;
+      }
+    }
 
     Navigator.pushNamed(
       context,

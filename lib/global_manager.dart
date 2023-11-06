@@ -8,6 +8,7 @@ class GlobalManager {
   String? username;
   bool? profileCompleted;
   bool shouldNavigateToRequest = false;
+  bool? isDeliveryAvailable;
 
   factory GlobalManager() {
     return _singleton;
@@ -56,5 +57,9 @@ class GlobalManager {
 
   void navigateToRequest(bool value) {
     shouldNavigateToRequest = value;
+  }
+
+  void setDeliveryAvailability(bool value) {
+    isDeliveryAvailable = value;
   }
 }

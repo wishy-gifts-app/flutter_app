@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_number/phone_number.dart';
 
 class PhoneNumberField extends StatefulWidget {
-  final Function(String) onSaved;
+  final Function(String?) onSaved;
   final Function(String) onError;
 
   PhoneNumberField({required this.onSaved, required this.onError});
@@ -50,16 +50,19 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: TextInputType.phone,
-      onSaved: (newValue) async => {
+      onSaved: (newValue) async {
         if (await isValidPhoneNumber(newValue))
-          widget.onSaved(newValue ?? "")
-        else
-          widget.onError(errorMessage ?? "")
+          widget.onSaved(newValue);
+        else {
+          widget.onError(errorMessage ?? "");
+        }
       },
       onChanged: (value) {
         phoneNumber = value;
         if (value.isNotEmpty) {
-          errorMessage = null;
+          setState(() {
+            this.errorMessage = null;
+          });
         }
       },
       decoration: InputDecoration(

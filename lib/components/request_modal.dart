@@ -8,6 +8,7 @@ import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class RequestData {
   int? userId;
@@ -38,6 +39,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   int _currentStep = 0;
   Map<String, dynamic> variants = {};
   RequestData requestData = RequestData();
+  Completer<bool>? _phoneValidationCompleter;
 
   void _onUserSelected(int? userId) {
     requestData.userId = userId;
@@ -49,6 +51,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   void _onPhoneChanged(String? phone) {
     requestData.phone = phone;
+    _phoneValidationCompleter!.complete(true);
   }
 
   void _onReasonChanged(String? reason) {
@@ -67,7 +70,9 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
+      _phoneValidationCompleter = Completer<bool>();
       _formKey.currentState!.save();
+      await _phoneValidationCompleter!.future;
       _onVariantChosen();
 
       if (requestData.reason != null &&

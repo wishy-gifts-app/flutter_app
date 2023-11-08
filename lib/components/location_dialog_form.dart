@@ -19,6 +19,17 @@ AddressComponent? getSpecificComponent(PlacesDetailsResponse detail, key) {
 }
 
 class LocationDialogForm extends StatefulWidget {
+  final int? userId;
+  final String? userName;
+  final String? userPhoneNumber;
+
+  LocationDialogForm({
+    Key? key,
+    this.userId,
+    this.userName,
+    this.userPhoneNumber,
+  }) : super(key: key);
+
   @override
   _LocationDialogFormState createState() => _LocationDialogFormState();
 }
@@ -70,7 +81,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       final extraDetails = _extraDetailsController.text;
 
       try {
-        await graphQLQueryHandler("saveUserAddress", {
+        final result = await graphQLQueryHandler("saveUserAddress", {
           "country": country,
           "state": state,
           "city": city,
@@ -79,14 +90,16 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           "zip_code": zipCode,
           "apartment": apartment,
           "extra_details": extraDetails,
-          "user_id": GlobalManager().userId
+          "user_id": widget.userId,
+          "phone_number": widget.userPhoneNumber,
+          "name": widget.userName
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Your address has been successfully added')),
         );
 
-        Navigator.of(context).pop(true);
+        Navigator.of(context).pop(result["user_id"]);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address. Please try again.')),
@@ -96,11 +109,17 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    print(
-      dotenv.get("GOOGLE_MAPS_API_KEY"),
-    );
+  void initState() {
+    super.initState();
 
+    if (widget.userId == null &&
+        (widget.userName == null || widget.userPhoneNumber == null)) {
+      throw Exception("Missing user details");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Address'),

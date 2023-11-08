@@ -260,7 +260,9 @@ const Map<String, String> graphqlQueries = {
 """,
   'saveUserAddress': """
     mutation saveUserAddress(
-      \$user_id: Int!,
+      \$user_id: Int,
+      \$name: String,
+      \$phone_number: String,
       \$country: String!,
       \$state: String!,
       \$city: String!,
@@ -271,8 +273,10 @@ const Map<String, String> graphqlQueries = {
       \$extra_details: String,
     ) {
       saveUserAddress(user_id: \$user_id, country: \$country, state: \$state, city: \$city, zip_code: \$zip_code,
-      street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, extra_details: \$extra_details ) {
+      street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, 
+      extra_details: \$extra_details, name: \$name, phone_number: \$phone_number ) {
         id
+        user_id
       }
     }
 """,
@@ -280,8 +284,9 @@ const Map<String, String> graphqlQueries = {
     query getUserAddresses(
       \$limit: Int!,
       \$cursor: String,
+      \$user_id: Int!,
     ) {
-      getUserAddresses(limit: \$limit, cursor: \$cursor) {
+      getUserAddresses(limit: \$limit, cursor: \$cursor, user_id: \$user_id) {
         results {
           id
           country
@@ -328,12 +333,9 @@ const Map<String, String> graphqlQueries = {
     mutation checkoutHandler(
       \$variant_id: Int!,
       \$quantity: Int!,
-      \$address_id: Int,
-      \$user_id: Int,
-      \$phone_number: Int,
-      \$name: Int,
+      \$address_id: Int!,
     ) {
-      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, user_id: \$user_id, phone_number: \$phone_number, name: \$name) {
+      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id) {
         payment_url
       }
     }

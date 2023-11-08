@@ -51,7 +51,7 @@ class BuyAsGift extends StatelessWidget {
           onNameChanged: _onNameChanged,
           onPhoneChanged: _onPhoneChanged,
         ),
-        SizedBox(height: getProportionateScreenHeight(100)),
+        SizedBox(height: getProportionateScreenHeight(90)),
         PaymentButton(
           onSubmit: () => onSubmit(
             context,

@@ -23,7 +23,6 @@ class SearchUserWidget extends StatefulWidget {
 
 class _SearchUserWidgetState extends State<SearchUserWidget> {
   final TextEditingController _typeAheadController = TextEditingController();
-  String? phoneNumber = "";
   int? _selectedUser;
   bool _showPhoneField = false;
 
@@ -49,6 +48,9 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
             return null;
           },
           textFieldConfiguration: TextFieldConfiguration(
+            onChanged: (value) {
+              _showPhoneField = true;
+            },
             controller: _typeAheadController,
             decoration: InputDecoration(labelText: 'Search User'),
           ),
@@ -66,12 +68,6 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
           },
           itemBuilder: (context, suggestion) {
             final follower = suggestion as Follower;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _showPhoneField = false;
-              });
-            });
-
             return ListTile(
               title: Text(follower.name),
               subtitle: Text(follower.phoneNumber.toString()),
@@ -82,6 +78,11 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
 
             _typeAheadController.text = follower.name;
             _selectedUser = follower.id;
+            setState(() {
+              _showPhoneField = false;
+            });
+
+            widget.onUserSelected(_selectedUser);
           },
           noItemsFoundBuilder: (context) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -98,7 +99,7 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
           ),
           PhoneNumberField(
             onSaved: widget.onPhoneChanged,
-            onError: (String error) => print(1),
+            onError: (String error) => widget.onPhoneChanged(null),
           )
         ],
       ],

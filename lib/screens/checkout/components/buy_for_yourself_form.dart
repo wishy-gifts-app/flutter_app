@@ -1,3 +1,4 @@
+import 'package:Wishy/components/shopify_payment_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/location_dialog_form.dart';
 import 'package:Wishy/constants.dart';
@@ -32,6 +33,20 @@ class _BuyForYourselfState extends State<BuyForYourself> {
         "quantity": 1,
         "address_id": _addresses![_selectedAddressIndex].id,
       });
+      print(result);
+      if (result != null && result["payment_url"] != null) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Dialog.fullscreen(
+              child: CheckoutWebView(checkoutUrl: result["payment_url"]),
+            );
+          },
+        );
+      } else {
+        throw Exception('Payment URL not available');
+      }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(

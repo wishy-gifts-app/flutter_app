@@ -61,6 +61,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   webview_flutter: ^4.4.2
   lottie: ^2.3.2
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/animations/
     - lib/.env
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

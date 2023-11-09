@@ -1,9 +1,13 @@
+import 'package:Wishy/components/swipe_tutorial_overlay.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
+import 'package:lottie/lottie.dart';
 import 'package:swipe_cards/swipe_cards.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 List<SwipeItem> buildSwipeItems(
     List<Product> items,
@@ -48,6 +52,7 @@ class SwipeableProducts extends StatefulWidget {
       cardBuilder;
   final String emptyString;
   final String situation;
+  final bool showAnimation;
 
   SwipeableProducts({
     Key? key,
@@ -58,6 +63,7 @@ class SwipeableProducts extends StatefulWidget {
     required this.cardBuilder,
     required this.situation,
     this.emptyString = "Sorry, but we don't have products yet",
+    this.showAnimation = true,
   }) : super(key: key);
 
   @override
@@ -68,6 +74,7 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
   List<SwipeItem> _swipeItems = <SwipeItem>[];
   MatchEngine? _matchEngine;
   bool isStateEmpty = false;
+  late bool _showAnimation = GlobalManager().showAnimation;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
 
   @override
@@ -136,46 +143,57 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
       ));
     }
 
-    return Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
-        child: Container(
-            child: SwipeCards(
-          onStackFinished: fetchItems,
-          matchEngine: _matchEngine!,
-          itemBuilder: (BuildContext context, int index) {
-            return widget.cardBuilder(
-                context,
-                _swipeItems[index].content as Product,
-                currentIndex.value == index);
-          },
-          leftSwipeAllowed: true,
-          rightSwipeAllowed: true,
-          upSwipeAllowed: true,
-          fillSpace: true,
-          itemChanged: (SwipeItem item, int index) {
-            if (index != currentIndex.value) {
-              currentIndex.value = index;
-            }
-          },
-          likeTag: Container(
-            margin: const EdgeInsets.all(15.0),
-            padding: const EdgeInsets.all(3.0),
-            decoration: BoxDecoration(border: Border.all(color: Colors.green)),
-            child: Text('Like'),
-          ),
-          nopeTag: Container(
-            margin: const EdgeInsets.all(15.0),
-            padding: const EdgeInsets.all(3.0),
-            decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-            child: Text('Nope'),
-          ),
-          superLikeTag: Container(
-            margin: const EdgeInsets.all(15.0),
-            padding: const EdgeInsets.all(3.0),
-            decoration: BoxDecoration(border: Border.all(color: Colors.orange)),
-            child: Text('Request'),
-          ),
-        )));
+    return Stack(children: [
+      Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
+          child: Container(
+              child: SwipeCards(
+            onStackFinished: fetchItems,
+            matchEngine: _matchEngine!,
+            itemBuilder: (BuildContext context, int index) {
+              return widget.cardBuilder(
+                  context,
+                  _swipeItems[index].content as Product,
+                  currentIndex.value == index);
+            },
+            leftSwipeAllowed: true,
+            rightSwipeAllowed: true,
+            upSwipeAllowed: true,
+            fillSpace: true,
+            itemChanged: (SwipeItem item, int index) {
+              if (index != currentIndex.value) {
+                currentIndex.value = index;
+              }
+            },
+            likeTag: Container(
+              margin: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(3.0),
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.green)),
+              child: Text('Like'),
+            ),
+            nopeTag: Container(
+              margin: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(3.0),
+              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+              child: Text('Nope'),
+            ),
+            superLikeTag: Container(
+              margin: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(3.0),
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.orange)),
+              child: Text('Request'),
+            ),
+          ))),
+      if (_showAnimation)
+        SwipeTutorialOverlay(onFinished: () {
+          setState(() {
+            this._showAnimation = false;
+          });
+          GlobalManager().setShowAnimation(false);
+        }),
+    ]);
   }
 }

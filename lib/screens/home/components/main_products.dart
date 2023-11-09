@@ -22,7 +22,6 @@ class _MainProductsState extends State<MainProducts> {
   late GraphQLPaginationService _paginationService;
 
   void _initializePaginationService() {
-    print(widget.selectedTag?.id);
     _paginationService = new GraphQLPaginationService(
       queryName: "getProductsFeed",
       variables: {"limit": 5, "tag_id": widget.selectedTag?.id},
@@ -93,6 +92,7 @@ class _MainProductsState extends State<MainProducts> {
         onSwipeLeft: (int id) => saveLike(id, false, context),
         onSwipeUp: _onSwipeUp,
         nextPage: fetchData,
+        showAnimation: true,
         cardBuilder: (context, product, isInFront) {
           return ProductCard(
               situation: situation,

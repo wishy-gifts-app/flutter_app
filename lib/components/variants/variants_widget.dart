@@ -48,7 +48,7 @@ Map<String, dynamic> getVariantsById(int variantId, List<Variant> variants) {
 
 class VariantsWidget extends StatefulWidget {
   final String situation, buttonText;
-  final int? productId, variantId;
+  final int? productId, variantId, recipientId;
   final String? productTitle;
   final bool withBuyButton;
   final List<Variant> productVariants;
@@ -64,6 +64,7 @@ class VariantsWidget extends StatefulWidget {
     this.buttonText = "Buy Now",
     this.variantId,
     this.withBuyButton = true,
+    this.recipientId,
   }) : super(key: key);
 
   @override
@@ -98,7 +99,11 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     Navigator.pushNamed(
       context,
       CheckoutScreen.routeName,
-      arguments: {'variant': selectedVariant, 'productId': widget.productId},
+      arguments: {
+        'variant': selectedVariant,
+        'productId': widget.productId,
+        'recipientId': widget.recipientId
+      },
     );
   }
 

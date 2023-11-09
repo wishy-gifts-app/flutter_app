@@ -3,8 +3,12 @@ import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 
-void showVariantsModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants) {
+void showVariantsModal(
+  BuildContext context,
+  int productId,
+  String productTitle,
+  List<Variant> variants,
+) {
   showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -29,7 +33,8 @@ void showVariantsModal(BuildContext context, int productId, String productTitle,
             VariantsWidget(
                 productId: productId,
                 productTitle: productTitle,
-                productVariants: variants)
+                productVariants: variants,
+                recipientId: 1)
           ],
         );
       });

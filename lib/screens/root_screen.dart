@@ -22,7 +22,7 @@ class _RootScreenState extends State<RootScreen> {
   void _initUniLinks() async {
     try {
       Uri? initialUri = await getInitialUri();
-      print(initialUri);
+
       if (initialUri != null && initialUri.path == '/requests') {
         GlobalManager().navigateToRequest(true);
       }

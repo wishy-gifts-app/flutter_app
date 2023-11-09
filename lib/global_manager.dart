@@ -9,6 +9,7 @@ class GlobalManager {
   bool? profileCompleted;
   bool shouldNavigateToRequest = false;
   bool? isDeliveryAvailable;
+  bool showAnimation = false;
 
   factory GlobalManager() {
     return _singleton;
@@ -57,6 +58,10 @@ class GlobalManager {
 
   void navigateToRequest(bool value) {
     shouldNavigateToRequest = value;
+  }
+
+  void setShowAnimation(bool value) {
+    showAnimation = value;
   }
 
   void setDeliveryAvailability(bool value) {

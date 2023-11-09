@@ -42,8 +42,7 @@ class _ColorDotsState extends State<ColorDots> {
     if (widget.chosenVariant != null)
       selectedColor =
           widget.values.indexWhere((item) => item == widget.chosenVariant);
-    print(selectedColor);
-    print(widget.chosenVariant);
+
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),

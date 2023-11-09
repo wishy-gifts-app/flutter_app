@@ -1,4 +1,9 @@
+import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/variants/variants_modal.dart';
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -36,6 +41,64 @@ class _RequestProductsState extends State<RequestProductsList> {
       );
 
       return false;
+    }
+  }
+
+  Future<bool> removeRequest(Request request, BuildContext context) async {
+    setState(() {
+      requests.remove(request);
+    });
+
+    try {
+      graphQLQueryHandler("updateRequestById", {
+        "show_request": false,
+        "id": request.id,
+      });
+
+      return true;
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error to remove the request. Please try again.')),
+      );
+
+      return false;
+    }
+  }
+
+  void _onCheckoutPressed(Request request) async {
+    if (!GlobalManager().isDeliveryAvailable!) {
+      await DeliveryAvailabilityDialog.show(context);
+
+      if (!GlobalManager().isDeliveryAvailable!) {
+        return;
+      }
+    }
+
+    if (request.product.variants!.length > 1) {
+      showVariantsModal(
+        context,
+        request.product.id,
+        request.product.title,
+        request.product.variants!,
+      );
+    } else {
+      AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
+          properties: {
+            "Product Id": request.product.id,
+            "Situation": "Requested Product",
+            "Variants Exist": false
+          });
+
+      Navigator.pushNamed(
+        context,
+        CheckoutScreen.routeName,
+        arguments: {
+          'variant': request.product.variants![0],
+          'productId': request.product.id,
+          'recipientId': request.requesterId
+        },
+      );
     }
   }
 
@@ -123,6 +186,7 @@ class _RequestProductsState extends State<RequestProductsList> {
                       arguments: ProductDetailsArguments(
                           product: request.product,
                           variantId: request.variantId,
+                          recipientId: request.requesterId,
                           buttonText:
                               request.type == RequestType.requestFromUser
                                   ? "Buy For " + request.otherUserName
@@ -218,9 +282,7 @@ class _RequestProductsState extends State<RequestProductsList> {
     if (request.type == RequestType.requestFromUser) {
       actions.add(
         SlidableAction(
-          onPressed: (context) {
-            // Implement buy functionality here
-          },
+          onPressed: (context) => _onCheckoutPressed(request),
           backgroundColor: Colors.green,
           foregroundColor: Colors.white,
           icon: Icons.shopping_cart,
@@ -230,12 +292,7 @@ class _RequestProductsState extends State<RequestProductsList> {
     }
     actions.add(
       SlidableAction(
-        onPressed: (context) {
-          // Implement remove functionality here
-          setState(() {
-            requests.remove(request);
-          });
-        },
+        onPressed: (context) => removeRequest(request, context),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         icon: Icons.delete,

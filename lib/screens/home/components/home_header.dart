@@ -29,7 +29,6 @@ class _HomeHeaderState extends State<HomeHeader> {
     final result = await _paginationServices.run();
 
     if (mounted && result["data"] != null) {
-      print(_tags.length);
       setState(() {
         _tags = (result["data"] as List<dynamic>)
             .map((item) => Tag.fromJson(item))

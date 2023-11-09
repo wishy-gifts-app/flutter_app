@@ -18,7 +18,6 @@ class ProductDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(product.isLike);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -14,7 +14,7 @@ class _PersonalInfoTabState extends State<PersonalInfoTab> {
   User? _userData;
   GraphQLPaginationService _paginationServices = new GraphQLPaginationService(
     queryName: "getUserAddresses",
-    variables: {"limit": 20},
+    variables: {"limit": 20, "user_id": GlobalManager().userId},
   );
 
   @override

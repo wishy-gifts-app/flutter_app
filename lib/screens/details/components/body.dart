@@ -16,14 +16,15 @@ import 'product_images.dart';
 class Body extends StatelessWidget {
   final situation = "product_details";
   final Product product;
-  final int? variantId;
+  final int? variantId, recipientId;
   final String buttonText;
 
   Body(
       {Key? key,
       required this.product,
       this.buttonText = "Buy Now",
-      this.variantId})
+      this.variantId,
+      this.recipientId})
       : super(key: key);
   final firstColor = Colors.white;
   final secondColor = Color(0xFFF6F7F9);
@@ -58,7 +59,8 @@ class Body extends StatelessWidget {
                     productTitle: product.title,
                     productVariants: product.variants!,
                     buttonText: this.buttonText,
-                    variantId: this.variantId)
+                    variantId: this.variantId,
+                    recipientId: recipientId)
               else
                 buildButton(secondColor, context)
             ],
@@ -99,7 +101,8 @@ class Body extends StatelessWidget {
               CheckoutScreen.routeName,
               arguments: {
                 'variant': product.variants![0],
-                'productId': product.id
+                'productId': product.id,
+                'recipientId': recipientId
               },
             );
           },

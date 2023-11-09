@@ -428,4 +428,17 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'updateRequestById': """
+    mutation updateRequestById(
+      \$id: Int!,    
+      \$show_request: Boolean!,
+    ) {
+      updateRequestById(
+        id: \$id,
+        show_request: \$show_request,
+      ) {
+        id
+      }
+    }
+  """,
 };

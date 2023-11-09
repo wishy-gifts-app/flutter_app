@@ -12,12 +12,10 @@ import 'dart:async';
 
 class PurchaseForm extends StatefulWidget {
   final int variantId;
-  final bool isGift;
   final int? recipientId;
 
   PurchaseForm({
     required this.variantId,
-    this.isGift = false,
     this.recipientId,
   });
 
@@ -41,8 +39,6 @@ class _PurchaseFormState extends State<PurchaseForm> {
       this.userId = userId;
     });
 
-    print(userId);
-    print(_recipientId);
     if (this.userId != null) {
       setState(() {
         this._recipientId = this.userId!;
@@ -112,7 +108,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
   }
 
   void initState() {
-    _isGift = widget.isGift;
+    _isGift = widget.recipientId != null;
     _recipientId = _isGift && widget.recipientId != null
         ? widget.recipientId!
         : GlobalManager().userId!;

@@ -8,6 +8,11 @@ import 'package:Wishy/screens/home/home_screen.dart';
 class RouterUtils {
   static void routeToHomePage(
       BuildContext context, bool? profileCompleted, String? token) {
+    GlobalManager().setShowAnimation(token == null ||
+        token.isEmpty ||
+        profileCompleted == null ||
+        !profileCompleted);
+
     if (token == null || token.isEmpty) {
       Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     } else if (profileCompleted == null || !profileCompleted) {

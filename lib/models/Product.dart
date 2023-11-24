@@ -12,6 +12,7 @@ class Product extends Identifiable {
   final bool isAvailable;
   final int? followerId;
   final List<String> tags;
+  final DateTime? deletedAt;
 
   Product({
     required this.id,
@@ -25,6 +26,7 @@ class Product extends Identifiable {
     this.isLike = null,
     this.followerId = null,
     this.followerName = null,
+    this.deletedAt = null,
     required this.isAvailable,
     required this.tags,
   });
@@ -50,7 +52,8 @@ class Product extends Identifiable {
               .map((variantJson) => Variant.fromJson(variantJson))
               .toList()
           : null,
-      vendorName: convertValue<String?>(json, 'vendorName', false),
+      vendorName: convertValue<String?>(json, 'vendor_name', false),
+      deletedAt: convertValue<DateTime?>(json, 'deleted_at', false),
       tags: (json['tags'] as List<dynamic>)
           .map((tag) => tag.toString())
           .toList(), // You can adjust this based on the actual data structure

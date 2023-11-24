@@ -8,6 +8,7 @@ void showVariantsModal(
   int productId,
   String productTitle,
   List<Variant> variants,
+  int? recipientId,
 ) {
   showModalBottomSheet<void>(
       context: context,
@@ -34,7 +35,7 @@ void showVariantsModal(
                 productId: productId,
                 productTitle: productTitle,
                 productVariants: variants,
-                recipientId: 1)
+                recipientId: recipientId)
           ],
         );
       });

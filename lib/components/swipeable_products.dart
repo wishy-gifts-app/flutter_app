@@ -90,7 +90,7 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
   }
 
   void onSwipeLeft(int productId) {
-    widget.onSwipeRight(productId);
+    widget.onSwipeLeft(productId);
     AnalyticsService.trackEvent(analyticEvents["SWIPED_LEFT"]!,
         properties: {"Product Id": productId, "Situation": widget.situation});
   }

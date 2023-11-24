@@ -64,7 +64,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                      speed: const Duration(milliseconds: 300),
+                      speed: const Duration(milliseconds: 100),
                     ),
                   ],
                   totalRepeatCount: 1,

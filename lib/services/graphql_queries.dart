@@ -196,6 +196,7 @@ const Map<String, String> graphqlQueries = {
             shop_id
             like_created_at
             tags
+            deleted_at
             variants {
               id
               title
@@ -334,8 +335,9 @@ const Map<String, String> graphqlQueries = {
       \$variant_id: Int!,
       \$quantity: Int!,
       \$address_id: Int!,
+      \$recipient_id: Int,
     ) {
-      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id) {
+      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, recipient_id: \$recipient_id) {
         payment_url
       }
     }

@@ -87,12 +87,8 @@ class _ProductCardState extends State<ProductCard> {
     }
 
     if (widget.product.variants!.length > 1) {
-      showVariantsModal(
-        context,
-        widget.product.id,
-        widget.product.title,
-        widget.product.variants!,
-      );
+      showVariantsModal(context, widget.product.id, widget.product.title,
+          widget.product.variants!, null);
     } else {
       AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
           properties: {

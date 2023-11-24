@@ -68,6 +68,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
         "variant_id": widget.variantId,
         "quantity": 1,
         "address_id": _addresses![_selectedAddressIndex].id,
+        "recipient_id": _isGift ? _recipientId : null
       });
 
       if (result != null && result["payment_url"] != null) {
@@ -199,9 +200,11 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 tooltip: "Add address",
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _phoneValidationCompleter = Completer<bool>();
-                    _formKey.currentState!.save();
-                    await _phoneValidationCompleter!.future;
+                    if (_isGift) {
+                      _phoneValidationCompleter = Completer<bool>();
+                      _formKey.currentState!.save();
+                      await _phoneValidationCompleter!.future;
+                    }
 
                     if (_recipientId != null ||
                         (name != null && phoneNumber != null)) {

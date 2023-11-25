@@ -1,3 +1,4 @@
+import 'package:Wishy/components/support.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,7 @@ class _HomeHeaderState extends State<HomeHeader> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            SupportWidget(),
             Text(
               "Wishy",
               style: TextStyle(
@@ -76,7 +78,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.filter_list), // Filter icon
+              icon: Icon(Icons.filter_list),
               onPressed: _showFilterDialog,
             ),
           ],

@@ -13,11 +13,14 @@ class LikesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height,
-      child: Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
-          child: Text("Wishy")),
-    );
+        height: height,
+        child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: getProportionateScreenWidth(20)),
+            child: Text("Wishy",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: getProportionateScreenWidth(16),
+                ))));
   }
 }

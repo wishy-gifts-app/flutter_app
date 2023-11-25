@@ -3,7 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:Wishy/constants.dart';
-import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:collection/collection.dart';
@@ -155,7 +154,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                       mode: Mode.overlay,
                       language: "en",
                       types: ["address"],
-                      components: [Component(Component.country, "us")],
+                      components: [Component(Component.country, "in")],
                       strictbounds: false,
                       decoration: InputDecoration(
                         hintText: "Search",

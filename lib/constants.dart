@@ -60,7 +60,13 @@ const String kReasonNullError = "Please Enter the reason";
 const String kPhoneNumberNullError = "Please Enter your phone number";
 const String kAddressNullError = "Please Enter your address";
 const String kInvalidPhoneNumberError = "Invalid phone number";
-
+const marketDetails = {
+  "symbol": "₹",
+  "country": "India",
+  "currency": "indian_rupee",
+  "short": "RS"
+};
+const String privacyURL = "https://www.wishy.store/privacy";
 final otpInputDecoration = InputDecoration(
   contentPadding:
       EdgeInsets.symmetric(vertical: getProportionateScreenWidth(15)),

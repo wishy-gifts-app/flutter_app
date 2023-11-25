@@ -10,6 +10,7 @@ import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:rounded_background_text/rounded_background_text.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({
@@ -161,7 +162,7 @@ class _ProductCardState extends State<ProductCard> {
               children: [
                 if (widget.isFullScreen)
                   Positioned(
-                      top: 20,
+                      top: 13,
                       left: 0,
                       right: 0,
                       child: Align(
@@ -179,7 +180,9 @@ class _ProductCardState extends State<ProductCard> {
                               child: Container(
                                 width: 10,
                                 height: 10,
-                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -246,7 +249,7 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 Positioned(
                   bottom: widget.isFullScreen ? 30 : 60,
-                  left: 20,
+                  left: 10,
                   width: MediaQuery.of(context).size.width *
                       (widget.isFullScreen ? 0.6 : 0.36),
                   child: Column(
@@ -255,13 +258,37 @@ class _ProductCardState extends State<ProductCard> {
                     children: [
                       DeliveryAvailabilityIcon(),
                       SizedBox(height: 5),
-                      Text(
-                        "\$ ${widget.product.price}",
+                      RoundedBackgroundText(
+                        "${marketDetails["symbol"]}${widget.product.variants?[0].price}",
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.5),
+                              offset: Offset(1, 1),
+                              blurRadius: 2,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 5),
-                      Text(
+                      RoundedBackgroundText(
                         widget.product.title,
                         maxLines: 2,
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.5),
+                              offset: Offset(1, 1),
+                              blurRadius: 2,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

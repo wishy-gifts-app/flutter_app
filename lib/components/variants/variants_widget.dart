@@ -75,6 +75,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
   Map<String, dynamic> variants = {};
   final firstColor = Colors.white;
   final secondColor = Color(0xFFF6F7F9);
+  late Variant selectedVariant;
 
   void _onVariantChange(String type, String value) {
     if (widget.onVariantChange != null) widget.onVariantChange!(type, value);
@@ -82,12 +83,13 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     setState(() {
       variants[type] = value;
     });
+
+    setState(() {
+      selectedVariant = getSelectedVariant(widget.productVariants, variants);
+    });
   }
 
   void _onBuyPressed(BuildContext context) async {
-    Variant selectedVariant =
-        getSelectedVariant(widget.productVariants, variants);
-
     if (!GlobalManager().isDeliveryAvailable!) {
       await DeliveryAvailabilityDialog.show(context);
 
@@ -100,11 +102,17 @@ class _VariantsWidgetState extends State<VariantsWidget> {
       context,
       CheckoutScreen.routeName,
       arguments: {
-        'variant': selectedVariant,
+        'variant': this.selectedVariant,
         'productId': widget.productId,
         'recipientId': widget.recipientId
       },
     );
+  }
+
+  @override
+  void initState() {
+    selectedVariant = widget.productVariants[0];
+    super.initState();
   }
 
   @override
@@ -114,7 +122,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     final Map<String, dynamic>? chosenVariant = widget.variantId != null
         ? getVariantsById(widget.variantId!, widget.productVariants)
         : null;
-    print(chosenVariant);
+
     return (buildVariantsSectionWithButton(
         variantsWithChildren!, secondColor, context, chosenVariant));
   }
@@ -130,7 +138,8 @@ class _VariantsWidgetState extends State<VariantsWidget> {
           top: getProportionateScreenWidth(15),
         ),
         child: DefaultButton(
-          text: widget.buttonText,
+          text:
+              "${widget.buttonText} ${marketDetails["symbol"]}${this.selectedVariant.price}",
           eventName: analyticEvents["CHECKOUT_PRESSED"]!,
           eventData: {
             "Product Id": widget.productId,

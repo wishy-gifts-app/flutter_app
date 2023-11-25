@@ -64,7 +64,8 @@ class _OtpFormState extends State<OtpForm> {
       await GlobalManager().setParams(
           newToken: result.token,
           newProfileCompleted: result.profileCompleted,
-          newUserId: result.userId);
+          newUserId: result.userId,
+          newUsername: result.username);
       AnalyticsService.registerSuperProperties({"User Id": result.userId});
 
       AnalyticsService.trackEvent(

@@ -196,7 +196,6 @@ const Map<String, String> graphqlQueries = {
             shop_id
             like_created_at
             tags
-            deleted_at
             variants {
               id
               title

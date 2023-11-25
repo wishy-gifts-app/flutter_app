@@ -35,30 +35,36 @@ class _VariantPickerState extends State<VariantPicker> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("${widget.type}:"),
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "${widget.type[0].toUpperCase()}${widget.type.substring(1)}:",
+              )),
           SizedBox(height: getProportionateScreenWidth(10)),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: List.generate(
-              widget.values.length,
-              (index) => GestureDetector(
-                onTap: widget.chosenVariant == null
-                    ? () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                        widget.onVariantChange(
-                            widget.type, widget.values[index]);
-                      }
-                    : null,
-                child: VariantDot(
-                  value: widget.values[index],
-                  isSelected: index == selectedIndex,
+          Align(
+              alignment: Alignment.center,
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: List.generate(
+                  widget.values.length,
+                  (index) => GestureDetector(
+                    onTap: widget.chosenVariant == null
+                        ? () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                            widget.onVariantChange(
+                                widget.type, widget.values[index]);
+                          }
+                        : null,
+                    child: VariantDot(
+                      value: widget.values[index],
+                      isSelected: index == selectedIndex,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
+              )),
         ],
       ),
     );

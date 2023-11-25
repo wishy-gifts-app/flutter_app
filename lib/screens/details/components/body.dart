@@ -81,7 +81,8 @@ class Body extends StatelessWidget {
           top: getProportionateScreenWidth(15),
         ),
         child: DefaultButton(
-          text: this.buttonText,
+          text:
+              "${this.buttonText} ${marketDetails["symbol"]}${product.variants![0].price}",
           eventName: analyticEvents["CHECKOUT_PRESSED"]!,
           eventData: {
             "Product Id": product.id,

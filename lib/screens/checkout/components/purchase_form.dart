@@ -1,5 +1,6 @@
 import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/shopify_payment_widget.dart';
 import 'package:Wishy/components/location_dialog_form.dart';
@@ -80,7 +81,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
               child: CheckoutWebView(checkoutUrl: result["payment_url"]),
             );
           },
-        );
+        ).then((_) {
+          Navigator.pushNamed(
+            context,
+            HomeScreen.routeName,
+          );
+        });
+        ;
       } else {
         throw Exception('Payment URL not available');
       }
@@ -227,7 +234,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                     }
                   }
                 }),
-            SizedBox(height: getProportionateScreenHeight(10)),
+            SizedBox(height: getProportionateScreenHeight(20)),
             PaymentButton(
               onSubmit: onSubmit,
               enable: _addresses != null && _addresses!.length > 0,

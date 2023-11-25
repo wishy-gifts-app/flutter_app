@@ -1,3 +1,4 @@
+import 'package:Wishy/services/opt_services.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/size_config.dart';
@@ -6,6 +7,7 @@ import 'otp_form.dart';
 
 class Body extends StatelessWidget {
   final String phoneNumber;
+  final otpServices = OTPServices();
 
   Body({required this.phoneNumber});
 
@@ -25,14 +27,23 @@ class Body extends StatelessWidget {
                 style: headingStyle,
               ),
               Text("We sent your code to ${phoneNumber}"),
-              buildTimer(),
+              // buildTimer(),
               OtpForm(
                 phoneNumber: phoneNumber,
               ),
               SizedBox(height: SizeConfig.screenHeight * 0.1),
               GestureDetector(
                 onTap: () {
-                  // OTP code resend
+                  try {
+                    otpServices.sendOTPService(phoneNumber);
+                  } catch (error) {
+                    print(error);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Failed to resend OTP. Please try again.')),
+                    );
+                  }
                 },
                 child: Text(
                   "Resend OTP Code",

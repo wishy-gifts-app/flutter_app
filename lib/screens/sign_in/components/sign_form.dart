@@ -1,3 +1,4 @@
+import 'package:Wishy/components/privacy.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
@@ -5,6 +6,7 @@ import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/form_error.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:Wishy/services/opt_services.dart';
+import 'package:flutter/gestures.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -150,7 +152,38 @@ class _SignFormState extends State<SignForm> {
               buildPhoneNumberFormField(),
               SizedBox(height: getProportionateScreenHeight(30)),
               FormError(errors: errors),
-              SizedBox(height: getProportionateScreenHeight(40)),
+              SizedBox(height: getProportionateScreenHeight(30)),
+              SizedBox(height: getProportionateScreenHeight(30)),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.bodySmall,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text:
+                          "By continuing you confirm that you agree with our ",
+                    ),
+                    TextSpan(
+                      text: "Terms and Conditions",
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return Dialog.fullscreen(child: PrivacyWebView());
+                            },
+                          );
+                        },
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: getProportionateScreenHeight(10)),
               DefaultButton(
                 eventName: analyticEvents["PHONE_SIGN_IN_SUBMITTED"]!,
                 text: "continue",

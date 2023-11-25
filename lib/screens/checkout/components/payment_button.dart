@@ -5,6 +5,7 @@ import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/components/buy_as_gift_form.dart';
 import 'package:Wishy/screens/checkout/components/buy_for_yourself_form.dart';
 import 'package:Wishy/size_config.dart';
+import 'package:flutter/gestures.dart';
 
 class PaymentButton extends StatelessWidget {
   final onSubmit;
@@ -16,12 +17,27 @@ class PaymentButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          "By continuing your confirm that you agree \nwith our Term and Condition",
+        RichText(
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall,
+          text: TextSpan(
+            style: Theme.of(context).textTheme.bodySmall,
+            children: <TextSpan>[
+              TextSpan(
+                text:
+                    "By completing this purchase, you confirm that you agree with our ",
+              ),
+              TextSpan(
+                text: "Purchase and Refund Terms",
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()..onTap = () {},
+              ),
+            ],
+          ),
         ),
-        SizedBox(height: getProportionateScreenHeight(20)),
+        SizedBox(height: getProportionateScreenHeight(10)),
         DefaultButton(text: "Go to payment", press: onSubmit, enable: enable),
       ],
     );

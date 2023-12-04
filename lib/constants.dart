@@ -20,9 +20,21 @@ const analyticEvents = {
   "PRODUCT_VIEWED": "Product Viewed",
   "PRODUCT_DETAILS_PRESSED": "Product Details Pressed",
   "SWIPED_RIGHT": "Swiped Right",
-  "SWIPED_LEFT": "Swiped Left",
-  "SWIPED_UP": "Swiped Up",
+  "SWIPED_LEFT": "Start Request",
+  "START_REQUEST": "Swiped Up",
+  "SHOW_MORE_PRODUCT_DESCRIPTION": "Show More Product Description",
   "INSTAGRAM_AUTH_SUBMITTED": "Instagram Auth Submitted",
+  "ADDRESS_ADDED": "Address Added",
+  "ADD_ADDRESS_PRESSED": "Add Address Pressed",
+  "PAY_PRESSED": "Pay Pressed",
+  "NEW_PURCHASE": "New Purchase",
+  "PRODUCT_REQUESTED": "Product Requested",
+  "REQUEST_VARIANT_PICKED": "Request Variant Picked",
+  "FILTER_PRODUCTS_FEED": "Filter Product Feed",
+  "SUPPORT_PRESSED": "Support Pressed",
+  "REQUEST_REMOVED": "Request Removed",
+  "PAGE_OPENED": "Page Opened",
+  "PROFILE_TAB_PRESSED": "Profile Tab Pressed",
 };
 
 const kPrimaryColor = Colors.black;

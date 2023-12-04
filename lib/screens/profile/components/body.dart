@@ -1,8 +1,11 @@
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/screens/profile/components/profile_pic.dart';
 import 'personal_info_tab.dart';
 import 'orders_tab.dart';
+
+final tabs = ["Orders", "Personal Info"];
 
 class Body extends StatefulWidget {
   @override
@@ -12,10 +15,20 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   TabController? _controller;
 
+  void _handleTabSelection() {
+    if (_controller!.indexIsChanging) {
+      AnalyticsService.trackEvent(analyticEvents["PROFILE_TAB_PRESSED"]!,
+          properties: {
+            "Tab": tabs[_controller!.index],
+          });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _controller = TabController(length: 2, vsync: this);
+    _controller!.addListener(_handleTabSelection);
   }
 
   @override
@@ -29,8 +42,8 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
           indicatorColor: kPrimaryColor,
           controller: _controller,
           tabs: [
-            Tab(text: "Orders"),
-            Tab(text: "Personal Info"),
+            Tab(text: tabs[0]),
+            Tab(text: tabs[1]),
           ],
         ),
         Expanded(

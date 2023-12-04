@@ -6,6 +6,7 @@ import 'package:Wishy/constants.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:collection/collection.dart';
+import 'package:Wishy/components/default_button.dart';
 
 AddressComponent? getSpecificComponent(PlacesDetailsResponse detail, key) {
   if (key is String) {
@@ -260,9 +261,11 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16),
-        child: TextButton(
-          child: Text('Add', style: TextStyle(color: kTextColor)),
-          onPressed: _onSubmit,
+        child: DefaultButton(
+          text: 'Add',
+          press: _onSubmit,
+          eventName: analyticEvents["ADDRESS_ADDED"],
+          eventData:{ "Is Gift": widget.userId ==null}
         ),
       ),
     );

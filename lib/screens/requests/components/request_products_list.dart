@@ -18,6 +18,7 @@ class RequestProductsList extends StatefulWidget {
 }
 
 class _RequestProductsState extends State<RequestProductsList> {
+  final situation = "request_product_card";
   List<Request?> requests = [];
   bool isLoading = false;
   ScrollController _scrollController = ScrollController();
@@ -48,6 +49,13 @@ class _RequestProductsState extends State<RequestProductsList> {
     setState(() {
       requests.remove(request);
     });
+    AnalyticsService.trackEvent(analyticEvents["REQUEST_REMOVED"]!,
+        properties: {
+          "Product Id": request.product.id,
+          "Request Id": request.id,
+          "Requester Id": request.requesterId,
+          "Recipient Id": request.recipientId,
+        });
 
     try {
       graphQLQueryHandler("updateRequestById", {
@@ -67,6 +75,15 @@ class _RequestProductsState extends State<RequestProductsList> {
   }
 
   void _onCheckoutPressed(Request request) async {
+    AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
+        properties: {
+          "Product Id": request.product.id,
+          "Situation": situation,
+          "Variants Exist": request.product.variants!.length > 1,
+          "Variant Picked": false,
+          "Delivery Availability": GlobalManager().isDeliveryAvailable
+        });
+
     if (!GlobalManager().isDeliveryAvailable!) {
       await DeliveryAvailabilityDialog.show(context);
 
@@ -77,13 +94,14 @@ class _RequestProductsState extends State<RequestProductsList> {
 
     if (request.product.variants!.length > 1) {
       showVariantsModal(context, request.product.id, request.product.title,
-          request.product.variants!, null);
+          request.product.variants!, null, situation);
     } else {
       AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
           properties: {
             "Product Id": request.product.id,
-            "Situation": "Requested Product",
-            "Variants Exist": false
+            "Situation": situation,
+            "Variants Exist": false,
+            "Variant Picked": false,
           });
 
       Navigator.pushNamed(
@@ -169,13 +187,13 @@ class _RequestProductsState extends State<RequestProductsList> {
           Request request = requests[index]!;
           return GestureDetector(
               onTap: () => {
-                    // AnalyticsService.trackEvent(
-                    //     analyticEvents["PRODUCT_DETAILS_PRESSED"]!,
-                    //     properties: {
-                    //       "Product Id": widget.product.id,
-                    //       'Product Title': widget.product.title,
-                    //       "Situation": widget.situation
-                    //     }),
+                    AnalyticsService.trackEvent(
+                        analyticEvents["PRODUCT_DETAILS_PRESSED"]!,
+                        properties: {
+                          "Product Id": request.product.id,
+                          'Product Title': request.product.title,
+                          "Situation": situation
+                        }),
                     Navigator.pushNamed(
                       context,
                       DetailsScreen.routeName,

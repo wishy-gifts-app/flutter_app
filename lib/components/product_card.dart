@@ -69,13 +69,20 @@ class _ProductCardState extends State<ProductCard> {
           'Image Url': widget.product.images.isNotEmpty
               ? widget.product.images[_currentImageIndex].url
               : null,
-          "Situation": widget.situation
+          "Situation": widget.situation,
+          "Delivery Availability": GlobalManager().isDeliveryAvailable
         });
   }
 
   void _onRequestPressed() {
+    AnalyticsService.trackEvent(analyticEvents["START_REQUEST"]!, properties: {
+      "Product Id": widget.product.id,
+      "Situation": widget.situation,
+      "Delivery Availability": GlobalManager().isDeliveryAvailable
+    });
+
     showRequestModal(context, widget.product.id, widget.product.title,
-        widget.product.variants ?? []);
+        widget.product.variants ?? [], widget.situation);
   }
 
   void _onCheckoutPressed() async {
@@ -87,17 +94,19 @@ class _ProductCardState extends State<ProductCard> {
       }
     }
 
+    AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
+        properties: {
+          "Product Id": widget.product.id,
+          "Situation": widget.situation,
+          "Variants Exist": widget.product.variants!.length > 1,
+          "Variant Picked": false,
+          "Delivery Availability": GlobalManager().isDeliveryAvailable
+        });
+
     if (widget.product.variants!.length > 1) {
       showVariantsModal(context, widget.product.id, widget.product.title,
-          widget.product.variants!, null);
+          widget.product.variants!, null, widget.situation);
     } else {
-      AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
-          properties: {
-            "Product Id": widget.product.id,
-            "Situation": widget.situation,
-            "Variants Exist": false
-          });
-
       Navigator.pushNamed(
         context,
         CheckoutScreen.routeName,
@@ -121,7 +130,8 @@ class _ProductCardState extends State<ProductCard> {
                 properties: {
                   'Product Id': widget.product.id,
                   'Product Title': widget.product.title,
-                  "Situation": widget.situation
+                  "Situation": widget.situation,
+                  "Delivery Availability": GlobalManager().isDeliveryAvailable
                 });
 
             _sendImageViewedEvent();
@@ -137,7 +147,8 @@ class _ProductCardState extends State<ProductCard> {
                 properties: {
                   "Product Id": widget.product.id,
                   'Product Title': widget.product.title,
-                  "Situation": widget.situation
+                  "Situation": widget.situation,
+                  "Delivery Availability": GlobalManager().isDeliveryAvailable
                 }),
             Navigator.pushNamed(
               context,
@@ -209,7 +220,7 @@ class _ProductCardState extends State<ProductCard> {
                         ? Image.network(
                             widget.product.images[_currentImageIndex].url,
                             fit: BoxFit.contain,
-                            height: widget.isFullScreen ? null : 130,
+                            height: widget.isFullScreen ? null : 160,
                           )
                         : Text(
                             "Image not available",
@@ -220,7 +231,7 @@ class _ProductCardState extends State<ProductCard> {
                     child: Align(
                       alignment: widget.isFullScreen
                           ? Alignment.centerLeft
-                          : Alignment(-1, -0.4),
+                          : Alignment(-1.1, -0.3),
                       child: IconButton(
                         icon: Icon(Icons.arrow_back),
                         onPressed: _showPreviousImage,
@@ -235,7 +246,7 @@ class _ProductCardState extends State<ProductCard> {
                     child: Align(
                       alignment: widget.isFullScreen
                           ? Alignment.centerRight
-                          : Alignment(1, -0.4),
+                          : Alignment(1.1, -0.3),
                       child: IconButton(
                         icon: Icon(Icons.arrow_forward),
                         onPressed: _showNextImage,
@@ -249,47 +260,55 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 Positioned(
                   bottom: widget.isFullScreen ? 30 : 60,
-                  left: 10,
+                  left: 5,
                   width: MediaQuery.of(context).size.width *
                       (widget.isFullScreen ? 0.6 : 0.36),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      DeliveryAvailabilityIcon(),
-                      SizedBox(height: 5),
-                      RoundedBackgroundText(
-                        "${marketDetails["symbol"]}${widget.product.variants?[0].price}",
-                        backgroundColor: Colors.black.withOpacity(0.5),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.5),
-                              offset: Offset(1, 1),
-                              blurRadius: 2,
-                            ),
-                          ],
-                        ),
+                      DeliveryAvailabilityIcon(
+                        size: widget.isFullScreen ? 20 : 15,
                       ),
-                      SizedBox(height: 5),
-                      RoundedBackgroundText(
-                        widget.product.title,
-                        maxLines: 2,
-                        backgroundColor: Colors.black.withOpacity(0.5),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.5),
-                              offset: Offset(1, 1),
-                              blurRadius: 2,
+                      SizedBox(height: 2),
+                      Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                          child: RoundedBackgroundText(
+                            "${marketDetails["symbol"]}${widget.product.variants?[0].price}",
+                            backgroundColor: Colors.black.withOpacity(0.5),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: widget.isFullScreen ? 16 : 11,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  offset: Offset(1, 1),
+                                  blurRadius: 2,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          )),
+                      SizedBox(height: 5),
+                      Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                          child: RoundedBackgroundText(
+                            widget.product.title,
+                            maxLines: 2,
+                            backgroundColor: Colors.black.withOpacity(0.5),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: widget.isFullScreen ? 16 : 10,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  offset: Offset(1, 1),
+                                  blurRadius: 2,
+                                ),
+                              ],
+                            ),
+                          )),
                     ],
                   ),
                 ),

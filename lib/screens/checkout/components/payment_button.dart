@@ -10,8 +10,14 @@ import 'package:flutter/gestures.dart';
 class PaymentButton extends StatelessWidget {
   final onSubmit;
   final bool enable;
+  final double price;
+  final Map<String, dynamic>? eventData;
 
-  PaymentButton({required this.onSubmit, this.enable = true});
+  PaymentButton(
+      {required this.price,
+      required this.onSubmit,
+      this.enable = true,
+      this.eventData});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,13 @@ class PaymentButton extends StatelessWidget {
           ),
         ),
         SizedBox(height: getProportionateScreenHeight(10)),
-        DefaultButton(text: "Go to payment", press: onSubmit, enable: enable),
+        DefaultButton(
+          text: "Proceed with ${marketDetails["symbol"]}${price} Purchase",
+          press: onSubmit,
+          enable: enable,
+          eventName: analyticEvents["PAY_PRESSED"],
+          eventData: eventData,
+        ),
       ],
     );
   }

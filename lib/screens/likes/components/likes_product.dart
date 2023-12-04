@@ -28,10 +28,6 @@ class _LikesProductsState extends State<LikesProducts> {
     super.initState();
   }
 
-  void _onSwipeUp(int id) {
-    // Implement your logic here
-  }
-
   Future<List<Product>?> fetchData() async {
     final formatResponse = (dynamic result) => (result as List<dynamic>)
         .map((item) => new Product.fromJson(item))

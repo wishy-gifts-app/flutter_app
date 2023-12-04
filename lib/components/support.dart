@@ -1,3 +1,5 @@
+import 'package:Wishy/constants.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -37,7 +39,9 @@ class SupportWidget extends StatelessWidget {
   }
 
   void _launchWhatsApp(BuildContext context) async {
-// TODO Ori change it to correct link
+    AnalyticsService.trackEvent(
+      analyticEvents["SUPPORT_PRESSED"]!,
+    );
     final Uri whatsappUri =
         Uri.parse("https://wa.me/${dotenv.get("WHATSAPP_PHONE_NUMBER")}");
 

@@ -1,6 +1,8 @@
 import 'package:Wishy/components/support.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
@@ -52,6 +54,10 @@ class _HomeHeaderState extends State<HomeHeader> {
           tags: _tags,
           onTagSelected: (selectedTag) {
             widget.onTagSelected(selectedTag);
+
+            AnalyticsService.trackEvent(analyticEvents["FILTER_PRODUCTS_FEED"]!,
+                properties: {"Tag": selectedTag?.value});
+
             Navigator.of(context).pop();
           },
         );

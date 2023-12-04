@@ -32,9 +32,9 @@ class Body extends StatelessWidget {
           Text("Complete Purchase", style: headingStyle),
           SizedBox(height: getProportionateScreenHeight(20)),
           PurchaseForm(
-            variantId: variant.id,
-            recipientId: recipientId,
-          ),
+              variantId: variant.id,
+              recipientId: recipientId,
+              price: variant.price),
 
           // TabBar(
           //   labelColor: kPrimaryColor,

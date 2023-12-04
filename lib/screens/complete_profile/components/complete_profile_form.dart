@@ -42,6 +42,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         AnalyticsService.setUserProfile(GlobalManager().userId!, {
           "Email": email,
           "Name": fullName,
+          "Contacts Permission": _givePermission
         });
         Navigator.pushNamed(context, LoginSuccessScreen.routeName);
       } catch (error) {
@@ -62,7 +63,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           buildFullNameFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: getProportionateScreenHeight(20)),
           CheckboxListTile(
             title: Text(
               "Give permission to get contacts for matching with them",

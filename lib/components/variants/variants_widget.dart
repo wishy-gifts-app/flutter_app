@@ -56,7 +56,7 @@ class VariantsWidget extends StatefulWidget {
 
   const VariantsWidget({
     Key? key,
-    this.situation = "product_details",
+    required this.situation,
     this.productId,
     this.productTitle,
     required this.productVariants,
@@ -145,7 +145,9 @@ class _VariantsWidgetState extends State<VariantsWidget> {
             "Product Id": widget.productId,
             "Product Title": widget.productTitle,
             "Situation": widget.situation,
-            "Variants Exist": true
+            "Variant Picked": true,
+            "Variants Exist": true,
+            "Delivery Availability": GlobalManager().isDeliveryAvailable
           },
           press: () => _onBuyPressed(context),
         ),

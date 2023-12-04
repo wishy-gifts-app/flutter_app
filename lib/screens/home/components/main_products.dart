@@ -19,6 +19,7 @@ class MainProducts extends StatefulWidget {
 }
 
 class _MainProductsState extends State<MainProducts> {
+  final situation = "main_product_card";
   late GraphQLPaginationService _paginationService;
 
   void _initializePaginationService() {
@@ -37,7 +38,7 @@ class _MainProductsState extends State<MainProducts> {
 
   void _onSwipeUp(Product product) {
     showRequestModal(
-        context, product.id, product.title, product.variants ?? []);
+        context, product.id, product.title, product.variants ?? [], situation);
   }
 
   Future<List<Product>?> fetchData() async {
@@ -82,8 +83,6 @@ class _MainProductsState extends State<MainProducts> {
 
   @override
   Widget build(BuildContext context) {
-    final situation = "main_product_card";
-
     return Container(
       height: SizeConfig.screenHeight,
       child: SwipeableProducts(

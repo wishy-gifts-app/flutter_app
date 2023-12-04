@@ -9,9 +9,11 @@ import 'package:Wishy/services/graphql_service.dart';
 
 class BuyForYourself extends StatefulWidget {
   final int variantId;
+  final double price;
 
   BuyForYourself({
     required this.variantId,
+    required this.price,
   });
 
   @override
@@ -133,6 +135,7 @@ class _BuyForYourselfState extends State<BuyForYourself> {
             }),
         SizedBox(height: getProportionateScreenHeight(100)),
         PaymentButton(
+          price: widget.price,
           onSubmit: onSubmit,
           enable: _addresses != null && _addresses!.length > 0,
         ),

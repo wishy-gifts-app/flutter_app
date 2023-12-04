@@ -1,4 +1,5 @@
 import 'package:Wishy/screens/requests/requests_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
@@ -24,13 +25,17 @@ class CustomBottomNavBar extends StatelessWidget {
     final Color inActiveIconColor = Color(0xFFB6B6B6);
 
     return IconButton(
-      icon: SvgPicture.asset(
-        iconPath,
-        height: height,
-        color: menuState == selectedMenu ? kPrimaryColor : inActiveIconColor,
-      ),
-      onPressed: () => Navigator.pushNamed(context, routPath),
-    );
+        icon: SvgPicture.asset(
+          iconPath,
+          height: height,
+          color: menuState == selectedMenu ? kPrimaryColor : inActiveIconColor,
+        ),
+        onPressed: () {
+          AnalyticsService.trackEvent(
+            analyticEvents["PAGE_OPENED"]!,
+          );
+          Navigator.pushNamed(context, routPath);
+        });
   }
 
   @override

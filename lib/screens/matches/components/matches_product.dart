@@ -13,16 +13,13 @@ class MatchesProducts extends StatefulWidget {
 }
 
 class _MatchesProductsState extends State<MatchesProducts> {
+  final situation = "match_product_card";
+
   GraphQLPaginationService _paginationService = new GraphQLPaginationService(
       queryName: "getMatchedProducts", variables: {"limit": 5});
 
   void initState() {
     super.initState();
-  }
-
-  void _onSwipeUp(Product product) {
-    showRequestModal(
-        context, product.id, product.title, product.variants ?? []);
   }
 
   Future<List<Product>?> fetchData() async {
@@ -60,8 +57,6 @@ class _MatchesProductsState extends State<MatchesProducts> {
 
   @override
   Widget build(BuildContext context) {
-    final situation = "match_product_card";
-
     return Container(
         height: SizeConfig.screenHeight,
         child: new SwipeableLeftProducts<Product>(

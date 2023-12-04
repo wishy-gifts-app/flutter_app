@@ -1,6 +1,7 @@
 import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/additional_details_dialog.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -41,6 +42,14 @@ class Body extends StatelessWidget {
               ProductDescription(
                 product: product,
                 pressOnSeeMore: () {
+                  AnalyticsService.trackEvent(
+                      analyticEvents["SHOW_MORE_PRODUCT_DESCRIPTION"]!,
+                      properties: {
+                        "Product Id": product.id,
+                        "Delivery Availability":
+                            GlobalManager().isDeliveryAvailable
+                      });
+
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -55,6 +64,7 @@ class Body extends StatelessWidget {
                 buildOutOfStock(secondColor)
               else if (product.variants!.length > 1)
                 VariantsWidget(
+                    situation: situation,
                     productId: product.id,
                     productTitle: product.title,
                     productVariants: product.variants!,
@@ -88,7 +98,9 @@ class Body extends StatelessWidget {
             "Product Id": product.id,
             "Product Title": product.title,
             "Situation": situation,
-            "Variants Exist": false
+            "Variants Exist": false,
+            "Variant Picked": false,
+            "Delivery Availability": GlobalManager().isDeliveryAvailable
           },
           press: () async {
             if (!GlobalManager().isDeliveryAvailable!) {

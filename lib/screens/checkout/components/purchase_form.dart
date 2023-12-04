@@ -10,13 +10,16 @@ import 'package:Wishy/screens/checkout/components/payment_button.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'dart:async';
+import 'package:Wishy/utils/analytics.dart';
 
 class PurchaseForm extends StatefulWidget {
   final int variantId;
   final int? recipientId;
+  final double price;
 
   PurchaseForm({
     required this.variantId,
+    required this.price,
     this.recipientId,
   });
 
@@ -82,6 +85,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
             );
           },
         ).then((_) {
+          AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
+              properties: {
+                "Variant Id": widget.variantId,
+                "Is Gift": _isGift,
+                "Recipient Id": _recipientId
+              });
+
           Navigator.pushNamed(
             context,
             HomeScreen.routeName,
@@ -215,6 +225,12 @@ class _PurchaseFormState extends State<PurchaseForm> {
 
                     if (_recipientId != null ||
                         (name != null && phoneNumber != null)) {
+                      AnalyticsService.trackEvent(
+                          analyticEvents["ADD_ADDRESS_PRESSED"]!,
+                          properties: {
+                            "Variant Id": widget.variantId,
+                            "Is Gift": _isGift
+                          });
                       showDialog<int>(
                         context: context,
                         builder: (context) => Dialog.fullscreen(
@@ -224,20 +240,28 @@ class _PurchaseFormState extends State<PurchaseForm> {
                           userPhoneNumber: phoneNumber,
                         )),
                       ).then((result) {
-                        setState(() {
-                          _recipientId = result;
-                          _selectedAddressIndex = 0;
-                        });
+                        if (result != null) {
+                          setState(() {
+                            _recipientId = result;
+                            _selectedAddressIndex = 0;
+                          });
 
-                        fetchData(_recipientId!);
+                          fetchData(_recipientId!);
+                        }
                       });
                     }
                   }
                 }),
             SizedBox(height: getProportionateScreenHeight(20)),
             PaymentButton(
+              price: widget.price,
               onSubmit: onSubmit,
               enable: _addresses != null && _addresses!.length > 0,
+              eventData: {
+                "Is Gift": _isGift,
+                "Recipient Id": _recipientId,
+                "Variant Id": widget.variantId,
+              },
             ),
           ],
         ));

@@ -46,23 +46,33 @@ class _ColorDotsState extends State<ColorDots> {
     return Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Colors:"),
-          Spacer(),
-          ...List.generate(
-            widget.values.length,
-            (index) => GestureDetector(
-              onTap: widget.chosenVariant == null
-                  ? () => handleChange(index)
-                  : null,
-              child: ColorDot(
-                color: ColorUtils.stringToColor(
-                    widget.values[index].toLowerCase()),
-                isSelected: index == selectedColor,
-              ),
-            ),
-          ),
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Colors:",
+              )),
+          SizedBox(height: getProportionateScreenWidth(10)),
+          Align(
+              alignment: Alignment.center,
+              child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(
+                    widget.values.length,
+                    (index) => GestureDetector(
+                      onTap: widget.chosenVariant == null
+                          ? () => handleChange(index)
+                          : null,
+                      child: ColorDot(
+                        color: ColorUtils.stringToColor(
+                            widget.values[index].toLowerCase()),
+                        isSelected: index == selectedColor,
+                      ),
+                    ),
+                  ))),
         ],
       ),
     );

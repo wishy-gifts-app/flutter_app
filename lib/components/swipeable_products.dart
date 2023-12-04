@@ -21,6 +21,7 @@ List<SwipeItem> buildSwipeItems(
       content: item,
       likeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.green[900],
           content: Text("Like saved"),
           duration: Duration(milliseconds: 500),
         ));
@@ -29,6 +30,7 @@ List<SwipeItem> buildSwipeItems(
       },
       nopeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red[900],
           content: Text("Nope saved"),
           duration: Duration(milliseconds: 500),
         ));
@@ -85,20 +87,29 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
 
   void onSwipeRight(int productId) {
     widget.onSwipeRight(productId);
-    AnalyticsService.trackEvent(analyticEvents["SWIPED_RIGHT"]!,
-        properties: {"Product Id": productId, "Situation": widget.situation});
+    AnalyticsService.trackEvent(analyticEvents["SWIPED_RIGHT"]!, properties: {
+      "Product Id": productId,
+      "Situation": widget.situation,
+      "Delivery Availability": GlobalManager().isDeliveryAvailable
+    });
   }
 
   void onSwipeLeft(int productId) {
     widget.onSwipeLeft(productId);
-    AnalyticsService.trackEvent(analyticEvents["SWIPED_LEFT"]!,
-        properties: {"Product Id": productId, "Situation": widget.situation});
+    AnalyticsService.trackEvent(analyticEvents["SWIPED_LEFT"]!, properties: {
+      "Product Id": productId,
+      "Situation": widget.situation,
+      "Delivery Availability": GlobalManager().isDeliveryAvailable
+    });
   }
 
   void onSwipeUp(Product product) {
     widget.onSwipeUp(product);
-    AnalyticsService.trackEvent(analyticEvents["SWIPED_UP"]!,
-        properties: {"Product Id": product.id, "Situation": widget.situation});
+    AnalyticsService.trackEvent(analyticEvents["START_REQUEST"]!, properties: {
+      "Product Id": product.id,
+      "Situation": widget.situation,
+      "Delivery Availability": GlobalManager().isDeliveryAvailable
+    });
   }
 
   Future<void> fetchItems() async {

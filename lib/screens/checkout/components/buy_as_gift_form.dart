@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 
 class BuyAsGift extends StatelessWidget {
   final int variantId;
+  final double price;
 
   BuyAsGift({
     required this.variantId,
+    required this.price,
   });
 
   int? userId;
@@ -53,6 +55,7 @@ class BuyAsGift extends StatelessWidget {
         ),
         SizedBox(height: getProportionateScreenHeight(90)),
         PaymentButton(
+          price: price,
           onSubmit: () => onSubmit(
             context,
           ),

@@ -7,6 +7,7 @@ import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -20,13 +21,14 @@ class RequestData {
 
 class VariantsAndRequestModal extends StatefulWidget {
   final int productId;
-  final String productTitle;
+  final String situation, productTitle;
   final List<Variant> variants;
 
   VariantsAndRequestModal({
     required this.productId,
     required this.productTitle,
     required this.variants,
+    required this.situation,
   });
 
   @override
@@ -89,6 +91,15 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             "recipient_id": requestData.userId
           });
 
+          AnalyticsService.trackEvent(analyticEvents["PRODUCT_REQUESTED"]!,
+              properties: {
+                "Product Id": widget.productId,
+                "Variant Id": requestData.selectedVariant!.id,
+                "Reason": requestData.reason,
+                "Name": requestData.name,
+                "Recipient Id": requestData.userId,
+                "Variants Exist": widget.variants.length > 1
+              });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("Request sent successfully"),
           ));
@@ -113,6 +124,15 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             setState(() {
               _currentStep += 1;
             });
+            AnalyticsService.trackEvent(
+                analyticEvents["REQUEST_VARIANT_PICKED"]!,
+                properties: {
+                  "Product Id": widget.productId,
+                  "Variant Id": requestData.selectedVariant!.id,
+                  "Reason": requestData.reason,
+                  "Name": requestData.name,
+                  "Recipient Id": requestData.userId,
+                });
           } else {
             _onSubmit();
           }
@@ -122,6 +142,8 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             setState(() {
               _currentStep -= 1;
             });
+          } else {
+            Navigator.pop(context);
           }
         },
         steps: [
@@ -132,6 +154,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                 VariantsWidget(
                     productVariants: widget.variants,
                     withBuyButton: false,
+                    situation: widget.situation,
                     onVariantChange: _onVariantChange),
               ],
             ),
@@ -217,7 +240,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 }
 
 void showRequestModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants) async {
+    List<Variant> variants, String situation) async {
   if (!GlobalManager().isDeliveryAvailable!) {
     await DeliveryAvailabilityDialog.show(context);
 
@@ -239,6 +262,7 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: VariantsAndRequestModal(
               productId: productId,
+              situation: situation,
               productTitle: productTitle,
               variants: variants,
             ));

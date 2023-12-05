@@ -68,6 +68,26 @@ class _PurchaseFormState extends State<PurchaseForm> {
 
   Future<void> onSubmit() async {
     try {
+      if (true) {
+        AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
+            properties: {
+              "Variant Id": widget.variantId,
+              "Is Gift": _isGift,
+              "Recipient Id": _recipientId
+            });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "Sorry, purchase feature is currently unavailable. We'll notify you when it's ready. Thank you!"),
+        ));
+
+        Navigator.pushNamed(
+          context,
+          HomeScreen.routeName,
+        );
+        return;
+      }
+
       final result = await graphQLQueryHandler("checkoutHandler", {
         "variant_id": widget.variantId,
         "quantity": 1,

@@ -2,7 +2,6 @@ import 'package:Wishy/utils/contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
-import 'package:Wishy/components/form_error.dart';
 import 'package:Wishy/screens/login_success/login_success_screen.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -34,8 +33,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
         await graphQLQueryHandler("updateUserById",
             {"email": email, "name": fullName, "id": GlobalManager().userId});
-        await GlobalManager()
-            .setParams(newProfileCompleted: true, newUsername: fullName);
+        // await GlobalManager()
+        //     .setParams(newProfileCompleted: true, newUsername: fullName);
         AnalyticsService.trackEvent(
             analyticEvents["COMPLETE_PROFILE_SUBMITTED"]!);
 

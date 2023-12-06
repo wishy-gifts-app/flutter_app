@@ -10,6 +10,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "lib/.env");
   await GlobalManager().initialize();
+  if (GlobalManager().token == null) {
+    //TODO create user or fetch
+    final result = {"show_animation": true};
+    GlobalManager().setShowAnimation(result["show_animation"]!);
+  }
+
   await AnalyticsService.init({"User Id": GlobalManager().userId});
 
   runApp(MyApp());

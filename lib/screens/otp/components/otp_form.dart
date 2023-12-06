@@ -22,7 +22,6 @@ class OtpForm extends StatefulWidget {
 }
 
 class _OtpFormState extends State<OtpForm> {
-  bool? completedProfile = GlobalManager().profileCompleted;
   final otpServices = OTPServices();
   String otpValue = "";
 
@@ -63,7 +62,6 @@ class _OtpFormState extends State<OtpForm> {
 
       await GlobalManager().setParams(
           newToken: result.token,
-          newProfileCompleted: result.profileCompleted,
           newUserId: result.userId,
           newUsername: result.username);
       AnalyticsService.registerSuperProperties({"User Id": result.userId});
@@ -73,8 +71,9 @@ class _OtpFormState extends State<OtpForm> {
       );
 
       if (mounted) {
-        RouterUtils.routeToHomePage(
-            context, result.profileCompleted, result.token);
+        //TODO fix this if that start to use
+        // RouterUtils.routeToHomePage(
+        //     context, result.profileCompleted, result.token);
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(

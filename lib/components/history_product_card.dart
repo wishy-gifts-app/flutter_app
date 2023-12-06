@@ -70,7 +70,7 @@ class HistoryProductCard extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
-          Text("\$ ${price}"),
+          Text("${marketDetails["symbol"]}${price}"),
           if (product.variants != null && product.variants!.length > 1)
             Text(
               variant!.title,

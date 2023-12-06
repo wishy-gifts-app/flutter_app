@@ -1,3 +1,5 @@
+import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/screens/requests/requests_screen.dart';
 import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/global_manager.dart';
@@ -15,28 +17,21 @@ class _RootScreenState extends State<RootScreen> {
   @override
   void initState() {
     super.initState();
-    _initUniLinks();
-    _navigateBasedOnToken();
+    _navigate();
   }
 
-  void _initUniLinks() async {
+  void _navigate() async {
     try {
       Uri? initialUri = await getInitialUri();
 
       if (initialUri != null && initialUri.path == '/requests') {
-        GlobalManager().navigateToRequest(true);
+        Navigator.pushReplacementNamed(context, RequestsScreen.routeName);
+      } else {
+        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
       }
     } on Exception {
       // Handle exception (if any)
     }
-  }
-
-  Future<void> _navigateBasedOnToken({bool toRequestsPage = false}) async {
-    await GlobalManager().initialize();
-    String? token = GlobalManager().token;
-    bool? profileCompleted = GlobalManager().profileCompleted;
-
-    RouterUtils.routeToHomePage(context, profileCompleted, token);
   }
 
   @override

@@ -6,7 +6,7 @@ class GlobalManager {
   String? token;
   int? userId;
   String? username;
-  bool? profileCompleted;
+  bool? signedIn;
   bool shouldNavigateToRequest = false;
   bool? isDeliveryAvailable;
   bool showAnimation = false;
@@ -22,15 +22,15 @@ class GlobalManager {
     token = await storage.read(key: 'token');
     userId = int.tryParse(await storage.read(key: 'user_id') ?? "");
     username = await storage.read(key: 'username');
-    String? completedProfileStr = await storage.read(key: 'profile_completed');
-    profileCompleted = completedProfileStr == 'true';
+    String? signedInStr = await storage.read(key: 'signed_in');
+    signedIn = signedInStr == 'true';
   }
 
   Future<void> setParams({
     String? newToken,
     String? newUsername,
     int? newUserId,
-    bool? newProfileCompleted,
+    bool? newSignedIn,
   }) async {
     final storage = FlutterSecureStorage();
 
@@ -49,10 +49,10 @@ class GlobalManager {
       await storage.write(key: 'username', value: newUsername);
     }
 
-    if (newProfileCompleted != null) {
-      profileCompleted = newProfileCompleted;
+    if (newSignedIn != null) {
+      signedIn = newSignedIn;
       await storage.write(
-          key: 'profile_completed', value: newProfileCompleted.toString());
+          key: 'profile_completed', value: newSignedIn.toString());
     }
   }
 

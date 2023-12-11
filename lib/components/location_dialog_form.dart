@@ -155,7 +155,10 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                       mode: Mode.overlay,
                       language: "en",
                       types: ["address"],
-                      components: [Component(Component.country, "in")],
+                      components: [
+                        Component(
+                            Component.country, marketDetails["google_country"]!)
+                      ],
                       strictbounds: false,
                       decoration: InputDecoration(
                         hintText: "Search",
@@ -262,11 +265,10 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16),
         child: DefaultButton(
-          text: 'Add',
-          press: _onSubmit,
-          eventName: analyticEvents["ADDRESS_ADDED"],
-          eventData:{ "Is Gift": widget.userId ==null}
-        ),
+            text: 'Add',
+            press: _onSubmit,
+            eventName: analyticEvents["ADDRESS_ADDED"],
+            eventData: {"Is Gift": widget.userId == null}),
       ),
     );
   }

@@ -409,6 +409,30 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'startSupport': """
+    query startSupport(
+      \$limit: Int!,
+      \$cursor: String,
+    ) {
+      startSupport(
+        limit: \$limit,
+        cursor: \$cursor,
+      ) {
+        results {
+          id,
+          message,
+          read_at,
+          is_consultant,
+          is_end_chat,
+          user_id
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  """,
   'getAllTags': """
     query getAllTags(
       \$limit: Int!,
@@ -439,6 +463,38 @@ const Map<String, String> graphqlQueries = {
         show_request: \$show_request,
       ) {
         id
+      }
+    }
+  """,
+  'saveSupportMessage': """
+    mutation saveSupportMessage(
+      \$user_id: Int!,    
+      \$is_consultant: Boolean!,
+      \$is_end_chat: Boolean!,
+      \$read_at: Date!,
+      \$message: String!,
+    ) {
+      saveSupportMessage(
+        user_id: \$user_id,
+        is_consultant: \$is_consultant,
+        is_end_chat: \$is_end_chat,
+        read_at: \$read_at,
+        message: \$message,
+      ) {
+          id,
+          message,
+          read_at,
+          is_consultant,
+          is_end_chat,
+          user_id
+      }
+    }
+  """,
+  'isProductAvailable': """
+    query isProductAvailable {
+      isProductAvailable {
+        is_product_available
+        user_country
       }
     }
   """,

@@ -1,3 +1,5 @@
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/models/Product.dart';
 
@@ -12,8 +14,19 @@ class CheckoutScreen extends StatelessWidget {
   CheckoutScreen(
       {required this.variant, required this.productId, this.recipientId});
 
+  void _redirectToSignInIfNeeded(BuildContext context) {
+    if (GlobalManager().signedIn != true) {
+      GlobalManager().setSignInRelatedProductId(productId);
+      GlobalManager().navigateToRequest(recipientId != null);
+      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) => _redirectToSignInIfNeeded(context));
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Checkout'),

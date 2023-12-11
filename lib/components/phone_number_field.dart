@@ -6,8 +6,10 @@ import 'package:phone_number/phone_number.dart';
 class PhoneNumberField extends StatefulWidget {
   final Function(String?) onSaved;
   final Function(String) onError;
+  final bool withIcon;
 
-  PhoneNumberField({required this.onSaved, required this.onError});
+  PhoneNumberField(
+      {required this.onSaved, required this.onError, this.withIcon = true});
 
   @override
   _PhoneNumberFieldState createState() => _PhoneNumberFieldState();
@@ -51,9 +53,9 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
     return TextFormField(
       keyboardType: TextInputType.phone,
       onSaved: (newValue) async {
-        if (await isValidPhoneNumber(newValue))
+        if (await isValidPhoneNumber(newValue)) {
           widget.onSaved(newValue);
-        else {
+        } else {
           widget.onError(errorMessage ?? "");
         }
       },
@@ -67,9 +69,11 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
       },
       decoration: InputDecoration(
         labelText: "Phone Number",
-        hintText: "Enter your phone number including international prefix",
+        hintText: "e.g. +1123456789",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
+        suffixIcon: widget.withIcon
+            ? CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg")
+            : null,
         errorText: errorMessage,
       ),
     );

@@ -5,6 +5,7 @@ import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
@@ -72,9 +73,12 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      _phoneValidationCompleter = Completer<bool>();
       _formKey.currentState!.save();
-      await _phoneValidationCompleter!.future;
+
+      if (requestData.userId == null) {
+        _phoneValidationCompleter = Completer<bool>();
+        await _phoneValidationCompleter!.future;
+      }
       _onVariantChosen();
 
       if (requestData.reason != null &&
@@ -245,6 +249,12 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
     await DeliveryAvailabilityDialog.show(context);
 
     if (!GlobalManager().isDeliveryAvailable!) return;
+  }
+
+  if (GlobalManager().signedIn != true) {
+    GlobalManager().setSignInRelatedProductId(productId);
+    Navigator.pushReplacementNamed(context, SignInScreen.routeName);
+    return;
   }
 
   showModalBottomSheet<void>(

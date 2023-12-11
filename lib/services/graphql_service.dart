@@ -32,7 +32,11 @@ Future<dynamic> graphQLQueryHandler(
     final token = GlobalManager().token;
     final http.Response response = await _client.post(
       Uri.parse(dotenv.get("GRAPHQL_API_URL")),
-      headers: {"Content-Type": "application/json", "auth": token!},
+      headers: {
+        "Content-Type": "application/json",
+        "auth": token!,
+        "userCountry": GlobalManager().userCountry ?? ""
+      },
       body: jsonEncode(requestBody),
     );
 

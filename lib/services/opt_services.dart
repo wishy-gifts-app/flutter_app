@@ -3,7 +3,25 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class OTPServices {
+class AuthServices {
+  Future<SignInResponse> guestSignInService() async {
+    final response = await http.post(
+      Uri.parse(dotenv.get("GUEST_SIGN_IN_API_URL")),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return SignInResponse.fromJson(data);
+    } else {
+      print(
+          'Failed to handling guest sign in, error_message: ${data["message"]}');
+      throw Exception('Failed to handling guest sign in');
+    }
+  }
+
   Future<SignInResponse> verifyOTPService(
       String phoneNumber, String otp) async {
     final response = await http.post(

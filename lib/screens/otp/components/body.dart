@@ -7,7 +7,7 @@ import 'otp_form.dart';
 
 class Body extends StatelessWidget {
   final String phoneNumber;
-  final otpServices = OTPServices();
+  final otpServices = AuthServices();
 
   Body({required this.phoneNumber});
 

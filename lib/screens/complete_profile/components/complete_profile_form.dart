@@ -33,8 +33,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
         await graphQLQueryHandler("updateUserById",
             {"email": email, "name": fullName, "id": GlobalManager().userId});
-        // await GlobalManager()
-        //     .setParams(newProfileCompleted: true, newUsername: fullName);
+        await GlobalManager()
+            .setParams(newProfileCompleted: true, newUsername: fullName);
         AnalyticsService.trackEvent(
             analyticEvents["COMPLETE_PROFILE_SUBMITTED"]!);
 

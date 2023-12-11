@@ -1,4 +1,11 @@
+import 'dart:async';
+
+import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/components/privacy.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_number/phone_number.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
@@ -19,9 +26,10 @@ class SignForm extends StatefulWidget {
 class _SignFormState extends State<SignForm> {
   final _formKey = new GlobalKey<FormState>();
   final List<String?> errors = [];
-  String phoneNumber = "";
-  final otpServices = OTPServices();
+  String? phoneNumber = "";
+  final authServices = AuthServices();
   int selectedIcon = 1;
+  Completer<bool>? _phoneValidationCompleter;
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -37,47 +45,60 @@ class _SignFormState extends State<SignForm> {
       });
   }
 
-  Future<bool> isValidPhoneNumber(String number) async {
-    final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil();
-    try {
-      return phoneNumberUtil.validate(number);
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<void> sendOPTNumber() async {
-    _formKey.currentState!.save();
-
-    if (phoneNumber.isEmpty) {
-      addError(error: kPhoneNumberNullError);
+  Future<void> skipSignIn() async {
+    if (GlobalManager().token != null) {
+      RouterUtils.routeToHomePage(context, false, GlobalManager().token, false);
       return;
-    } else {
-      try {
-        final isValid = await isValidPhoneNumber(phoneNumber);
-        if (!isValid) {
-          addError(error: kInvalidPhoneNumberError);
-          return;
-        }
-      } catch (error) {
-        addError(error: kInvalidPhoneNumberError);
-        return;
-      }
     }
-
     try {
-      removeError(error: kInvalidPhoneNumberError);
-      otpServices.sendOTPService(phoneNumber);
-      Navigator.pushNamed(
-        context,
-        OtpScreen.routeName,
-        arguments: {'phoneNumber': phoneNumber},
+      final result = await authServices.guestSignInService();
+
+      await GlobalManager().setParams(
+        newToken: result.token,
+        newUserId: result.userId,
+        newUsername: "",
+        newSignedIn: false,
       );
+
+      if (mounted) {
+        RouterUtils.routeToHomePage(context, false, result.token, false);
+      }
     } catch (error) {
       print(error);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send OTP. Please try again.')),
+        SnackBar(
+            content: Text(
+                "Sorry, we're unable to access the products page. Please retry shortly.")),
       );
+    }
+  }
+
+  void _onPhoneChanged(String? phone) {
+    setState(() {
+      phoneNumber = phone;
+    });
+  }
+
+  Future<void> sendOPTNumber() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      _phoneValidationCompleter = Completer<bool>();
+      await _phoneValidationCompleter!.future;
+      try {
+        removeError(error: kInvalidPhoneNumberError);
+        authServices.sendOTPService(phoneNumber!);
+        Navigator.pushNamed(
+          context,
+          OtpScreen.routeName,
+          arguments: {'phoneNumber': phoneNumber},
+        );
+      } catch (error) {
+        print(error);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send OTP. Please try again.')),
+        );
+      }
     }
   }
 
@@ -149,11 +170,11 @@ class _SignFormState extends State<SignForm> {
         Visibility(
             visible: selectedIcon == 1,
             child: Column(children: [
-              buildPhoneNumberFormField(),
-              SizedBox(height: getProportionateScreenHeight(30)),
-              FormError(errors: errors),
-              SizedBox(height: getProportionateScreenHeight(30)),
-              SizedBox(height: getProportionateScreenHeight(30)),
+              PhoneNumberField(
+                onSaved: _onPhoneChanged,
+                onError: (String error) => _onPhoneChanged(null),
+              ),
+              SizedBox(height: getProportionateScreenHeight(90)),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -164,7 +185,7 @@ class _SignFormState extends State<SignForm> {
                           "By continuing you confirm that you agree with our ",
                     ),
                     TextSpan(
-                      text: "Terms and Conditions",
+                      text: "Privacy Terms",
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           showDialog(
@@ -192,27 +213,21 @@ class _SignFormState extends State<SignForm> {
                   await sendOPTNumber();
                 },
               ),
+              SizedBox(height: getProportionateScreenHeight(20)),
+              DefaultButton(
+                backgroundColor: Colors.black54,
+                eventName: analyticEvents["SKIP_SIGN_IN"]!,
+                eventData: {
+                  "Related To Product Id":
+                      GlobalManager().signInRelatedProductId
+                },
+                text: "Explore as Guest",
+                press: () async {
+                  skipSignIn();
+                },
+              ),
             ])),
       ]),
-    );
-  }
-
-  TextFormField buildPhoneNumberFormField() {
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      onSaved: (newValue) => phoneNumber = newValue ?? "",
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kPhoneNumberNullError);
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: "Phone Number",
-        hintText: "Enter your phone number including international prefix",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
-      ),
     );
   }
 }

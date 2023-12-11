@@ -6,10 +6,13 @@ class GlobalManager {
   String? token;
   int? userId;
   String? username;
-  bool? signedIn;
+  bool signedIn = false;
   bool shouldNavigateToRequest = false;
   bool? isDeliveryAvailable;
+  String? userCountry;
   bool showAnimation = false;
+  bool? profileCompleted;
+  int? signInRelatedProductId = null;
 
   factory GlobalManager() {
     return _singleton;
@@ -24,6 +27,8 @@ class GlobalManager {
     username = await storage.read(key: 'username');
     String? signedInStr = await storage.read(key: 'signed_in');
     signedIn = signedInStr == 'true';
+    String? completedProfileStr = await storage.read(key: 'profile_completed');
+    profileCompleted = completedProfileStr == 'true';
   }
 
   Future<void> setParams({
@@ -31,6 +36,7 @@ class GlobalManager {
     String? newUsername,
     int? newUserId,
     bool? newSignedIn,
+    bool? newProfileCompleted,
   }) async {
     final storage = FlutterSecureStorage();
 
@@ -51,8 +57,13 @@ class GlobalManager {
 
     if (newSignedIn != null) {
       signedIn = newSignedIn;
+      await storage.write(key: 'signed_in', value: newSignedIn.toString());
+    }
+
+    if (newProfileCompleted != null) {
+      profileCompleted = newProfileCompleted;
       await storage.write(
-          key: 'profile_completed', value: newSignedIn.toString());
+          key: 'profile_completed', value: newProfileCompleted.toString());
     }
   }
 
@@ -64,7 +75,21 @@ class GlobalManager {
     showAnimation = value;
   }
 
-  void setDeliveryAvailability(bool value) {
+  void setDeliveryAvailability(
+    bool value,
+  ) {
     isDeliveryAvailable = value;
+  }
+
+  void setUserCountry(
+    String? value,
+  ) {
+    userCountry = value;
+  }
+
+  void setSignInRelatedProductId(
+    int? value,
+  ) {
+    signInRelatedProductId = value;
   }
 }

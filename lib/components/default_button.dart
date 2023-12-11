@@ -12,12 +12,15 @@ class DefaultButton extends StatelessWidget {
     this.text,
     this.press,
     this.enable = true,
+    this.pressBackgroundColor = kPrimaryLightColor,
+    this.backgroundColor = kPrimaryColor,
   }) : super(key: key);
   final String? eventName;
   final Map<String, dynamic>? eventData;
   final String? text;
   final Function? press;
   final bool enable;
+  final Color backgroundColor, pressBackgroundColor;
 
   void onPress() {
     if (press != null) press!();
@@ -36,7 +39,7 @@ class DefaultButton extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           foregroundColor: Colors.white,
-          backgroundColor: enable ? kPrimaryColor : kPrimaryLightColor,
+          backgroundColor: enable ? backgroundColor : pressBackgroundColor,
         ),
         onPressed: enable ? press as void Function()? : null,
         child: Text(

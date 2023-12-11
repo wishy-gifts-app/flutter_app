@@ -238,9 +238,12 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     if (_isGift) {
-                      _phoneValidationCompleter = Completer<bool>();
                       _formKey.currentState!.save();
-                      await _phoneValidationCompleter!.future;
+
+                      if (userId == null) {
+                        _phoneValidationCompleter = Completer<bool>();
+                        await _phoneValidationCompleter!.future;
+                      }
                     }
 
                     if (_recipientId != null ||

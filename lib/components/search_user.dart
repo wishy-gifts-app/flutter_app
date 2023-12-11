@@ -1,4 +1,4 @@
-import 'package:Wishy/components/PhoneNumberField.dart';
+import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -10,12 +10,13 @@ class SearchUserWidget extends StatefulWidget {
   final Function(int?) onUserSelected;
   final Function(String?) onNameChanged;
   final Function(String?) onPhoneChanged;
+  final bool withIcon;
 
-  SearchUserWidget({
-    required this.onUserSelected,
-    required this.onNameChanged,
-    required this.onPhoneChanged,
-  });
+  SearchUserWidget(
+      {required this.onUserSelected,
+      required this.onNameChanged,
+      required this.onPhoneChanged,
+      this.withIcon = true});
 
   @override
   _SearchUserWidgetState createState() => _SearchUserWidgetState();
@@ -100,6 +101,7 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
           PhoneNumberField(
             onSaved: widget.onPhoneChanged,
             onError: (String error) => widget.onPhoneChanged(null),
+            withIcon: widget.withIcon,
           )
         ],
       ],

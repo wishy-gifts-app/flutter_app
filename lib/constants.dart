@@ -35,6 +35,7 @@ const analyticEvents = {
   "REQUEST_REMOVED": "Request Removed",
   "PAGE_OPENED": "Page Opened",
   "PROFILE_TAB_PRESSED": "Profile Tab Pressed",
+  "SKIP_SIGN_IN": "Skip Sign In",
 };
 
 const kPrimaryColor = Colors.black;
@@ -71,12 +72,14 @@ const String kUserNameNullError = "Please Enter a user name";
 const String kReasonNullError = "Please Enter the reason";
 const String kPhoneNumberNullError = "Please Enter your phone number";
 const String kAddressNullError = "Please Enter your address";
-const String kInvalidPhoneNumberError = "Invalid phone number";
+const String kInvalidPhoneNumberError =
+    "Enter phone number with international prefix";
 const marketDetails = {
-  "symbol": "₹",
-  "country": "India",
-  "currency": "indian_rupee",
-  "short": "RS"
+  "symbol": "\$",
+  "google_country": "us",
+  "country": "USA",
+  "currency": "dollar",
+  "short": "USD"
 };
 const String privacyURL = "https://www.wishy.store/privacy";
 final otpInputDecoration = InputDecoration(

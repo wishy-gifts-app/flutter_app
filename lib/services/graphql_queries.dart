@@ -490,11 +490,31 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'updateSupportMessageRead': """
+    mutation updateSupportMessageRead(
+      \$id: Int!,  
+      \$read_at: Date!,  
+    ) {
+      updateSupportMessageRead(
+        id: \$id,
+        read_at: \$read_at,
+      ) {
+          id,
+      }
+    }
+  """,
   'isProductAvailable': """
     query isProductAvailable {
       isProductAvailable {
         is_product_available
         user_country
+      }
+    }
+  """,
+  'userHaveNewMessages': """
+    query userHaveNewMessages {
+      userHaveNewMessages {
+        user_have_new_messages
       }
     }
   """,

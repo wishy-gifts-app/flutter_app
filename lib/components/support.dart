@@ -1,17 +1,75 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:Wishy/components/interactive_dialog/dialog.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/SupportMessage.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/analytics.dart';
-import 'package:flutter/material.dart';
 
-class SupportWidget extends StatelessWidget {
+class SupportWidget extends StatefulWidget {
+  @override
+  _SupportWidgetState createState() => _SupportWidgetState();
+}
+
+class _SupportWidgetState extends State<SupportWidget> {
+  bool hasNewMessage = false;
+  Timer? _timer;
+
+  void _checkUserHaveNewMessages() async {
+    final result = await graphQLQueryHandler("userHaveNewMessages", {});
+
+    if (mounted) {
+      setState(() {
+        hasNewMessage = result["user_have_new_messages"];
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _checkUserHaveNewMessages();
+
+    _timer = Timer.periodic(
+        Duration(minutes: 2), (Timer t) => _checkUserHaveNewMessages());
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.support_agent),
-      onPressed: () => _showSupportDialog(context),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.support_agent),
+          onPressed: () {
+            setState(() {
+              hasNewMessage = false;
+            });
+            _showSupportDialog(context);
+          },
+        ),
+        if (hasNewMessage)
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -48,6 +106,21 @@ class SupportWidget extends StatelessWidget {
       final result = await _paginationService.run();
       final formattedResult =
           result["data"] != null ? formatResponse(result["data"]) : null;
+
+      if (formattedResult != null) {
+        final newConsultantMessages = formattedResult.where((message) =>
+            message.isConsultant == true && message.readAt == null);
+
+        for (var message in newConsultantMessages) {
+          graphQLQueryHandler(
+            "updateSupportMessageRead",
+            {
+              "id": message.id,
+              "read_at": DateTime.now(),
+            },
+          );
+        }
+      }
 
       return formattedResult;
     }

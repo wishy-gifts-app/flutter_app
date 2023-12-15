@@ -27,7 +27,12 @@ Future<bool> _saveChunk(List<Map<String, String>> chunk) async {
     final token = GlobalManager().token;
     final response = await http.post(
       Uri.parse(dotenv.get("FOLLOWERS_API_URL")),
-      headers: {"Content-Type": "application/json", "auth": token!},
+      headers: {
+        "Content-Type": "application/json",
+        "auth": token!,
+        "user_country": GlobalManager().userLocation?.country ?? "",
+        "iso_code": GlobalManager().userLocation?.isoCode ?? ""
+      },
       body: jsonEncode({
         'followers': chunk,
       }),

@@ -329,6 +329,16 @@ const Map<String, String> graphqlQueries = {
     }
   }
 """,
+  'isUserActive': """
+    query isUserActive(
+      \$id: Int!,
+      \$is_active_user: Boolean!,
+    ) {
+      isUserActive(id: \$id, is_active_user: \$is_active_user) {
+        result
+    }
+  }
+""",
   'checkoutHandler': """
     mutation checkoutHandler(
       \$variant_id: Int!,
@@ -421,7 +431,7 @@ const Map<String, String> graphqlQueries = {
         results {
           id,
           message,
-          read_at,
+          displayed_at,
           is_consultant,
           is_end_chat,
           user_id
@@ -453,6 +463,22 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'getInteractiveCardByType': """
+    query getInteractiveCardByType(
+      \$type: String!,
+    ) {
+      getInteractiveCardByType(
+        type: \$type,
+      ) {
+        id
+        type
+        question
+        products_count_trigger
+        background_image_path
+        additional_data
+      }
+    }
+  """,
   'updateRequestById': """
     mutation updateRequestById(
       \$id: Int!,    
@@ -471,33 +497,46 @@ const Map<String, String> graphqlQueries = {
       \$user_id: Int!,    
       \$is_consultant: Boolean!,
       \$is_end_chat: Boolean!,
-      \$read_at: Date!,
+      \$displayed_at: Date!,
       \$message: String!,
     ) {
       saveSupportMessage(
         user_id: \$user_id,
         is_consultant: \$is_consultant,
         is_end_chat: \$is_end_chat,
-        read_at: \$read_at,
+        displayed_at: \$displayed_at,
         message: \$message,
       ) {
           id,
           message,
-          read_at,
+          displayed_at,
           is_consultant,
           is_end_chat,
           user_id
       }
     }
   """,
-  'updateSupportMessageRead': """
-    mutation updateSupportMessageRead(
+  'updateSupportMessageById': """
+    mutation updateSupportMessageById(
       \$id: Int!,  
-      \$read_at: Date!,  
+      \$displayed_at: Date!,  
     ) {
-      updateSupportMessageRead(
+      updateSupportMessageById(
         id: \$id,
-        read_at: \$read_at,
+        displayed_at: \$displayed_at,
+      ) {
+          id,
+      }
+    }
+  """,
+  'updateMatchById': """
+    mutation updateMatchById(
+      \$id: Int!,  
+      \$displayed_at: Date!,  
+    ) {
+      updateMatchById(
+        id: \$id,
+        displayed_at: \$displayed_at,
       ) {
           id,
       }
@@ -511,10 +550,17 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
-  'userHaveNewMessages': """
-    query userHaveNewMessages {
-      userHaveNewMessages {
-        user_have_new_messages
+  'userHasNewMessages': """
+    query userHasNewMessages {
+      userHasNewMessages {
+        user_has_new_messages
+      }
+    }
+  """,
+  'userHasNewMatches': """
+    query userHasNewMatches {
+      userHasNewMatches {
+        user_has_new_matches
       }
     }
   """,

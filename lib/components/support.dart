@@ -17,11 +17,11 @@ class _SupportWidgetState extends State<SupportWidget> {
   Timer? _timer;
 
   void _checkUserHaveNewMessages() async {
-    final result = await graphQLQueryHandler("userHaveNewMessages", {});
+    final result = await graphQLQueryHandler("userHasNewMessages", {});
 
     if (mounted) {
       setState(() {
-        hasNewMessage = result["user_have_new_messages"];
+        hasNewMessage = result["user_has_new_messages"];
       });
     }
   }
@@ -79,7 +79,7 @@ class _SupportWidgetState extends State<SupportWidget> {
       "is_consultant": false,
       "is_end_chat": false,
       "user_id": GlobalManager().userId,
-      "read_at": DateTime.now()
+      "displayed_at": DateTime.now()
     });
     final formattedResult = result["data"] != null
         ? new SupportMessage.fromJson(result["data"])
@@ -109,14 +109,14 @@ class _SupportWidgetState extends State<SupportWidget> {
 
       if (formattedResult != null) {
         final newConsultantMessages = formattedResult.where((message) =>
-            message.isConsultant == true && message.readAt == null);
+            message.isConsultant == true && message.displayedAt == null);
 
         for (var message in newConsultantMessages) {
           graphQLQueryHandler(
-            "updateSupportMessageRead",
+            "updateSupportMessageById",
             {
               "id": message.id,
-              "read_at": DateTime.now(),
+              "displayed_at": DateTime.now(),
             },
           );
         }

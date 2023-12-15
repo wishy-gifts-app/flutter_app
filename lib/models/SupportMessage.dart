@@ -6,13 +6,13 @@ class SupportMessage {
   final String? message;
   final bool? isConsultant;
   final bool? isEndChat;
-  final DateTime? readAt;
+  final DateTime? displayedAt;
 
   SupportMessage(
       {required this.id,
       required this.user_id,
       this.isConsultant,
-      this.readAt,
+      this.displayedAt,
       this.isEndChat,
       this.message});
 
@@ -22,7 +22,7 @@ class SupportMessage {
       user_id: convertValue<int>(json, 'user_id', true),
       isConsultant: convertValue<bool?>(json, 'is_consultant', false),
       isEndChat: convertValue<bool?>(json, 'is_end_chat', false),
-      readAt: convertValue<DateTime?>(json, 'read_at', false),
+      displayedAt: convertValue<DateTime?>(json, 'displayed_at', false),
       message: convertValue<String?>(json, 'message', false),
     );
   }

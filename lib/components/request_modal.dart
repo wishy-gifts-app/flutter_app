@@ -44,7 +44,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   RequestData requestData = RequestData();
   Completer<bool>? _phoneValidationCompleter;
 
-  void _onUserSelected(int? userId) {
+  void _onUserSelected(int? userId, bool? isActiveUser) {
     requestData.userId = userId;
   }
 

@@ -1,3 +1,8 @@
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/profile/components/profile_header.dart';
+import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
@@ -33,8 +38,22 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return Column(children: [
+      SizedBox(height: getProportionateScreenHeight(35)),
+      ProfileHeader(height: 50),
+      if (GlobalManager().signedIn != true)
+        Expanded(
+            child: Center(
+                child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: DefaultButton(
+                      text: "Sign In",
+                      press: () => Navigator.pushNamed(
+                        context,
+                        SignInScreen.routeName,
+                      ),
+                    )))),
+      if (GlobalManager().signedIn) ...[
         ProfilePic(),
         SizedBox(height: 10),
         TabBar(
@@ -56,6 +75,6 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
           ),
         ),
       ],
-    );
+    ]);
   }
 }

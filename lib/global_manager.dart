@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:Wishy/models/UserLocationData.dart';
 
 class GlobalManager {
   static final GlobalManager _singleton = GlobalManager._internal();
@@ -9,10 +10,11 @@ class GlobalManager {
   bool signedIn = false;
   bool shouldNavigateToRequest = false;
   bool? isDeliveryAvailable;
-  String? userCountry;
+  UserLocationData? userLocation;
   bool showAnimation = false;
   bool? profileCompleted;
   int? signInRelatedProductId = null;
+  String? session = null;
 
   factory GlobalManager() {
     return _singleton;
@@ -75,16 +77,20 @@ class GlobalManager {
     showAnimation = value;
   }
 
+  void setSession(String value) {
+    session = value;
+  }
+
   void setDeliveryAvailability(
     bool value,
   ) {
     isDeliveryAvailable = value;
   }
 
-  void setUserCountry(
-    String? value,
+  void setUserLocation(
+    UserLocationData value,
   ) {
-    userCountry = value;
+    userLocation = value;
   }
 
   void setSignInRelatedProductId(

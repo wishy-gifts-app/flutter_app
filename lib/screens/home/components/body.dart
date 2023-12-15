@@ -1,9 +1,8 @@
-import 'package:Wishy/models/Tag.dart';
+import 'package:Wishy/models/InteractiveCardData.dart';
+import 'package:Wishy/screens/home/components/home_header.dart';
+import 'package:Wishy/screens/home/components/main_products.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
-
-import '../../../size_config.dart';
-import 'home_header.dart';
-import 'main_products.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -11,12 +10,11 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  final double headerHeight = 60.0;
-  Tag? _selectedTag;
+  late InteractiveCardData? _interactiveCard = null;
 
-  void _onTagSelected(Tag? selectedTag) {
+  void _setInteractiveCard(InteractiveCardData? value) {
     setState(() {
-      _selectedTag = selectedTag;
+      _interactiveCard = value;
     });
   }
 
@@ -27,13 +25,14 @@ class _BodyState extends State<Body> {
         children: [
           SizedBox(height: getProportionateScreenHeight(10)),
           HomeHeader(
-            height: headerHeight,
-            onTagSelected: _onTagSelected,
+            height: 60,
+            setInteractiveCard: _setInteractiveCard,
+            interactiveCard: _interactiveCard,
           ),
           Expanded(
             child: MainProducts(
-              key: ValueKey<int?>(_selectedTag?.id),
-              selectedTag: _selectedTag,
+              setInteractiveCard: _setInteractiveCard,
+              interactiveCard: _interactiveCard,
             ),
           ),
           SizedBox(height: getProportionateScreenWidth(10)),

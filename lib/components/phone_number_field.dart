@@ -68,7 +68,10 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
         }
       },
       decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
         labelText: "Phone Number",
+        labelStyle: TextStyle(backgroundColor: Colors.white),
         hintText: "e.g. +1123456789",
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: widget.withIcon

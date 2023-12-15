@@ -7,10 +7,7 @@ import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:phone_number/phone_number.dart';
-import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
-import 'package:Wishy/components/form_error.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:Wishy/services/opt_services.dart';
 import 'package:flutter/gestures.dart';
@@ -77,14 +74,16 @@ class _SignFormState extends State<SignForm> {
     setState(() {
       phoneNumber = phone;
     });
+
+    _phoneValidationCompleter!.complete(true);
   }
 
   Future<void> sendOPTNumber() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
       _phoneValidationCompleter = Completer<bool>();
       await _phoneValidationCompleter!.future;
+
       try {
         removeError(error: kInvalidPhoneNumberError);
         authServices.sendOTPService(phoneNumber!);

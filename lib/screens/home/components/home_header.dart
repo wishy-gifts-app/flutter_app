@@ -1,5 +1,7 @@
+import 'package:Wishy/components/interactive_card/interactive_card.dart';
 import 'package:Wishy/components/support.dart';
 import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/analytics.dart';
@@ -9,12 +11,14 @@ import '../../../size_config.dart';
 
 class HomeHeader extends StatefulWidget {
   final double? height;
-  final ValueChanged<Tag?> onTagSelected;
+  final void Function(InteractiveCardData? card) setInteractiveCard;
+  final InteractiveCardData? interactiveCard;
 
   const HomeHeader({
     Key? key,
     this.height,
-    required this.onTagSelected,
+    required this.setInteractiveCard,
+    required this.interactiveCard,
   }) : super(key: key);
 
   @override
@@ -22,47 +26,47 @@ class HomeHeader extends StatefulWidget {
 }
 
 class _HomeHeaderState extends State<HomeHeader> {
-  GraphQLPaginationService _paginationServices = new GraphQLPaginationService(
-    queryName: "getAllTags",
-    variables: {"limit": 20},
-  );
-  List<Tag> _tags = [];
+  late InteractiveCardData _inviteCard;
+  late InteractiveCardData _questionCard;
 
-  Future<void> fetchData() async {
-    final result = await _paginationServices.run();
-
-    if (mounted && result["data"] != null) {
-      setState(() {
-        _tags = (result["data"] as List<dynamic>)
-            .map((item) => Tag.fromJson(item))
-            .toList();
-      });
+  void _fetchInteractiveCardsData() async {
+    try {
+      final _inviteCardResult = await graphQLQueryHandler(
+          "getInteractiveCardByType", {"type": CardTypes.invite.name});
+      final _questionCardResult = await graphQLQueryHandler(
+          "getInteractiveCardByType", {"type": CardTypes.question.name});
+      if (mounted) {
+        _questionCard = InteractiveCardData.fromJson(_questionCardResult);
+        _inviteCard = InteractiveCardData.fromJson(_inviteCardResult);
+      }
+    } catch (error) {
+      print(error);
     }
   }
 
   @override
   void initState() {
-    fetchData();
+    _fetchInteractiveCardsData();
     super.initState();
   }
 
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return FilterDialog(
-          tags: _tags,
-          onTagSelected: (selectedTag) {
-            widget.onTagSelected(selectedTag);
-
-            AnalyticsService.trackEvent(analyticEvents["FILTER_PRODUCTS_FEED"]!,
-                properties: {"Tag": selectedTag?.value});
-
-            Navigator.of(context).pop();
-          },
-        );
-      },
-    );
+  void _setInteractiveDialog(CardTypes type) {
+    switch (type) {
+      case CardTypes.question:
+        if (widget.interactiveCard?.type == CardTypes.question)
+          widget.setInteractiveCard(null);
+        else
+          widget.setInteractiveCard(_questionCard);
+        break;
+      case CardTypes.invite:
+        if (widget.interactiveCard?.type == CardTypes.invite)
+          widget.setInteractiveCard(null);
+        else
+          widget.setInteractiveCard(_inviteCard);
+        break;
+      default:
+        widget.setInteractiveCard(null);
+    }
   }
 
   @override
@@ -71,11 +75,19 @@ class _HomeHeaderState extends State<HomeHeader> {
       height: widget.height,
       child: Padding(
         padding:
-            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
+            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SupportWidget(),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.person_add),
+                    onPressed: () => _setInteractiveDialog(CardTypes.invite),
+                  ),
+                ]),
             Text(
               "Wishy",
               style: TextStyle(
@@ -84,8 +96,8 @@ class _HomeHeaderState extends State<HomeHeader> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.filter_list),
-              onPressed: _showFilterDialog,
+              icon: Icon(Icons.tune),
+              onPressed: () => _setInteractiveDialog(CardTypes.question),
             ),
           ],
         ),

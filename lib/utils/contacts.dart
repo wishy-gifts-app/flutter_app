@@ -20,7 +20,7 @@ Future<void> _fetchAndSaveContacts() async {
     if (element.phones.isNotEmpty &&
         element.phones[0].normalizedNumber.isNotEmpty) {
       followers.add({
-        "phone_number": element.phones[0].normalizedNumber,
+        "phone_number": element.phones[0].number,
         "name": element.displayName
       });
     }

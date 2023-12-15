@@ -35,7 +35,9 @@ Future<dynamic> graphQLQueryHandler(
       headers: {
         "Content-Type": "application/json",
         "auth": token!,
-        "userCountry": GlobalManager().userCountry ?? ""
+        "user_country": GlobalManager().userLocation?.country ?? "",
+        "iso_code": GlobalManager().userLocation?.isoCode ?? "",
+        "session": GlobalManager().session ?? "",
       },
       body: jsonEncode(requestBody),
     );
@@ -66,9 +68,10 @@ class GraphQLPaginationService {
   GraphQLPaginationService(
       {required this.queryName,
       required this.variables,
+      this.cursor = null,
       this.infiniteScroll = false});
 
-  Future<List<dynamic>> runGraphQLQueryWithPagination() async {
+  Future<List<dynamic>> runGraphQLQueryWithPagination(String? newCursor) async {
     final result = await graphQLQueryHandler(
         this.queryName, {...this.variables, "cursor": this.cursor});
     final pageInfo = result['pageInfo'];
@@ -90,7 +93,7 @@ class GraphQLPaginationService {
       };
     }
 
-    final result = await runGraphQLQueryWithPagination();
+    final result = await runGraphQLQueryWithPagination(null);
 
     if (!infiniteScroll && this.cursor == null) {
       this._hasNextPage = false;

@@ -1,9 +1,29 @@
 import 'package:Wishy/models/SignInResponse.dart';
+import 'package:Wishy/models/UserLocationData.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthServices {
+  Future<UserLocationData> userLocationData() async {
+    final response = await http.get(
+      Uri.parse(dotenv.get("LOCATION_DATA_API_URL")),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return UserLocationData.fromJson(data);
+    } else {
+      print(
+          'Failed to fetch user location data, error_message: ${data["message"]}');
+      throw Exception('Failed to fetch user location data');
+    }
+  }
+
   Future<SignInResponse> guestSignInService() async {
     final response = await http.post(
       Uri.parse(dotenv.get("GUEST_SIGN_IN_API_URL")),

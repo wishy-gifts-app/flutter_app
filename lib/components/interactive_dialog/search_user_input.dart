@@ -1,8 +1,7 @@
 import 'dart:async';
-
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/search_user.dart';
-import 'package:Wishy/constants.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 
 class SearchUserInput extends StatefulWidget {
@@ -35,7 +34,7 @@ class _SearchUserInputState extends State<SearchUserInput> {
     setState(() => _phone = phone);
   }
 
-  void _handleUserSelected(int? userId) {
+  void _handleUserSelected(int? userId, bool? isActiveUser) {
     setState(() => _userId = userId);
   }
 
@@ -57,7 +56,6 @@ class _SearchUserInputState extends State<SearchUserInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 230,
         child: Form(
             key: _formKey,
             child: Column(
@@ -67,7 +65,7 @@ class _SearchUserInputState extends State<SearchUserInput> {
                     onPhoneChanged: _handlePhoneChanged,
                     onUserSelected: _handleUserSelected,
                     withIcon: false),
-                SizedBox(height: 10),
+                SizedBox(height: getProportionateScreenHeight(25)),
                 DefaultButton(
                   press: _handleSendInvitation,
                   text: widget.cta,

@@ -38,7 +38,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
   final _formKey = GlobalKey<FormState>();
   Completer<bool>? _phoneValidationCompleter;
 
-  void _onUserSelected(int? userId) {
+  void _onUserSelected(int? userId, bool? isActiveUser) {
     setState(() {
       this.userId = userId;
     });

@@ -47,6 +47,13 @@ T convertValue<T>(dynamic json, String key, bool required,
     } catch (e) {
       throw ArgumentError('Failed to parse DateTime from value');
     }
+  } else if (isTypeOf<T, List<String>, List<String>?>()) {
+    return (value as List).cast<String>() as T;
+  } else if (isTypeOf<T, List<Map<String, String>>,
+      List<Map<String, String>>?>()) {
+    return (value as List)
+        .map((i) => Map<String, String>.from(i as Map))
+        .toList() as T;
   } else {
     throw ArgumentError('Unsupported type: ${T.toString()}');
   }

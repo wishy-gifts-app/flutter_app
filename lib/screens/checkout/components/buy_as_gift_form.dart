@@ -15,7 +15,7 @@ class BuyAsGift extends StatelessWidget {
 
   int? userId;
   String? name, phoneNumber;
-  void _onUserSelected(int? userId) {
+  void _onUserSelected(int? userId, bool? isActiveUser) {
     userId = userId;
   }
 

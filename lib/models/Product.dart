@@ -54,9 +54,8 @@ class Product extends Identifiable {
           : null,
       vendorName: convertValue<String?>(json, 'vendor_name', false),
       deletedAt: convertValue<DateTime?>(json, 'deleted_at', false),
-      tags: (json['tags'] as List<dynamic>)
-          .map((tag) => tag.toString())
-          .toList(), // You can adjust this based on the actual data structure
+      tags:
+          (json['tags'] as List<dynamic>).map((tag) => tag.toString()).toList(),
     );
   }
 }

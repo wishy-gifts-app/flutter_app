@@ -67,6 +67,7 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   device_info_plus: ^9.1.1
   android_id: ^0.3.6
+  uuid: ^4.1.0
 
 dev_dependencies:
   flutter_test:

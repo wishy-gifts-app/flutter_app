@@ -91,8 +91,8 @@ class _ProcessingAnimationWidgetState extends State<ProcessingAnimationWidget>
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: Container(
-              constraints: BoxConstraints(minHeight: 200, maxHeight: 250),
               width: 320,
+              height: 250,
               alignment: Alignment.center,
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(

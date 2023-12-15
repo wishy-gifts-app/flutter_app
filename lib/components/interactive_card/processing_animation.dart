@@ -21,7 +21,6 @@ class _ProcessingAnimationWidgetState extends State<ProcessingAnimationWidget>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _rotationController;
-  bool _showSecondImage = false;
 
   @override
   void initState() {
@@ -104,7 +103,7 @@ class _ProcessingAnimationWidgetState extends State<ProcessingAnimationWidget>
                 ),
               ),
               child: AnimatedCrossFade(
-                duration: const Duration(milliseconds: 1000),
+                duration: const Duration(milliseconds: 500),
                 firstChild: _buildItem('assets/images/android_icon.png'),
                 secondChild:
                     _buildItem('assets/images/recommendations-image.png'),

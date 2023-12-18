@@ -8,7 +8,7 @@ CardTypes getCardTypeFromString(String typeStr) {
     case 'invite':
       return CardTypes.invite;
     default:
-      throw Exception('Unknown card type: $typeStr');
+      return CardTypes.newVersion;
   }
 }
 

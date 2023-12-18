@@ -351,6 +351,18 @@ const Map<String, String> graphqlQueries = {
       }
     }
 """,
+  'saveUserCard': """
+    mutation saveUserCard(
+      \$user_id: Int!,
+      \$card_id: Int!,
+      \$displayed_at: Date,
+      \$session: String,
+    ) {
+      saveUserCard(user_id: \$user_id, card_id: \$card_id, displayed_at: \$displayed_at, session: \$session) {
+        id
+      }
+    }
+""",
   'requestProduct': """
     mutation requestProduct(
       \$variant_id: Int!,
@@ -479,6 +491,26 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'getFeedInteractiveCards': """
+    query getFeedInteractiveCards(
+      \$start_number: Int!,
+      \$end_number: Int!,
+      \$old_swipes: Int,
+    ) {
+      getFeedInteractiveCards(
+        start_number: \$start_number,
+        end_number: \$end_number,
+        old_swipes: \$old_swipes,
+      ) {cards {
+        id
+        type
+        question
+        products_count_trigger
+        background_image_path
+        additional_data
+      }}
+    }
+  """,
   'updateRequestById': """
     mutation updateRequestById(
       \$id: Int!,    
@@ -562,6 +594,28 @@ const Map<String, String> graphqlQueries = {
       userHasNewMatches {
         user_has_new_matches
       }
+    }
+  """,
+  'getStepsProgressData': """
+    query getStepsProgressData {
+      getStepsProgressData {
+          id
+          type
+          step_number
+          tooltip_text
+          is_active
+        }
+    }
+  """,
+  'countOldUserSwipes': """
+    query countOldUserSwipes(
+      \$limit: Int!,
+    ) {
+      countOldUserSwipes(
+        limit: \$limit,
+      ) {
+          result
+        }
     }
   """,
 };

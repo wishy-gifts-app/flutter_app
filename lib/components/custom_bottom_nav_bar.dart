@@ -67,7 +67,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     _checkUserHasNewMatches();
 
     _timer = Timer.periodic(
-        Duration(minutes: 2), (Timer t) => _checkUserHasNewMatches());
+        Duration(minutes: 5), (Timer t) => _checkUserHasNewMatches());
 
     super.initState();
   }

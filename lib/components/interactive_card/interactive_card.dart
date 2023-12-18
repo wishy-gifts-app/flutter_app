@@ -1,12 +1,14 @@
 import 'package:Wishy/components/interactive_card/invite_card.dart';
 import 'package:Wishy/components/interactive_card/processing_animation.dart';
 import 'package:Wishy/components/interactive_card/question_card.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/utils.dart';
+import 'package:Wishy/services/graphql_service.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
-enum CardTypes { question, invite }
+enum CardTypes { question, invite, newVersion }
 
 class InteractiveCard extends StatefulWidget {
   final InteractiveCardData interactiveCardData;
@@ -25,6 +27,7 @@ class InteractiveCard extends StatefulWidget {
 class _InteractiveCardState extends State<InteractiveCard> {
   String? _message = null;
   bool? _refetchProducts = null;
+  int? _userCardId = null;
 
   _closeCard(dynamic v, String message) {
     setState(() {
@@ -40,6 +43,27 @@ class _InteractiveCardState extends State<InteractiveCard> {
 
       widget.closeCard("null");
     });
+  }
+
+  _sendInteractiveCardDisplayed() async {
+    final result = await graphQLQueryHandler("saveUserCard", {
+      "user_id": GlobalManager().userId,
+      "card_id": widget.interactiveCardData.id,
+      "displayed_at": DateTime.now(),
+      "session": GlobalManager().session
+    });
+
+    if (mounted)
+      setState(() {
+        _userCardId = result["id"];
+      });
+  }
+
+  @override
+  void initState() {
+    _sendInteractiveCardDisplayed();
+
+    super.initState();
   }
 
   @override

@@ -18,7 +18,7 @@ void main() async {
   await dotenv.load(fileName: "lib/.env");
   await GlobalManager().initialize();
   final uuid = Uuid();
-
+  GlobalManager().setSession(uuid.v1());
   final authServices = AuthServices();
 
   try {

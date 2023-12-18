@@ -31,7 +31,7 @@ class _SupportWidgetState extends State<SupportWidget> {
     _checkUserHaveNewMessages();
 
     _timer = Timer.periodic(
-        Duration(minutes: 2), (Timer t) => _checkUserHaveNewMessages());
+        Duration(minutes: 5), (Timer t) => _checkUserHaveNewMessages());
 
     super.initState();
   }

@@ -57,7 +57,7 @@ class _SwipeableCardState extends State<SwipeableCard> {
         padding:
             EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
         child: Container(
-            height: MediaQuery.of(context).size.height - 184.3,
+            height: MediaQuery.of(context).size.height - 169,
             width: MediaQuery.of(context).size.width - 19,
             child: SwipeCards(
               onStackFinished: () => {},

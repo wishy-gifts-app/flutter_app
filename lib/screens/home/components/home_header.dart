@@ -1,6 +1,4 @@
 import 'package:Wishy/components/interactive_card/interactive_card.dart';
-import 'package:Wishy/components/support.dart';
-import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -28,6 +26,7 @@ class HomeHeader extends StatefulWidget {
 class _HomeHeaderState extends State<HomeHeader> {
   late InteractiveCardData _inviteCard;
   late InteractiveCardData _questionCard;
+  bool _loading = true;
 
   void _fetchInteractiveCardsData() async {
     try {
@@ -36,8 +35,11 @@ class _HomeHeaderState extends State<HomeHeader> {
       final _questionCardResult = await graphQLQueryHandler(
           "getInteractiveCardByType", {"type": CardTypes.question.name});
       if (mounted) {
-        _questionCard = InteractiveCardData.fromJson(_questionCardResult);
-        _inviteCard = InteractiveCardData.fromJson(_inviteCardResult);
+        setState(() {
+          _questionCard = InteractiveCardData.fromJson(_questionCardResult);
+          _inviteCard = InteractiveCardData.fromJson(_inviteCardResult);
+          _loading = false;
+        });
       }
     } catch (error) {
       print(error);
@@ -97,7 +99,9 @@ class _HomeHeaderState extends State<HomeHeader> {
             ),
             IconButton(
               icon: Icon(Icons.tune),
-              onPressed: () => _setInteractiveDialog(CardTypes.question),
+              onPressed: _loading
+                  ? null
+                  : () => _setInteractiveDialog(CardTypes.question),
             ),
           ],
         ),

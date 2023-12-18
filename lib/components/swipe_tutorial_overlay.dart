@@ -5,8 +5,16 @@ import 'dart:ui';
 
 class SwipeTutorialOverlay extends StatefulWidget {
   final VoidCallback onFinished;
+  final bool right;
+  final bool left;
+  final bool up;
 
-  const SwipeTutorialOverlay({Key? key, required this.onFinished})
+  const SwipeTutorialOverlay(
+      {Key? key,
+      required this.onFinished,
+      this.right = false,
+      this.left = false,
+      this.up = false})
       : super(key: key);
 
   @override
@@ -27,14 +35,29 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
     'Want this? Swipe up to request!',
   ];
 
+  List<int> currentAnimations = [];
+
   void _nextStep() {
-    if (_currentStep < _animations.length - 1) {
+    if (_currentStep < currentAnimations.length - 1) {
       setState(() {
         this._currentStep++;
       });
     } else {
       widget.onFinished();
     }
+  }
+
+  @override
+  void initState() {
+    if (widget.right) currentAnimations.add(0);
+    if (widget.left) currentAnimations.add(1);
+    if (widget.up) currentAnimations.add(2);
+
+    if (currentAnimations.length == 0) currentAnimations.addAll([0, 1, 2]);
+
+    _currentStep = currentAnimations[0];
+
+    super.initState();
   }
 
   @override
@@ -64,9 +87,10 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                      speed: const Duration(milliseconds: 100),
+                      speed: const Duration(milliseconds: 50),
                     ),
                   ],
+                  pause: Duration(milliseconds: 400),
                   totalRepeatCount: 1,
                   onFinished: _nextStep,
                 ),

@@ -5,9 +5,7 @@ import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
-import 'package:lottie/lottie.dart';
 import 'package:swipe_cards/swipe_cards.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 
 List<SwipeItem> buildSwipeItems(
     List<Product> items,
@@ -76,7 +74,6 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
   List<SwipeItem> _swipeItems = <SwipeItem>[];
   MatchEngine? _matchEngine;
   bool isStateEmpty = false;
-  late bool _showAnimation = GlobalManager().showAnimation;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
 
   @override
@@ -198,13 +195,6 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
               child: Text('Request'),
             ),
           ))),
-      if (_showAnimation)
-        SwipeTutorialOverlay(onFinished: () {
-          setState(() {
-            this._showAnimation = false;
-          });
-          GlobalManager().setShowAnimation(false);
-        }),
     ]);
   }
 }

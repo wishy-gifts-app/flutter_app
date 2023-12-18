@@ -1,9 +1,4 @@
-import 'package:Wishy/components/delivery_availability_dialog.dart';
-import 'package:Wishy/screens/home/home_screen.dart';
-import 'package:Wishy/screens/requests/requests_screen.dart';
-import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/router_utils.dart';
-// import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/size_config.dart';
@@ -22,6 +17,8 @@ class _RootScreenState extends State<RootScreen> {
     super.initState();
 
     _navigateBasedOnToken();
+    GlobalManager().setShowAnimation(GlobalManager().token == null);
+    GlobalManager().setParams(newToken: null);
   }
 
   Future<void> _navigateBasedOnToken() async {

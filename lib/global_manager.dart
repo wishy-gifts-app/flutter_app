@@ -4,7 +4,7 @@ import 'package:Wishy/models/UserLocationData.dart';
 class GlobalManager {
   static final GlobalManager _singleton = GlobalManager._internal();
 
-  String? token;
+  String? token = null;
   int? userId;
   String? username;
   bool signedIn = false;

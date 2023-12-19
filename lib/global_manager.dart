@@ -15,6 +15,8 @@ class GlobalManager {
   bool? profileCompleted;
   int? signInRelatedProductId = null;
   String? session = null;
+  String? connectUser = null;
+  bool recommendationExists = false;
 
   factory GlobalManager() {
     return _singleton;
@@ -91,6 +93,18 @@ class GlobalManager {
     UserLocationData value,
   ) {
     userLocation = value;
+  }
+
+  void setConnectUser(
+    String? value,
+  ) {
+    connectUser = value;
+  }
+
+  void setRecommendationExists(
+    bool value,
+  ) {
+    recommendationExists = value;
   }
 
   void setSignInRelatedProductId(

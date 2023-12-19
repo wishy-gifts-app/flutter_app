@@ -19,12 +19,14 @@ class MainProducts extends StatefulWidget {
   final void Function(InteractiveCardData? card) setInteractiveCard;
   final InteractiveCardData? interactiveCard;
   final Function nextProductCounter;
+  final Function(String?) setConnectUser;
 
   MainProducts({
     Key? key,
     required this.interactiveCard,
     required this.setInteractiveCard,
     required this.nextProductCounter,
+    required this.setConnectUser,
   }) : super(key: key);
 
   @override
@@ -41,6 +43,7 @@ class _MainProductsState extends State<MainProducts> {
   int _currentProduct = 0;
   int? _startNumber = null;
   bool _cardResult = false;
+  bool _triggerByServer = false;
 
   void _initializePaginationService(String? cursor) {
     _paginationService = new GraphQLPaginationService(
@@ -154,19 +157,22 @@ class _MainProductsState extends State<MainProducts> {
     }
   }
 
-  void _onCloseInteractiveCard(String? cursor) {
+  void _onCloseInteractiveCard(String? cursor, String? connectUser) {
     setState(() {
       _isInteractiveClose = cursor == null;
       _cardResult = cursor != null;
+      _triggerByServer = false;
     });
+    widget.setConnectUser(connectUser);
 
     if (_isInteractiveClose) return;
 
-// TODO add the cursor and fix to correct id
-    _initializePaginationService(null);
+    _initializePaginationService(cursor);
     setState(() {
       _swipeableProductsKey = ValueKey<int?>(Random().nextInt(1000));
     });
+
+    widget.setConnectUser(connectUser);
   }
 
   void _nextProduct() {
@@ -190,6 +196,7 @@ class _MainProductsState extends State<MainProducts> {
 
       setState(() {
         _triggerCards.remove(activeCards[0]);
+        _triggerByServer = true;
       });
     }
   }
@@ -227,6 +234,7 @@ class _MainProductsState extends State<MainProducts> {
                   onSwipeLeft: () => widget.setInteractiveCard(null),
                   cardBuilder: (context, item) {
                     return InteractiveCard(
+                        triggerByServer: _triggerByServer,
                         interactiveCardData: item,
                         closeCard: _onCloseInteractiveCard);
                   },

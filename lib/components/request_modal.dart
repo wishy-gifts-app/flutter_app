@@ -1,5 +1,6 @@
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/constants.dart';
@@ -204,7 +205,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                     SizedBox(
                       height: getProportionateScreenHeight(20),
                     ),
-                    SearchUserWidget(
+                    SearchContactWidget(
                       onUserSelected: _onUserSelected,
                       onNameChanged: _onNameChanged,
                       onPhoneChanged: _onPhoneChanged,

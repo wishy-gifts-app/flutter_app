@@ -1,3 +1,4 @@
+import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
@@ -186,7 +187,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
               height: getProportionateScreenHeight(10),
             ),
             if (_isGift) ...[
-              SearchUserWidget(
+              SearchContactWidget(
                 onUserSelected: _onUserSelected,
                 onNameChanged: _onNameChanged,
                 onPhoneChanged: _onPhoneChanged,

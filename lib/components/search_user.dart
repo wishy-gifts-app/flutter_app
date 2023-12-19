@@ -94,7 +94,7 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
             });
 
             final result = await graphQLQueryHandler(
-                "isUserActive", {"id": 5, "is_active_user": true});
+                "isPhoneExists", {"id": follower.id, "is_active_user": true});
 
             setState(() {
               _isActiveUser = result["result"];

@@ -12,12 +12,14 @@ enum CardTypes { question, invite, newVersion }
 
 class InteractiveCard extends StatefulWidget {
   final InteractiveCardData interactiveCardData;
-  final Function(String?) closeCard;
+  final Function(String?, String?) closeCard;
+  final bool triggerByServer;
 
   InteractiveCard({
     Key? key,
     required this.interactiveCardData,
     required this.closeCard,
+    required this.triggerByServer,
   }) : super(key: key);
 
   @override
@@ -28,29 +30,44 @@ class _InteractiveCardState extends State<InteractiveCard> {
   String? _message = null;
   bool? _refetchProducts = null;
   int? _userCardId = null;
+  final displayAt = DateTime.now();
 
-  _closeCard(dynamic v, String message) {
+  _closeCard(dynamic response, String message) async {
     setState(() {
       _message = message;
     });
 
-    Future.delayed(Duration(seconds: 2), () {
-      if (mounted)
-        setState(() {
-          _message = "Curating Your Perfect Match...";
-          _refetchProducts = true;
-        });
-
-      widget.closeCard("null");
+    final result = await graphQLQueryHandler("interactiveCardHandler", {
+      "id": _userCardId,
+      "response": response,
+      "card_id": widget.interactiveCardData.id,
+      "displayed_at": displayAt,
+      "type": widget.interactiveCardData.type.name,
     });
+
+    if (mounted)
+      setState(() {
+        _message = result["message"];
+        _refetchProducts = result["cursor"] != null;
+      });
+
+    if (_refetchProducts != true && result["message"] != null) {
+      Future.delayed(Duration(seconds: 2), () {
+        widget.closeCard(result["cursor"], result["connect_user"]);
+      });
+    } else {
+      widget.closeCard(result["cursor"], result["connect_user"]);
+    }
   }
 
   _sendInteractiveCardDisplayed() async {
     final result = await graphQLQueryHandler("saveUserCard", {
+      "type": widget.interactiveCardData.type.name,
       "user_id": GlobalManager().userId,
       "card_id": widget.interactiveCardData.id,
-      "displayed_at": DateTime.now(),
-      "session": GlobalManager().session
+      "displayed_at": displayAt,
+      "session": GlobalManager().session,
+      "trigger_by_server": widget.triggerByServer,
     });
 
     if (mounted)
@@ -61,7 +78,7 @@ class _InteractiveCardState extends State<InteractiveCard> {
 
   @override
   void initState() {
-    _sendInteractiveCardDisplayed();
+    if (widget.triggerByServer) _sendInteractiveCardDisplayed();
 
     super.initState();
   }
@@ -101,40 +118,16 @@ class _InteractiveCardState extends State<InteractiveCard> {
                     refetchProducts: _refetchProducts == true)
                 : SingleChildScrollView(
                     child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RoundedBackgroundText(
-                          widget.interactiveCardData.question,
-                          backgroundColor: Colors.black.withOpacity(0.5),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            wordSpacing: 1,
-                            height: 1.2,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.5),
-                                offset: Offset(1, 1),
-                                blurRadius: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                        getCustomCard(widget.interactiveCardData.type,
-                            widget.interactiveCardData.additionalData)
-                      ],
-                    ),
-                  ))));
+                        padding: EdgeInsets.all(20),
+                        child: getCustomCard(widget.interactiveCardData.type,
+                            widget.interactiveCardData.additionalData)))));
   }
 
   Widget getCustomCard(CardTypes cardType, Map<String, dynamic> data) {
     switch (cardType) {
       case CardTypes.question:
         return QuestionCard(
+          question: widget.interactiveCardData.question,
           hintOptions: convertValue<List<String>>(data, "hint_options", true),
           CTA: data["CTA"],
           priceRanges: convertValue<List<Map<String, String>>>(
@@ -144,6 +137,7 @@ class _InteractiveCardState extends State<InteractiveCard> {
         );
       case CardTypes.invite:
         return InviteCard(
+          question: widget.interactiveCardData.question,
           onSelect: _closeCard,
           CTA: data["CTA"],
         );

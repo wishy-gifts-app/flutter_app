@@ -20,17 +20,16 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
   String? fullName;
   String? email;
-  bool _givePermission = true;
+  bool _givePermission = false;
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
       try {
-        if (_givePermission) {
-          await fetchContacts();
-        }
-
+        // if (_givePermission) {
+        //   await fetchContacts();
+        // }
         await graphQLQueryHandler("updateUserById",
             {"email": email, "name": fullName, "id": GlobalManager().userId});
         await GlobalManager()
@@ -63,20 +62,20 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           SizedBox(height: getProportionateScreenHeight(30)),
           buildEmailFormField(),
           SizedBox(height: getProportionateScreenHeight(20)),
-          CheckboxListTile(
-            title: Text(
-              "Give permission to get contacts for matching with them",
-              style: TextStyle(fontSize: 12),
-            ),
-            value: _givePermission,
-            onChanged: (bool? value) {
-              setState(() {
-                _givePermission = value!;
-              });
-            },
-            controlAffinity: ListTileControlAffinity.leading,
-          ),
-          SizedBox(height: getProportionateScreenHeight(40)),
+          // CheckboxListTile(
+          //   title: Text(
+          //     "Give permission to get contacts for matching with them",
+          //     style: TextStyle(fontSize: 12),
+          //   ),
+          //   value: _givePermission,
+          //   onChanged: (bool? value) {
+          //     setState(() {
+          //       _givePermission = value!;
+          //     });
+          //   },
+          //   controlAffinity: ListTileControlAffinity.leading,
+          // ),
+          SizedBox(height: getProportionateScreenHeight(60)),
           DefaultButton(text: "continue", press: onSubmit),
         ],
       ),

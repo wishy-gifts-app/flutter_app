@@ -339,6 +339,16 @@ const Map<String, String> graphqlQueries = {
     }
   }
 """,
+  'isPhoneExists': """
+    query isPhoneExists(
+      \$phone_number: String!,
+    ) {
+      isPhoneExists(phone_number: \$phone_number) {
+        user_id
+        is_active_user
+    }
+  }
+""",
   'checkoutHandler': """
     mutation checkoutHandler(
       \$variant_id: Int!,
@@ -353,12 +363,15 @@ const Map<String, String> graphqlQueries = {
 """,
   'saveUserCard': """
     mutation saveUserCard(
+      \$type: String!,
       \$user_id: Int!,
       \$card_id: Int!,
       \$displayed_at: Date,
       \$session: String,
+      \$trigger_by_server: Boolean,
     ) {
-      saveUserCard(user_id: \$user_id, card_id: \$card_id, displayed_at: \$displayed_at, session: \$session) {
+      saveUserCard(user_id: \$user_id, card_id: \$card_id, type: \$type,
+      displayed_at: \$displayed_at, session: \$session, trigger_by_server: \$trigger_by_server) {
         id
       }
     }
@@ -616,6 +629,26 @@ const Map<String, String> graphqlQueries = {
       ) {
           result
         }
+    }
+  """,
+  'interactiveCardHandler': """
+    mutation interactiveCardHandler(
+      \$id: Int,  
+      \$card_id: Int,  
+      \$response: JSONObject!,  
+      \$type: String!,  
+      \$displayed_at: String!,  
+    ) {
+      interactiveCardHandler(
+        id: \$id,
+        card_id: \$card_id,
+        response: \$response,
+        type: \$type,
+        displayed_at: \$displayed_at,
+      ) {
+          cursor,
+          message
+      }
     }
   """,
 };

@@ -55,7 +55,7 @@ class _AnimatedHintTextFieldState extends State<AnimatedHintTextField> {
                         speed: Duration(milliseconds: 50),
                       );
                     }).toList(),
-                    pause: Duration(milliseconds: 200),
+                    pause: Duration(milliseconds: 400),
                     displayFullTextOnTap: true,
                   ),
                 )),

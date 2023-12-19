@@ -1,3 +1,4 @@
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/screens/home/components/custom_progress_bar.dart';
 import 'package:Wishy/screens/home/components/home_header.dart';
@@ -13,16 +14,20 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   int _currentProductNumber = 0;
   UniqueKey _homeKey = UniqueKey();
+  String? _connectUser = null;
+
+  void setConnectUser(String? value) {
+    setState(() {
+      _connectUser = value;
+    });
+
+    GlobalManager().setConnectUser(value);
+  }
 
   void nextProductCounter() {
     this.setState(() {
       _currentProductNumber = _currentProductNumber + 1;
     });
-
-    // if (_currentProductNumber == 10)
-    //   this.setState(() {
-    //     _homeKey = UniqueKey();
-    //   });
   }
 
   late InteractiveCardData? _interactiveCard = null;
@@ -44,6 +49,7 @@ class _BodyState extends State<Body> {
             height: 50,
             setInteractiveCard: _setInteractiveCard,
             interactiveCard: _interactiveCard,
+            connectUser: _connectUser,
           ),
           StepProgressBar(
             currentSessionCount: _currentProductNumber,
@@ -55,6 +61,7 @@ class _BodyState extends State<Body> {
               nextProductCounter: nextProductCounter,
               setInteractiveCard: _setInteractiveCard,
               interactiveCard: _interactiveCard,
+              setConnectUser: setConnectUser,
             ),
           ),
           SizedBox(height: getProportionateScreenWidth(10)),

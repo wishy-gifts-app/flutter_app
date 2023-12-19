@@ -7,6 +7,7 @@ import 'package:rounded_background_text/rounded_background_text.dart';
 class QuestionCard extends StatefulWidget {
   final List<String> hintOptions;
   final String CTA;
+  final String question;
   final bool withBudget;
   final List<Map<String, String>> priceRanges;
   final Function(Map<String, dynamic>, String) onSelect;
@@ -16,6 +17,7 @@ class QuestionCard extends StatefulWidget {
     required this.hintOptions,
     required this.onSelect,
     required this.CTA,
+    required this.question,
     required this.priceRanges,
     this.withBudget = true,
   }) : super(key: key);
@@ -46,6 +48,25 @@ class _QuestionCardState extends State<QuestionCard> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        RoundedBackgroundText(
+          widget.question,
+          backgroundColor: Colors.black.withOpacity(0.5),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            wordSpacing: 1,
+            height: 1.2,
+            shadows: [
+              Shadow(
+                color: Colors.black.withOpacity(0.5),
+                offset: Offset(1, 1),
+                blurRadius: 2,
+              ),
+            ],
+          ),
+        ),
         SizedBox(
             height: getProportionateScreenHeight(widget.withBudget ? 15 : 95)),
         if (widget.withBudget)

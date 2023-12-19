@@ -42,6 +42,7 @@ class _AnimatedSwipeableCardWrapperState
   @override
   void initState() {
     super.initState();
+
     _animationController = AnimationController(
       duration: Duration(milliseconds: 500),
       vsync: this,
@@ -58,8 +59,7 @@ class _AnimatedSwipeableCardWrapperState
       }
     });
 
-    _animationController
-        .forward(); // Start the animation when the widget builds
+    _animationController.forward();
 
     Future.delayed(Duration(milliseconds: 300), () {
       if (mounted) {

@@ -27,6 +27,7 @@ class _SignFormState extends State<SignForm> {
   final authServices = AuthServices();
   int selectedIcon = 1;
   Completer<bool>? _phoneValidationCompleter;
+  final TextEditingController _phoneController = TextEditingController();
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -170,6 +171,7 @@ class _SignFormState extends State<SignForm> {
             visible: selectedIcon == 1,
             child: Column(children: [
               PhoneNumberField(
+                controller: _phoneController,
                 onSaved: _onPhoneChanged,
                 onError: (String error) => _onPhoneChanged(null),
               ),

@@ -1,4 +1,5 @@
 import 'package:Wishy/components/interactive_card/interactive_card.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -11,12 +12,14 @@ class HomeHeader extends StatefulWidget {
   final double? height;
   final void Function(InteractiveCardData? card) setInteractiveCard;
   final InteractiveCardData? interactiveCard;
+  final String? connectUser;
 
   const HomeHeader({
     Key? key,
     this.height,
     required this.setInteractiveCard,
     required this.interactiveCard,
+    required this.connectUser,
   }) : super(key: key);
 
   @override
@@ -27,6 +30,7 @@ class _HomeHeaderState extends State<HomeHeader> {
   late InteractiveCardData _inviteCard;
   late InteractiveCardData _questionCard;
   bool _loading = true;
+  late IconData _connectIcon;
 
   void _fetchInteractiveCardsData() async {
     try {
@@ -48,8 +52,19 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   void initState() {
+    _connectIcon = widget.connectUser == null ? Icons.person_add : Icons.group;
     _fetchInteractiveCardsData();
     super.initState();
+  }
+
+  void didUpdateWidget(covariant HomeHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.connectUser != oldWidget.connectUser) {
+      setState(() {
+        _connectIcon =
+            widget.connectUser == null ? Icons.person_add : Icons.group;
+      });
+    }
   }
 
   void _setInteractiveDialog(CardTypes type) {
@@ -86,7 +101,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.person_add),
+                    icon: Icon(widget.connectUser == null
+                        ? Icons.person_add
+                        : Icons.group),
                     onPressed: () => _setInteractiveDialog(CardTypes.invite),
                   ),
                 ]),

@@ -59,8 +59,9 @@ Future<dynamic> graphQLQueryHandler(
 
 class GraphQLPaginationService {
   final String queryName;
-  final Map<String, dynamic> variables;
+  Map<String, dynamic> variables;
   final bool infiniteScroll;
+  final bool cashNextPage;
   Future<List<dynamic>>? _nextPagePromise = null;
   String? cursor;
   bool _hasNextPage = true;
@@ -69,6 +70,7 @@ class GraphQLPaginationService {
       {required this.queryName,
       required this.variables,
       this.cursor = null,
+      this.cashNextPage = true,
       this.infiniteScroll = false});
 
   Future<List<dynamic>> runGraphQLQueryWithPagination(String? newCursor) async {
@@ -93,10 +95,15 @@ class GraphQLPaginationService {
       };
     }
 
-    final result = await runGraphQLQueryWithPagination(null);
+    final result = this._nextPagePromise != null
+        ? await this._nextPagePromise!
+        : await runGraphQLQueryWithPagination(null);
 
     if (!infiniteScroll && this.cursor == null) {
       this._hasNextPage = false;
+    } else if (this.cashNextPage) {
+      this.variables["skip"] = cursor == null ? 0 : result.length;
+      this._nextPagePromise = runGraphQLQueryWithPagination(cursor);
     }
 
     return {

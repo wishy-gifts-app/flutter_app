@@ -46,6 +46,7 @@ class _SwipeableCardState extends State<SwipeableCard> {
   @override
   void initState() {
     super.initState();
+
     _swipeItems = buildSwipeItems(
         widget.items, widget.onSwipeRight, widget.onSwipeLeft, context);
     _matchEngine = MatchEngine(swipeItems: _swipeItems);

@@ -5,7 +5,8 @@ import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 
 void showVariantsModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants, int? recipientId, String situation) {
+    List<Variant> variants, int? recipientId, String situation,
+    {String? cursor}) {
   final variantsObjects = groupVariants(variants);
   int nonNullValueCount =
       variantsObjects.values.where((value) => value != null).length;
@@ -41,6 +42,7 @@ void showVariantsModal(BuildContext context, int productId, String productTitle,
                   productVariants: variants,
                   recipientId: recipientId,
                   situation: situation,
+                  cursor: cursor,
                 )
               ],
             ));

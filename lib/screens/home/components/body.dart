@@ -20,8 +20,6 @@ class _BodyState extends State<Body> {
     setState(() {
       _connectUser = value;
     });
-
-    GlobalManager().setConnectUser(value);
   }
 
   void nextProductCounter() {

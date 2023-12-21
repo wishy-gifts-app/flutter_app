@@ -104,7 +104,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                     icon: Icon(widget.connectUser == null
                         ? Icons.person_add
                         : Icons.group),
-                    onPressed: () => _setInteractiveDialog(CardTypes.invite),
+                    onPressed: _loading
+                        ? null
+                        : () => _setInteractiveDialog(CardTypes.invite),
                   ),
                 ]),
             Text(

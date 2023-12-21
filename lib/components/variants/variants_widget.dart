@@ -49,7 +49,7 @@ Map<String, dynamic> getVariantsById(int variantId, List<Variant> variants) {
 class VariantsWidget extends StatefulWidget {
   final String situation, buttonText;
   final int? productId, variantId, recipientId;
-  final String? productTitle;
+  final String? productTitle, cursor;
   final bool withBuyButton;
   final List<Variant> productVariants;
   final Function(String type, String value)? onVariantChange;
@@ -65,6 +65,7 @@ class VariantsWidget extends StatefulWidget {
     this.variantId,
     this.withBuyButton = true,
     this.recipientId,
+    this.cursor = null,
   }) : super(key: key);
 
   @override
@@ -104,7 +105,8 @@ class _VariantsWidgetState extends State<VariantsWidget> {
       arguments: {
         'variant': this.selectedVariant,
         'productId': widget.productId,
-        'recipientId': widget.recipientId
+        'recipientId': widget.recipientId,
+        'cursor': widget.cursor,
       },
     );
   }

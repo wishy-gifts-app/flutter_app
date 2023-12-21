@@ -94,9 +94,9 @@ class _SupportWidgetState extends State<SupportWidget> {
     );
     final GraphQLPaginationService _paginationService =
         new GraphQLPaginationService(
-      queryName: "startSupport",
-      variables: {"limit": 15},
-    );
+            queryName: "startSupport",
+            variables: {"limit": 15},
+            cashNextPage: false);
 
     Future<List<SupportMessage>?> _fetchData() async {
       final formatResponse = (dynamic result) => (result as List<dynamic>)

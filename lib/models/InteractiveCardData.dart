@@ -7,6 +7,8 @@ CardTypes getCardTypeFromString(String typeStr) {
       return CardTypes.question;
     case 'invite':
       return CardTypes.invite;
+    case 'message':
+      return CardTypes.message;
     default:
       return CardTypes.newVersion;
   }

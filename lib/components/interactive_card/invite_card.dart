@@ -10,12 +10,14 @@ class InviteCard extends StatefulWidget {
   final Function(Map<String, dynamic>, String) onSelect;
   final String CTA;
   final String question;
+  final String? connectUser;
 
   InviteCard({
     Key? key,
     required this.onSelect,
     required this.CTA,
     required this.question,
+    this.connectUser,
   }) : super(key: key);
 
   @override
@@ -71,11 +73,11 @@ class _InviteCardState extends State<InviteCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (GlobalManager().connectUser != null)
+    if (widget.connectUser != null)
       return Column(
         children: [
           RoundedBackgroundText(
-            '${GlobalManager().connectUser} is now connected for gifting. Browse their wishlist to find the perfect gift!',
+            '${widget.connectUser} is now connected for gifting. Browse their wishlist to find the perfect gift!',
             backgroundColor: Colors.black.withOpacity(0.5),
             textAlign: TextAlign.center,
             style: TextStyle(

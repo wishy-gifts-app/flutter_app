@@ -10,9 +10,13 @@ class CheckoutScreen extends StatelessWidget {
   final Variant variant;
   final int productId;
   final int? recipientId;
+  final String? cursor;
 
   CheckoutScreen(
-      {required this.variant, required this.productId, this.recipientId});
+      {required this.variant,
+      required this.productId,
+      this.recipientId,
+      this.cursor = null});
 
   void _redirectToSignInIfNeeded(BuildContext context) {
     if (GlobalManager().signedIn != true) {

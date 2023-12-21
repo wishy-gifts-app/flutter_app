@@ -22,6 +22,7 @@ class DetailsScreen extends StatelessWidget {
         buttonText: args.buttonText,
         variantId: args.variantId,
         recipientId: args.recipientId,
+        cursor: args.cursor,
       ),
     );
   }
@@ -31,10 +32,12 @@ class ProductDetailsArguments {
   final Product product;
   final int? variantId, recipientId;
   final String buttonText;
+  final String? cursor;
 
   ProductDetailsArguments(
       {required this.product,
       this.buttonText = "Buy Now",
       this.variantId,
-      this.recipientId});
+      this.recipientId,
+      this.cursor});
 }

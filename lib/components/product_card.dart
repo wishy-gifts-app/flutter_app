@@ -20,12 +20,14 @@ class ProductCard extends StatefulWidget {
     this.availableHeight,
     this.isFullScreen = false,
     this.isInFront = true,
+    this.cursor,
   }) : super(key: key);
 
   final Product product;
   final bool isFullScreen;
   final double? availableHeight;
   final String situation;
+  final String? cursor;
   final bool isInFront;
 
   @override
@@ -105,14 +107,16 @@ class _ProductCardState extends State<ProductCard> {
 
     if (widget.product.variants!.length > 1) {
       showVariantsModal(context, widget.product.id, widget.product.title,
-          widget.product.variants!, null, widget.situation);
+          widget.product.variants!, null, widget.situation,
+          cursor: widget.cursor);
     } else {
       Navigator.pushNamed(
         context,
         CheckoutScreen.routeName,
         arguments: {
           'variant': widget.product.variants![0],
-          'productId': widget.product.id
+          'productId': widget.product.id,
+          "cursor": widget.cursor
         },
       );
     }
@@ -153,7 +157,8 @@ class _ProductCardState extends State<ProductCard> {
             Navigator.pushNamed(
               context,
               DetailsScreen.routeName,
-              arguments: ProductDetailsArguments(product: widget.product),
+              arguments: ProductDetailsArguments(
+                  product: widget.product, cursor: widget.cursor),
             )
           },
           child: Container(

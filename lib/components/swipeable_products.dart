@@ -71,10 +71,13 @@ class SwipeableProducts extends StatefulWidget {
 }
 
 class _SwipeableProductsState extends State<SwipeableProducts> {
-  List<SwipeItem> _swipeItems = <SwipeItem>[];
-  MatchEngine? _matchEngine;
+  List<SwipeItem> _currentSwipeItems = <SwipeItem>[];
+  List<SwipeItem> _nextSwipeItems = <SwipeItem>[];
+  MatchEngine? _currentMatchEngine;
+  MatchEngine? _nextMatchEngine;
   bool isStateEmpty = false;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
+  bool _isFirstCard = true;
 
   @override
   void dispose() {
@@ -109,17 +112,35 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
     });
   }
 
-  Future<void> fetchItems() async {
+  Future<void> _fetchItems({bool isNextSet = false}) async {
     final results = await widget.nextPage();
 
     if (mounted) {
       if (results != null && results.length > 0) {
-        currentIndex.value = 0;
         setState(() {
-          isStateEmpty = false;
-          _swipeItems = buildSwipeItems(
+          _currentSwipeItems = buildSwipeItems(
               results, onSwipeRight, onSwipeLeft, onSwipeUp, context);
-          _matchEngine = MatchEngine(swipeItems: _swipeItems);
+          _currentMatchEngine = MatchEngine(swipeItems: _currentSwipeItems);
+          isStateEmpty = false;
+        });
+      } else {
+        setState(() {
+          isStateEmpty = true;
+        });
+      }
+    }
+  }
+
+  void _fetchNextItems() async {
+    final nextResults = await widget.nextPage();
+
+    if (mounted) {
+      if (nextResults != null && nextResults.length > 0) {
+        setState(() {
+          _nextSwipeItems = buildSwipeItems(
+              nextResults, onSwipeRight, onSwipeLeft, onSwipeUp, context);
+          _nextMatchEngine = MatchEngine(swipeItems: _nextSwipeItems);
+          isStateEmpty = false;
         });
       } else {
         setState(() {
@@ -132,12 +153,13 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
   @override
   void initState() {
     super.initState();
-    fetchItems();
+    _fetchItems().then((value) => _fetchNextItems());
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_swipeItems.length == 0) {
+    if ((_isFirstCard && _currentSwipeItems.length == 0) ||
+        (!_isFirstCard && _nextSwipeItems.length == 0)) {
       return Center(
           child: Padding(
         padding:
@@ -156,45 +178,85 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
           padding:
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: Container(
-              child: SwipeCards(
-            onStackFinished: fetchItems,
-            matchEngine: _matchEngine!,
-            itemBuilder: (BuildContext context, int index) {
-              return widget.cardBuilder(
-                  context,
-                  _swipeItems[index].content as Product,
-                  currentIndex.value == index);
-            },
-            leftSwipeAllowed: true,
-            rightSwipeAllowed: true,
-            upSwipeAllowed: true,
-            fillSpace: true,
-            itemChanged: (SwipeItem item, int index) {
-              if (index != currentIndex.value) {
-                currentIndex.value = index;
-              }
-            },
-            likeTag: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.green)),
-              child: Text('Like'),
-            ),
-            nopeTag: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-              child: Text('Nope'),
-            ),
-            superLikeTag: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.orange)),
-              child: Text('Request'),
-            ),
-          ))),
+              child: Stack(children: [
+            if (_nextMatchEngine != null && !_isFirstCard)
+              _buildSwipeCards(_nextMatchEngine!, _nextSwipeItems, () {
+                setState(() {
+                  _isFirstCard = true;
+                });
+
+                _fetchNextItems();
+              }),
+            if (_currentMatchEngine != null && _isFirstCard)
+              _buildSwipeCards(_currentMatchEngine!, _currentSwipeItems, () {
+                setState(() {
+                  _isFirstCard = false;
+                });
+
+                _fetchItems();
+              }),
+            if (_nextMatchEngine != null && _isFirstCard)
+              _buildSwipeCards(_nextMatchEngine!, _nextSwipeItems, () {
+                setState(() {
+                  _isFirstCard = false;
+                });
+
+                _fetchNextItems();
+              }),
+            if (_currentMatchEngine != null && !_isFirstCard)
+              _buildSwipeCards(_currentMatchEngine!, _currentSwipeItems, () {
+                setState(() {
+                  _isFirstCard = true;
+                });
+
+                _fetchItems();
+              }),
+          ]))),
     ]);
+  }
+
+  SwipeCards _buildSwipeCards(
+      MatchEngine matchEngine, List<SwipeItem> swipeItems, Function refetch) {
+    return SwipeCards(
+      onStackFinished: () {
+        setState(() {
+          _isFirstCard = !this._isFirstCard;
+        });
+
+        refetch();
+      },
+      matchEngine: matchEngine,
+      itemBuilder: (BuildContext context, int index) {
+        return widget.cardBuilder(context, swipeItems[index].content as Product,
+            currentIndex.value == index);
+      },
+      leftSwipeAllowed: true,
+      rightSwipeAllowed: true,
+      upSwipeAllowed: true,
+      fillSpace: true,
+      itemChanged: (SwipeItem item, int index) {
+        if (index != currentIndex.value) {
+          currentIndex.value = index;
+        }
+      },
+      likeTag: Container(
+        margin: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+        child: Text('Like'),
+      ),
+      nopeTag: Container(
+        margin: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+        child: Text('Nope'),
+      ),
+      superLikeTag: Container(
+        margin: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(border: Border.all(color: Colors.orange)),
+        child: Text('Request'),
+      ),
+    );
   }
 }

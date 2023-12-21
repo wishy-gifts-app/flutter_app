@@ -23,11 +23,13 @@ const Map<String, String> graphqlQueries = {
   'getProductsFeed': """
     query getProductsFeed(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$tag_id: Int
     ) {
       getProductsFeed(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
         tag_id: \$tag_id
       ) {
@@ -71,11 +73,13 @@ const Map<String, String> graphqlQueries = {
   'getLikedProducts': """
     query getLikedProducts(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$is_like: Boolean!,
     ) {
       getLikedProducts(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
         is_like: \$is_like
       ) {
@@ -119,10 +123,12 @@ const Map<String, String> graphqlQueries = {
   'getMatchedProducts': """
     query getMatchedProducts(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
     ) {
       getMatchedProducts(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
       ) {
         results {
@@ -167,11 +173,13 @@ const Map<String, String> graphqlQueries = {
   'getUserOrders': """
     query getUserOrders(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$is_order_completed: Boolean!,
     ) {
       getUserOrders(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
         is_order_completed: \$is_order_completed
       ) {
@@ -228,8 +236,10 @@ const Map<String, String> graphqlQueries = {
       \$product_id: Int!,    
       \$user_id: Int!,
       \$is_like: Boolean!
+      \$cursor: String
     ) {
-      saveLike(product_id: \$product_id, user_id: \$user_id, is_like: \$is_like) {
+      saveLike(product_id: \$product_id, user_id: \$user_id, is_like: \$is_like,
+        cursor: \$cursor) {
         id
       }
     }
@@ -283,10 +293,11 @@ const Map<String, String> graphqlQueries = {
   'getUserAddresses': """
     query getUserAddresses(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$user_id: Int!,
     ) {
-      getUserAddresses(limit: \$limit, cursor: \$cursor, user_id: \$user_id) {
+      getUserAddresses(limit: \$limit,skip:\$skip, cursor: \$cursor, user_id: \$user_id) {
         results {
           id
           country
@@ -355,8 +366,10 @@ const Map<String, String> graphqlQueries = {
       \$quantity: Int!,
       \$address_id: Int!,
       \$recipient_id: Int,
+      \$cursor: String,
     ) {
-      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, recipient_id: \$recipient_id) {
+      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, 
+      `recipient_id: \$recipient_id, cursor: \$cursor) {
         payment_url
       }
     }
@@ -384,8 +397,10 @@ const Map<String, String> graphqlQueries = {
       \$recipient_id: Int,
       \$name: String,
       \$phone_number: String,
+      \$cursor: String,
     ) {
-      requestProduct(variant_id: \$variant_id, product_id: \$product_id, reason: \$reason, recipient_id: \$recipient_id, name: \$name, phone_number: \$phone_number) {
+      requestProduct(variant_id: \$variant_id, product_id: \$product_id, reason: \$reason, 
+      recipient_id: \$recipient_id, name: \$name, phone_number: \$phone_number, cursor: \$cursor) {
         id
       }
     }
@@ -393,10 +408,12 @@ const Map<String, String> graphqlQueries = {
   'getUserRequests': """
     query getUserRequests(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
     ) {
       getUserRequests(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
       ) {
         results {
@@ -637,7 +654,8 @@ const Map<String, String> graphqlQueries = {
       \$card_id: Int,  
       \$response: JSONObject!,  
       \$type: String!,  
-      \$displayed_at: String!,  
+      \$displayed_at: String,  
+      \$current_cursor: String,  
     ) {
       interactiveCardHandler(
         id: \$id,
@@ -645,9 +663,11 @@ const Map<String, String> graphqlQueries = {
         response: \$response,
         type: \$type,
         displayed_at: \$displayed_at,
+        current_cursor: \$current_cursor,
       ) {
           cursor,
-          message
+          message,
+          connect_user
       }
     }
   """,

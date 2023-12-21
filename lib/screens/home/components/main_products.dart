@@ -44,6 +44,10 @@ class _MainProductsState extends State<MainProducts> {
   int? _startNumber = null;
   bool _cardResult = false;
   bool _triggerByServer = false;
+  String? _firstCursor = null;
+  bool _loadingInteractive = false;
+  int? _userCardId = null;
+  String? _connectUser = null;
 
   void _initializePaginationService(String? cursor) {
     _paginationService = new GraphQLPaginationService(
@@ -79,6 +83,9 @@ class _MainProductsState extends State<MainProducts> {
   }
 
   void _fetchFeedCards() async {
+    if (widget.interactiveCard != null || _loadingInteractive) return;
+    _loadingInteractive = true;
+
     if (_startNumber == null) {
       final result = await graphQLQueryHandler("countOldUserSwipes", {
         "limit": 10,
@@ -101,6 +108,7 @@ class _MainProductsState extends State<MainProducts> {
       if (mounted)
         setState(() {
           _triggerCards = formattedResult;
+          _loadingInteractive = false;
         });
 
       triggerCard();
@@ -130,19 +138,17 @@ class _MainProductsState extends State<MainProducts> {
   Future<bool> saveLike(
       int productId, bool isLike, BuildContext context) async {
     _nextProduct();
+
     try {
       await graphQLQueryHandler("saveLike", {
         "product_id": productId,
         "is_like": isLike,
-        "user_id": GlobalManager().userId
+        "user_id": GlobalManager().userId,
+        "cursor": _firstCursor
       });
 
       return true;
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error to save reaction. Please try again.')),
-      );
-
       return false;
     }
   }
@@ -157,11 +163,22 @@ class _MainProductsState extends State<MainProducts> {
     }
   }
 
+  void skipCard() {
+    setState(() {
+      _userCardId = null;
+      _triggerByServer = false;
+    });
+
+    widget.setInteractiveCard(null);
+  }
+
   void _onCloseInteractiveCard(String? cursor, String? connectUser) {
     setState(() {
       _isInteractiveClose = cursor == null;
       _cardResult = cursor != null;
       _triggerByServer = false;
+      _userCardId = null;
+      _connectUser = connectUser;
     });
     widget.setConnectUser(connectUser);
 
@@ -169,6 +186,7 @@ class _MainProductsState extends State<MainProducts> {
 
     _initializePaginationService(cursor);
     setState(() {
+      _firstCursor = cursor;
       _swipeableProductsKey = ValueKey<int?>(Random().nextInt(1000));
     });
 
@@ -198,7 +216,25 @@ class _MainProductsState extends State<MainProducts> {
         _triggerCards.remove(activeCards[0]);
         _triggerByServer = true;
       });
+
+      _sendInteractiveCardDisplayed(activeCards[0]);
     }
+  }
+
+  _sendInteractiveCardDisplayed(InteractiveCardData card) async {
+    final result = await graphQLQueryHandler("saveUserCard", {
+      "type": card.type.name,
+      "user_id": GlobalManager().userId,
+      "card_id": card.id,
+      "displayed_at": DateTime.now(),
+      "session": GlobalManager().session,
+      "trigger_by_server": true,
+    });
+
+    if (mounted)
+      setState(() {
+        _userCardId = result["id"];
+      });
   }
 
   @override
@@ -225,18 +261,21 @@ class _MainProductsState extends State<MainProducts> {
           if (widget.interactiveCard != null)
             AnimatedSwipeableCardWrapper(
                 close: this._isInteractiveClose,
-                closeHandler: () => widget.setInteractiveCard(null),
+                closeHandler: skipCard,
                 type: widget.interactiveCard!.type,
                 child: SwipeableCard(
                   key: ValueKey(widget.interactiveCard?.id),
                   items: [widget.interactiveCard!],
-                  onSwipeRight: () => widget.setInteractiveCard(null),
-                  onSwipeLeft: () => widget.setInteractiveCard(null),
+                  onSwipeRight: skipCard,
+                  onSwipeLeft: skipCard,
                   cardBuilder: (context, item) {
                     return InteractiveCard(
                         triggerByServer: _triggerByServer,
                         interactiveCardData: item,
-                        closeCard: _onCloseInteractiveCard);
+                        currentCursor: _paginationService.cursor,
+                        closeCard: _onCloseInteractiveCard,
+                        userCardId: _userCardId,
+                        connectUser: _connectUser);
                   },
                 )),
           if (_showAnimation)

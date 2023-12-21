@@ -1,4 +1,5 @@
 import 'package:Wishy/components/interactive_card/invite_card.dart';
+import 'package:Wishy/components/interactive_card/message_card.dart';
 import 'package:Wishy/components/interactive_card/processing_animation.dart';
 import 'package:Wishy/components/interactive_card/question_card.dart';
 import 'package:Wishy/global_manager.dart';
@@ -6,20 +7,25 @@ import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/utils.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:flutter/material.dart';
-import 'package:rounded_background_text/rounded_background_text.dart';
 
-enum CardTypes { question, invite, newVersion }
+enum CardTypes { question, invite, message, newVersion }
 
 class InteractiveCard extends StatefulWidget {
   final InteractiveCardData interactiveCardData;
   final Function(String?, String?) closeCard;
   final bool triggerByServer;
+  final String? currentCursor;
+  final int? userCardId;
+  final String? connectUser;
 
   InteractiveCard({
     Key? key,
     required this.interactiveCardData,
     required this.closeCard,
     required this.triggerByServer,
+    required this.currentCursor,
+    this.userCardId,
+    this.connectUser,
   }) : super(key: key);
 
   @override
@@ -29,7 +35,6 @@ class InteractiveCard extends StatefulWidget {
 class _InteractiveCardState extends State<InteractiveCard> {
   String? _message = null;
   bool? _refetchProducts = null;
-  int? _userCardId = null;
   final displayAt = DateTime.now();
 
   _closeCard(dynamic response, String message) async {
@@ -38,11 +43,12 @@ class _InteractiveCardState extends State<InteractiveCard> {
     });
 
     final result = await graphQLQueryHandler("interactiveCardHandler", {
-      "id": _userCardId,
+      "id": widget.userCardId,
       "response": response,
       "card_id": widget.interactiveCardData.id,
       "displayed_at": displayAt,
       "type": widget.interactiveCardData.type.name,
+      "current_cursor": widget.currentCursor
     });
 
     if (mounted)
@@ -58,29 +64,6 @@ class _InteractiveCardState extends State<InteractiveCard> {
     } else {
       widget.closeCard(result["cursor"], result["connect_user"]);
     }
-  }
-
-  _sendInteractiveCardDisplayed() async {
-    final result = await graphQLQueryHandler("saveUserCard", {
-      "type": widget.interactiveCardData.type.name,
-      "user_id": GlobalManager().userId,
-      "card_id": widget.interactiveCardData.id,
-      "displayed_at": displayAt,
-      "session": GlobalManager().session,
-      "trigger_by_server": widget.triggerByServer,
-    });
-
-    if (mounted)
-      setState(() {
-        _userCardId = result["id"];
-      });
-  }
-
-  @override
-  void initState() {
-    if (widget.triggerByServer) _sendInteractiveCardDisplayed();
-
-    super.initState();
   }
 
   @override
@@ -140,6 +123,13 @@ class _InteractiveCardState extends State<InteractiveCard> {
           question: widget.interactiveCardData.question,
           onSelect: _closeCard,
           CTA: data["CTA"],
+          connectUser: widget.connectUser,
+        );
+      case CardTypes.message:
+        return MessageCard(
+          question: widget.interactiveCardData.question,
+          CTA: data["CTA"],
+          closeCard: widget.closeCard,
         );
       default:
         return SizedBox.shrink();

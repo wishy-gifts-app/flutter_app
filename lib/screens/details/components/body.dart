@@ -19,12 +19,14 @@ class Body extends StatelessWidget {
   final Product product;
   final int? variantId, recipientId;
   final String buttonText;
+  final String? cursor;
 
   Body(
       {Key? key,
       required this.product,
       this.buttonText = "Buy Now",
       this.variantId,
+      this.cursor,
       this.recipientId})
       : super(key: key);
   final firstColor = Colors.white;
@@ -115,7 +117,8 @@ class Body extends StatelessWidget {
               arguments: {
                 'variant': product.variants![0],
                 'productId': product.id,
-                'recipientId': recipientId
+                'recipientId': recipientId,
+                "cursor": cursor
               },
             );
           },

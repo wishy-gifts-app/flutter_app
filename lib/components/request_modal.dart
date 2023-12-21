@@ -24,6 +24,7 @@ class RequestData {
 class VariantsAndRequestModal extends StatefulWidget {
   final int productId;
   final String situation, productTitle;
+  final String? cursor;
   final List<Variant> variants;
 
   VariantsAndRequestModal({
@@ -31,6 +32,7 @@ class VariantsAndRequestModal extends StatefulWidget {
     required this.productTitle,
     required this.variants,
     required this.situation,
+    this.cursor,
   });
 
   @override
@@ -93,7 +95,8 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             "phone_number": requestData.phone,
             "reason": requestData.reason,
             "name": requestData.name,
-            "recipient_id": requestData.userId
+            "recipient_id": requestData.userId,
+            "cursor": widget.cursor
           });
 
           AnalyticsService.trackEvent(analyticEvents["PRODUCT_REQUESTED"]!,
@@ -245,7 +248,8 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 }
 
 void showRequestModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants, String situation) async {
+    List<Variant> variants, String situation,
+    {String? cursor = null}) async {
   if (!GlobalManager().isDeliveryAvailable!) {
     await DeliveryAvailabilityDialog.show(context);
 
@@ -276,6 +280,7 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
               situation: situation,
               productTitle: productTitle,
               variants: variants,
+              cursor: cursor,
             ));
       });
 }

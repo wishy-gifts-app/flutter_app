@@ -129,7 +129,7 @@ class _InviteCardState extends State<InviteCard> {
       return Column(
         children: [
           RoundedBackgroundText(
-            '${widget.connectUser} is now connected for gifting. Browse their wishlist to find the perfect gift!',
+            "View ${widget.connectUser}'s Wishlist to find the perfect gift!",
             backgroundColor: Colors.black.withOpacity(0.5),
             textAlign: TextAlign.center,
             style: TextStyle(

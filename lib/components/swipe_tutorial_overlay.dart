@@ -30,8 +30,8 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
   ];
 
   static const _messages = [
-    'Like it? Swipe right!',
-    'Not your style? Swipe left.',
+    'Love this item? Swipe right to add it to your Wishlist.',
+    'Not a fan? Swipe left to skip.',
     'Want this? Swipe up to request!',
   ];
 
@@ -68,11 +68,13 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
       child: Container(
         color: Colors.black45,
         child: Center(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return ScaleTransition(child: child, scale: animation);
-            },
+            child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return ScaleTransition(child: child, scale: animation);
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
             child: Column(
               key: ValueKey<int>(_currentStep),
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +107,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
               ],
             ),
           ),
-        ),
+        )),
       ),
     ));
   }

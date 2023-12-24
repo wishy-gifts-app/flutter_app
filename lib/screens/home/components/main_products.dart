@@ -33,6 +33,7 @@ class MainProducts extends StatefulWidget {
 }
 
 class _MainProductsState extends State<MainProducts> {
+  final int limit = 5;
   final situation = "main_product_card";
   late GraphQLPaginationService _paginationService;
   bool _isInteractiveClose = true;
@@ -49,9 +50,8 @@ class _MainProductsState extends State<MainProducts> {
   void _initializePaginationService(String? cursor) {
     _paginationService = new GraphQLPaginationService(
       firstCursor: cursor,
-      cashNextPage: false,
       queryName: "getProductsFeed",
-      variables: {"limit": 5, "tag_id": null},
+      variables: {"limit": limit, "tag_id": null},
       infiniteScroll: true,
     );
   }
@@ -89,13 +89,12 @@ class _MainProductsState extends State<MainProducts> {
       final result = await graphQLQueryHandler("countOldUserSwipes", {
         "limit": 10,
       });
-      setState(() {
-        _startNumber = result["result"];
-      });
+      _startNumber = result["result"];
     }
+
     final result = await graphQLQueryHandler("getFeedInteractiveCards", {
       "start_number": _currentProduct,
-      "end_number": _currentProduct + 5,
+      "end_number": _currentProduct + limit,
       "old_swipes": _startNumber
     });
 

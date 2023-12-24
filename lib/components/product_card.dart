@@ -300,7 +300,7 @@ class _ProductCardState extends State<ProductCard> {
                             backgroundColor: Colors.black.withOpacity(0.5),
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: widget.isFullScreen ? 16 : 11,
+                              fontSize: widget.isFullScreen ? 16 : 13,
                               shadows: [
                                 Shadow(
                                   color: Colors.black.withOpacity(0.5),
@@ -365,7 +365,7 @@ class _ProductCardState extends State<ProductCard> {
                                 width: getProportionateScreenWidth(5),
                               ),
                               Text(
-                                "${widget.product.likedByUserName} Wishes",
+                                "${widget.product.likedByUserName}'s Wishes",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,

@@ -20,7 +20,7 @@ List<SwipeItem> buildSwipeItems(
       likeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.green[900],
-          content: Text("Like saved"),
+          content: Text("Added to Wishlist!"),
           duration: Duration(milliseconds: 500),
         ));
 
@@ -29,7 +29,7 @@ List<SwipeItem> buildSwipeItems(
       nopeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red[900],
-          content: Text("Nope saved"),
+          content: Text("Item skipped"),
           duration: Duration(milliseconds: 500),
         ));
 
@@ -153,13 +153,12 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
   @override
   void initState() {
     super.initState();
-    _fetchItems().then((value) => _fetchNextItems());
+    _fetchItems();
   }
 
   @override
   Widget build(BuildContext context) {
-    if ((_isFirstCard && _currentSwipeItems.length == 0) ||
-        (!_isFirstCard && _nextSwipeItems.length == 0)) {
+    if (_currentSwipeItems.length == 0) {
       return Center(
           child: Padding(
         padding:
@@ -179,38 +178,8 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: Container(
               child: Stack(children: [
-            if (_nextMatchEngine != null && !_isFirstCard)
-              _buildSwipeCards(_nextMatchEngine!, _nextSwipeItems, () {
-                setState(() {
-                  _isFirstCard = true;
-                });
-
-                _fetchNextItems();
-              }),
-            if (_currentMatchEngine != null && _isFirstCard)
-              _buildSwipeCards(_currentMatchEngine!, _currentSwipeItems, () {
-                setState(() {
-                  _isFirstCard = false;
-                });
-
-                _fetchItems();
-              }),
-            if (_nextMatchEngine != null && _isFirstCard)
-              _buildSwipeCards(_nextMatchEngine!, _nextSwipeItems, () {
-                setState(() {
-                  _isFirstCard = false;
-                });
-
-                _fetchNextItems();
-              }),
-            if (_currentMatchEngine != null && !_isFirstCard)
-              _buildSwipeCards(_currentMatchEngine!, _currentSwipeItems, () {
-                setState(() {
-                  _isFirstCard = true;
-                });
-
-                _fetchItems();
-              }),
+            _buildSwipeCards(
+                _currentMatchEngine!, _currentSwipeItems, _fetchItems),
           ]))),
     ]);
   }
@@ -249,7 +218,7 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
         margin: const EdgeInsets.all(15.0),
         padding: const EdgeInsets.all(3.0),
         decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-        child: Text('Nope'),
+        child: Text('Dislike'),
       ),
       superLikeTag: Container(
         margin: const EdgeInsets.all(15.0),

@@ -67,9 +67,10 @@ class _SignFormState extends State<SignForm> {
         RouterUtils.routeToHomePage(context, false, result.token, false);
       }
     } catch (error) {
-      setState(() {
-        _loadingGuest = false;
-      });
+      if (mounted)
+        setState(() {
+          _loadingGuest = false;
+        });
 
       print(error);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,10 +109,10 @@ class _SignFormState extends State<SignForm> {
             arguments: {'phoneNumber': phoneNumber},
           );
         } catch (error) {
-          setState(() {
-            _loading = false;
-          });
-
+          if (mounted)
+            setState(() {
+              _loading = false;
+            });
           print(error);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to send OTP. Please try again.')),

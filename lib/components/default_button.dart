@@ -12,7 +12,6 @@ class DefaultButton extends StatefulWidget {
     this.text,
     this.press,
     this.enable = true,
-    required this.loading,
     this.pressBackgroundColor = kPrimaryLightColor,
     this.backgroundColor = kPrimaryColor,
   }) : super(key: key);
@@ -21,7 +20,6 @@ class DefaultButton extends StatefulWidget {
   final String? text;
   final Function? press;
   final bool enable;
-  final bool loading;
   final Color backgroundColor, pressBackgroundColor;
 
   @override
@@ -69,41 +67,31 @@ class _DefaultButtonState extends State<DefaultButton>
 
   @override
   void dispose() {
-    _isPressed = false;
     for (var controller in _controllers) {
       controller.dispose();
     }
+
     super.dispose();
   }
 
-  void onPress() async{
-    if (widget.press != null) {await widget.press!();
-    if(mounted)setState((){
-          _isPressed = false;
+  void onPress() async {
+    if (widget.press != null) {
+      setState(() {
+        _isPressed = true;
+      });
+      _startAnimation();
 
-    });
-    }
-    if (widget.eventName != null) {
-      AnalyticsService.trackEvent(widget.eventName!,
-          properties: widget.eventData);
-    }
-  }
+      await widget.press!();
 
-  @override
-  void didUpdateWidget(covariant DefaultButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.loading != oldWidget.loading) {
-      if (widget.loading) {
-        setState(() {
-          _isPressed = true;
-        });
-        _startAnimation();
-      } else {
-        setState(() {
-          _isPressed = false;
-        });
+      if (widget.eventName != null) {
+        AnalyticsService.trackEvent(widget.eventName!,
+            properties: widget.eventData);
       }
+
+      if (mounted)
+        setState(() {
+          _isPressed = false;
+        });
     }
   }
 
@@ -136,7 +124,7 @@ class _DefaultButtonState extends State<DefaultButton>
                     ),
             ),
           ),
-          if (widget.loading)
+          if (_isPressed)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (index) {

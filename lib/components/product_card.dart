@@ -2,6 +2,7 @@ import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/components/delivery_availability_icon.dart';
 import 'package:Wishy/components/request_modal.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/variants/variants_modal.dart';
 import 'package:Wishy/constants.dart';
@@ -9,6 +10,7 @@ import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
@@ -272,6 +274,20 @@ class _ProductCardState extends State<ProductCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
+                      // if (widget.product.likedByUserName != null) ...[
+                      //   Chip(
+                      //     backgroundColor: Colors.purple
+                      //         .withOpacity(0.85), // Distinctive badge color
+                      //     label: Text(
+                      //       "${widget.product.likedByUserName} Likes it",
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: widget.isFullScreen ? 16 : 11,
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   // SizedBox(height: 5),
+                      // ],
                       DeliveryAvailabilityIcon(
                         size: widget.isFullScreen ? 20 : 15,
                       ),
@@ -317,6 +333,47 @@ class _ProductCardState extends State<ProductCard> {
                     ],
                   ),
                 ),
+                if (widget.product.likedByUserName != null)
+                  Positioned.fill(
+                      top: widget.isFullScreen ? 40 : 0,
+                      child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(color: Colors.white, width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child:
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                              SvgPicture.asset(
+                                "assets/icons/Heart Icon_2.svg",
+                                color: Colors.white,
+                                height: getProportionateScreenWidth(16),
+                              ),
+                              SizedBox(
+                                width: getProportionateScreenWidth(5),
+                              ),
+                              Text(
+                                "${widget.product.likedByUserName} Wishes",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: widget.isFullScreen ? 13 : 11,
+                                ),
+                              ),
+                            ]),
+                          ))),
                 if (widget.product.variants == null)
                   Positioned.fill(
                     child: Align(

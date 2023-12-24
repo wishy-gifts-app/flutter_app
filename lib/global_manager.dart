@@ -16,6 +16,10 @@ class GlobalManager {
   int? signInRelatedProductId = null;
   String? session = null;
   bool recommendationExists = false;
+  bool? notificationAvailable = null;
+  bool? newConnectAvailable = null;
+  String? connectUser = null;
+  String? firstFeedCursor = null;
 
   factory GlobalManager() {
     return _singleton;
@@ -32,6 +36,11 @@ class GlobalManager {
     signedIn = signedInStr == 'true';
     String? completedProfileStr = await storage.read(key: 'profile_completed');
     profileCompleted = completedProfileStr == 'true';
+    String? notificationAvailableStr =
+        await storage.read(key: 'notification_available');
+    notificationAvailable = notificationAvailableStr == null
+        ? null
+        : notificationAvailableStr == 'true';
   }
 
   Future<void> setParams({
@@ -40,6 +49,7 @@ class GlobalManager {
     int? newUserId,
     bool? newSignedIn,
     bool? newProfileCompleted,
+    bool? newNotificationAvailable,
   }) async {
     final storage = FlutterSecureStorage();
 
@@ -68,41 +78,23 @@ class GlobalManager {
       await storage.write(
           key: 'profile_completed', value: newProfileCompleted.toString());
     }
+
+    if (newNotificationAvailable != null) {
+      notificationAvailable = newNotificationAvailable;
+      await storage.write(
+          key: 'notification_available',
+          value: newNotificationAvailable.toString());
+    }
   }
 
-  void navigateToRequest(bool value) {
-    shouldNavigateToRequest = value;
-  }
-
-  void setShowAnimation(bool value) {
-    showAnimation = value;
-  }
-
-  void setSession(String value) {
-    session = value;
-  }
-
-  void setDeliveryAvailability(
-    bool value,
-  ) {
-    isDeliveryAvailable = value;
-  }
-
-  void setUserLocation(
-    UserLocationData value,
-  ) {
-    userLocation = value;
-  }
-
-  void setRecommendationExists(
-    bool value,
-  ) {
-    recommendationExists = value;
-  }
-
-  void setSignInRelatedProductId(
-    int? value,
-  ) {
-    signInRelatedProductId = value;
-  }
+  void navigateToRequest(bool value) => shouldNavigateToRequest = value;
+  void setShowAnimation(bool value) => showAnimation = value;
+  void setSession(String value) => session = value;
+  void setDeliveryAvailability(bool value) => isDeliveryAvailable = value;
+  void setNewConnectAvailable(bool value) => newConnectAvailable = value;
+  void setUserLocation(UserLocationData value) => userLocation = value;
+  void setRecommendationExists(bool value) => recommendationExists = value;
+  void setSignInRelatedProductId(int? value) => signInRelatedProductId = value;
+  void setConnectUser(String? value) => connectUser = value;
+  void setFirstFeedCursor(String? value) => firstFeedCursor = value;
 }

@@ -20,6 +20,8 @@ class InteractiveCardData extends Identifiable {
   final String question, backgroundImagePath;
   final int? productsCountTrigger;
   final Map<String, dynamic> additionalData;
+  final Map<String, dynamic> customData;
+  final int? customTriggerId;
 
   InteractiveCardData(
       {required this.id,
@@ -27,6 +29,8 @@ class InteractiveCardData extends Identifiable {
       required this.question,
       required this.backgroundImagePath,
       this.additionalData = const {},
+      this.customData = const {},
+      this.customTriggerId = null,
       this.productsCountTrigger});
 
   factory InteractiveCardData.fromJson(Map<String, dynamic> json) {
@@ -38,7 +42,9 @@ class InteractiveCardData extends Identifiable {
       question: convertValue<String>(json, 'question', true),
       backgroundImagePath:
           convertValue<String>(json, 'background_image_path', true),
+      customTriggerId: convertValue<int?>(json, 'custom_trigger_id', false),
       additionalData: json["additional_data"],
+      customData: json["custom_data"] ?? {},
     );
   }
 }

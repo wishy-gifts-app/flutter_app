@@ -2,7 +2,10 @@ import 'dart:async';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/Follower.dart';
+import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
+import 'package:Wishy/utils/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
@@ -11,6 +14,7 @@ class InviteCard extends StatefulWidget {
   final String CTA;
   final String question;
   final String? connectUser;
+  final Follower? suggestUser;
 
   InviteCard({
     Key? key,
@@ -18,6 +22,7 @@ class InviteCard extends StatefulWidget {
     required this.CTA,
     required this.question,
     this.connectUser,
+    this.suggestUser,
   }) : super(key: key);
 
   @override
@@ -31,6 +36,9 @@ class _InviteCardState extends State<InviteCard> {
   String? _phone;
   int? _userId;
   bool? _isActiveUser;
+  bool _giveNotificationPermission = true;
+  bool _loading = false;
+  bool _press = false;
 
   void _handleNameChanged(String? name) {
     setState(() => _name = name);
@@ -39,6 +47,8 @@ class _InviteCardState extends State<InviteCard> {
   void _handlePhoneChanged(String? phone) {
     setState(() => _phone = phone);
     _phoneValidationCompleter!.complete(true);
+
+    if (!_press) _handleSendInvitation();
   }
 
   void _handleUserSelected(int? userId, bool? isActiveUser) {
@@ -49,6 +59,7 @@ class _InviteCardState extends State<InviteCard> {
   }
 
   void _handleSendInvitation() async {
+    _press = true;
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -58,6 +69,23 @@ class _InviteCardState extends State<InviteCard> {
       }
 
       if (_userId != null || _phone != null) {
+        setState(() {
+          _loading = true;
+        });
+
+        if (_giveNotificationPermission &&
+            GlobalManager().notificationAvailable == null) {
+          Map<String, dynamic> notificationData =
+              await requestNotificationPermission();
+
+          graphQLQueryHandler("updateUserById", {
+            "id": GlobalManager().userId,
+            "notification_available": notificationData["available"],
+            "fcm_token": notificationData["fcmToken"],
+          }).then((v) => GlobalManager().setParams(
+              newNotificationAvailable: notificationData["available"]));
+        }
+
         widget.onSelect(
             {"name": _name, "user_id": _userId, "phone_number": _phone},
             this._isActiveUser == true
@@ -65,10 +93,34 @@ class _InviteCardState extends State<InviteCard> {
                 : "Inviting ${_name} to Share...");
       }
     }
+
+    _press = false;
   }
 
   void _handleDisconnect() async {
+    setState(() {
+      _loading = true;
+    });
+
     widget.onSelect({"disconnect": true}, "Disconnecting...");
+  }
+
+  _initSuggestUser() {
+    if (widget.suggestUser != null && mounted) {
+      setState(() {
+        _name = widget.suggestUser!.name;
+        _phone = widget.suggestUser!.phoneNumber;
+        _userId = widget.suggestUser!.id;
+        _isActiveUser = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _initSuggestUser();
+
+    super.initState();
   }
 
   @override
@@ -97,6 +149,7 @@ class _InviteCardState extends State<InviteCard> {
           ),
           SizedBox(height: getProportionateScreenHeight(50)),
           DefaultButton(
+            loading: _loading,
             press: _handleDisconnect,
             text: "Disconnect",
           ),
@@ -131,9 +184,27 @@ class _InviteCardState extends State<InviteCard> {
                 onNameChanged: _handleNameChanged,
                 onPhoneChanged: _handlePhoneChanged,
                 onUserSelected: _handleUserSelected,
+                defaultUser: widget.suggestUser,
                 withIcon: false),
-            SizedBox(height: getProportionateScreenHeight(25)),
+            SizedBox(height: getProportionateScreenHeight(20)),
+            if (GlobalManager().notificationAvailable == null)
+              CheckboxListTile(
+                title: RoundedBackgroundText(
+                  "Invitation Watch: Get quick updates on friend’s gift choices",
+                  backgroundColor: Colors.white.withOpacity(0.6),
+                  style: TextStyle(fontSize: 12),
+                ),
+                value: _giveNotificationPermission,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _giveNotificationPermission = value!;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+            SizedBox(height: getProportionateScreenHeight(5)),
             DefaultButton(
+              loading: _loading,
               press: _handleSendInvitation,
               text: widget.CTA,
             ),

@@ -1,3 +1,5 @@
+import 'package:Wishy/components/support.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/requests/requests_screen.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/analytics.dart';
@@ -50,34 +52,6 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         });
   }
 
-  Timer? _timer;
-
-  void _checkUserHasNewMatches() async {
-    final result = await graphQLQueryHandler("userHasNewMatches", {});
-
-    if (mounted) {
-      setState(() {
-        showNewMatchesPoint = result["user_has_new_matches"];
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    _checkUserHasNewMatches();
-
-    _timer = Timer.periodic(
-        Duration(minutes: 5), (Timer t) => _checkUserHasNewMatches());
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -105,31 +79,41 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                   HomeScreen.routeName, context),
               generateIconButton("assets/icons/Heart Icon.svg",
                   MenuState.favorite, LikesScreen.routeName, context),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  generateIconButton("assets/icons/matches.svg",
-                      MenuState.matches, MatchesScreen.routeName, context,
-                      height: 22),
-                  if (showNewMatchesPoint)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                ],
+              generateIconButton(
+                "assets/icons/matches.svg",
+                MenuState.matches,
+                MatchesScreen.routeName,
+                context,
               ),
               generateIconButton("assets/icons/Chat bubble Icon.svg",
                   MenuState.message, RequestsScreen.routeName, context),
-              generateIconButton("assets/icons/User Icon.svg",
-                  MenuState.profile, ProfileScreen.routeName, context),
+              generateIconButton(
+                "assets/icons/User Icon.svg",
+                MenuState.profile,
+                ProfileScreen.routeName,
+                context,
+              )
+              // Stack(
+              //   alignment: Alignment.center,
+              //   children: [
+              //     generateIconButton("assets/icons/User Icon.svg",
+              //         MenuState.profile, ProfileScreen.routeName, context,
+              //         height: 22),
+              //     if (showNewMatchesPoint)
+              //       Positioned(
+              //         top: 0,
+              //         right: 0,
+              //         child: Container(
+              //           width: 10,
+              //           height: 10,
+              //           decoration: BoxDecoration(
+              //             color: Colors.red,
+              //             shape: BoxShape.circle,
+              //           ),
+              //         ),
+              //       ),
+              //   ],
+              // ),
             ],
           )),
     );

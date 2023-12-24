@@ -27,7 +27,7 @@ class Body extends StatelessWidget {
             ),
             Text(
               GlobalManager().signInRelatedProductId == null
-                  ? "Enter your Wishy world – where every visit brings something new"
+                  ? "Enter your phone number to start exploring your Wishy world"
                   : "Please add your phone number to finalize your action",
               textAlign: TextAlign.center,
             ),

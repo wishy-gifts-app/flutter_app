@@ -6,7 +6,9 @@ const Map<String, String> graphqlQueries = {
       \$name: String,
       \$email: String,
       \$gender: String,
-      \$birthday: Date
+      \$birthday: Date,
+      \$fcm_token: String,
+      \$notification_available: Boolean,
     ) {
       updateUserById(
         id: \$id,
@@ -15,6 +17,8 @@ const Map<String, String> graphqlQueries = {
         email: \$email,
         gender: \$gender,
         birthday: \$birthday
+        fcm_token: \$fcm_token
+        notification_available: \$notification_available
       ) {
         id
       }
@@ -44,6 +48,7 @@ const Map<String, String> graphqlQueries = {
           tags
           is_like
           is_available
+          liked_by_user_name
           variants {
             id
             title
@@ -382,9 +387,11 @@ const Map<String, String> graphqlQueries = {
       \$displayed_at: Date,
       \$session: String,
       \$trigger_by_server: Boolean,
+      \$custom_trigger_id: Int,
     ) {
       saveUserCard(user_id: \$user_id, card_id: \$card_id, type: \$type,
-      displayed_at: \$displayed_at, session: \$session, trigger_by_server: \$trigger_by_server) {
+      displayed_at: \$displayed_at, session: \$session, 
+      trigger_by_server: \$trigger_by_server, custom_trigger_id:\$custom_trigger_id) {
         id
       }
     }
@@ -508,9 +515,11 @@ const Map<String, String> graphqlQueries = {
   'getInteractiveCardByType': """
     query getInteractiveCardByType(
       \$type: String!,
+      \$is_default: Boolean!,
     ) {
       getInteractiveCardByType(
         type: \$type,
+        is_default: \$is_default,
       ) {
         id
         type
@@ -518,6 +527,8 @@ const Map<String, String> graphqlQueries = {
         products_count_trigger
         background_image_path
         additional_data
+        custom_data
+        custom_trigger_id
       }
     }
   """,
@@ -538,6 +549,8 @@ const Map<String, String> graphqlQueries = {
         products_count_trigger
         background_image_path
         additional_data
+        custom_trigger_id
+        custom_data
       }}
     }
   """,
@@ -652,10 +665,11 @@ const Map<String, String> graphqlQueries = {
     mutation interactiveCardHandler(
       \$id: Int,  
       \$card_id: Int,  
-      \$response: JSONObject!,  
+      \$response: JSONObject,  
       \$type: String!,  
       \$displayed_at: String,  
       \$current_cursor: String,  
+      \$custom_trigger_id: Int,  
     ) {
       interactiveCardHandler(
         id: \$id,
@@ -664,6 +678,7 @@ const Map<String, String> graphqlQueries = {
         type: \$type,
         displayed_at: \$displayed_at,
         current_cursor: \$current_cursor,
+        custom_trigger_id:\$custom_trigger_id
       ) {
           cursor,
           message,

@@ -32,8 +32,6 @@ class _FadeHintTextFieldState extends State<FadeHintTextField> {
   }
 
   void _updateHintVisibility() {
-    print(widget.textField.controller?.text.isEmpty);
-
     if (mounted) {
       setState(() {
         _showHint = widget.textField.controller?.text.isEmpty ?? true;

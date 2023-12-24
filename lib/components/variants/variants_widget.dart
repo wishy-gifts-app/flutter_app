@@ -77,6 +77,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
   final firstColor = Colors.white;
   final secondColor = Color(0xFFF6F7F9);
   late Variant selectedVariant;
+  bool _loading = false;
 
   void _onVariantChange(String type, String value) {
     if (widget.onVariantChange != null) widget.onVariantChange!(type, value);
@@ -91,6 +92,9 @@ class _VariantsWidgetState extends State<VariantsWidget> {
   }
 
   void _onBuyPressed(BuildContext context) async {
+    setState(() {
+      _loading = true;
+    });
     if (!GlobalManager().isDeliveryAvailable!) {
       await DeliveryAvailabilityDialog.show(context);
 
@@ -140,6 +144,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
           top: getProportionateScreenWidth(15),
         ),
         child: DefaultButton(
+          loading: _loading,
           text:
               "${widget.buttonText} ${marketDetails["symbol"]}${this.selectedVariant.price}",
           eventName: analyticEvents["CHECKOUT_PRESSED"]!,

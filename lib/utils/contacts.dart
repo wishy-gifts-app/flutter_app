@@ -33,9 +33,6 @@ class Contacts {
     }).toList();
 
     final s = filteredContacts.map((e) {
-      print(e.displayName);
-      print(e.phones);
-
       return Follower(
           name: e.displayName,
           phoneNumber: e.phones.isNotEmpty ? e.phones[0].number : "");

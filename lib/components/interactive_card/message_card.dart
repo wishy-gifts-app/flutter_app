@@ -7,15 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
 class MessageCard extends StatefulWidget {
+  static bool sent = false;
+
   final String CTA;
   final String question;
   final Function(String?, String?) closeCard;
+  final Function(Map<String, dynamic>, String) onSelect;
 
   MessageCard({
     Key? key,
     required this.CTA,
     required this.question,
     required this.closeCard,
+    required this.onSelect,
   }) : super(key: key);
 
   @override
@@ -23,10 +27,19 @@ class MessageCard extends StatefulWidget {
 }
 
 class _MessageCardState extends State<MessageCard> {
+  void _sendRequest() {
+    if (!MessageCard.sent) {
+      MessageCard.sent = true;
+
+      widget.onSelect(new Map(), "");
+      widget.closeCard(null, null);
+    }
+  }
+
   @override
   void initState() {
     Future.delayed(Duration(seconds: 5), () {
-      widget.closeCard(null, null);
+      _sendRequest();
     });
 
     super.initState();
@@ -57,6 +70,7 @@ class _MessageCardState extends State<MessageCard> {
         ),
         SizedBox(height: getProportionateScreenHeight(50)),
         DefaultButton(
+          loading: false,
           press: () => widget.closeCard(null, null),
           text: widget.CTA,
         ),

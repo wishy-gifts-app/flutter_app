@@ -8,38 +8,24 @@ import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/analytics.dart';
 
 class SupportWidget extends StatefulWidget {
+  static bool? newSupportMessage = null;
+
   @override
   _SupportWidgetState createState() => _SupportWidgetState();
 }
 
 class _SupportWidgetState extends State<SupportWidget> {
-  bool hasNewMessage = false;
-  Timer? _timer;
+  Future<void> _checkUserHaveNewMessages() async {
+    if (SupportWidget.newSupportMessage != null) return;
 
-  void _checkUserHaveNewMessages() async {
     final result = await graphQLQueryHandler("userHasNewMessages", {});
-
-    if (mounted) {
-      setState(() {
-        hasNewMessage = result["user_has_new_messages"];
-      });
-    }
+    SupportWidget.newSupportMessage = result["user_has_new_messages"];
   }
 
   @override
   void initState() {
     _checkUserHaveNewMessages();
-
-    _timer = Timer.periodic(
-        Duration(minutes: 5), (Timer t) => _checkUserHaveNewMessages());
-
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   @override
@@ -50,13 +36,11 @@ class _SupportWidgetState extends State<SupportWidget> {
         IconButton(
           icon: Icon(Icons.support_agent),
           onPressed: () {
-            setState(() {
-              hasNewMessage = false;
-            });
+            SupportWidget.newSupportMessage = false;
             _showSupportDialog(context);
           },
         ),
-        if (hasNewMessage)
+        if (SupportWidget.newSupportMessage == true)
           Positioned(
             top: 0,
             right: 0,

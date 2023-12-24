@@ -70,6 +70,9 @@ dependencies:
   uuid: ^4.1.0
   percent_indicator: ^4.2.3
   step_progress_indicator: ^1.0.2
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.9
+  firebase_crashlytics: ^3.4.8
 
 dev_dependencies:
   flutter_test:

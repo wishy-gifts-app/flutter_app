@@ -13,7 +13,6 @@ import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import '../../../size_config.dart';
-import 'dart:math';
 
 class MainProducts extends StatefulWidget {
   final void Function(InteractiveCardData? card) setInteractiveCard;
@@ -44,14 +43,13 @@ class _MainProductsState extends State<MainProducts> {
   int? _startNumber = null;
   bool _cardResult = false;
   bool _triggerByServer = false;
-  String? _firstCursor = null;
   bool _loadingInteractive = false;
   int? _userCardId = null;
-  String? _connectUser = null;
 
   void _initializePaginationService(String? cursor) {
     _paginationService = new GraphQLPaginationService(
-      cursor: cursor,
+      firstCursor: cursor,
+      cashNextPage: false,
       queryName: "getProductsFeed",
       variables: {"limit": 5, "tag_id": null},
       infiniteScroll: true,
@@ -61,7 +59,7 @@ class _MainProductsState extends State<MainProducts> {
   @override
   void initState() {
     super.initState();
-    _initializePaginationService(null);
+    _initializePaginationService(GlobalManager().firstFeedCursor);
 
     Future.delayed(
         Duration(seconds: 6), () => _showAvailabilityDialogIfNeeded());
@@ -79,7 +77,8 @@ class _MainProductsState extends State<MainProducts> {
     _nextProduct();
 
     showRequestModal(
-        context, product.id, product.title, product.variants ?? [], situation);
+        context, product.id, product.title, product.variants ?? [], situation,
+        cursor: _paginationService.firstCursor);
   }
 
   void _fetchFeedCards() async {
@@ -144,7 +143,7 @@ class _MainProductsState extends State<MainProducts> {
         "product_id": productId,
         "is_like": isLike,
         "user_id": GlobalManager().userId,
-        "cursor": _firstCursor
+        "cursor": _paginationService.firstCursor
       });
 
       return true;
@@ -178,19 +177,19 @@ class _MainProductsState extends State<MainProducts> {
       _cardResult = cursor != null;
       _triggerByServer = false;
       _userCardId = null;
-      _connectUser = connectUser;
     });
     widget.setConnectUser(connectUser);
 
     if (_isInteractiveClose) return;
 
+    GlobalManager().setFirstFeedCursor(cursor);
     _initializePaginationService(cursor);
-    setState(() {
-      _firstCursor = cursor;
-      _swipeableProductsKey = ValueKey<int?>(Random().nextInt(1000));
-    });
 
     widget.setConnectUser(connectUser);
+
+    setState(() {
+      _swipeableProductsKey = ValueKey<String?>(cursor);
+    });
   }
 
   void _nextProduct() {
@@ -229,6 +228,7 @@ class _MainProductsState extends State<MainProducts> {
       "displayed_at": DateTime.now(),
       "session": GlobalManager().session,
       "trigger_by_server": true,
+      "custom_trigger_id": card.customTriggerId,
     });
 
     if (mounted)
@@ -252,10 +252,12 @@ class _MainProductsState extends State<MainProducts> {
             showAnimation: true,
             cardBuilder: (context, product, isInFront) {
               return ProductCard(
-                  situation: situation,
-                  product: product,
-                  isFullScreen: true,
-                  isInFront: isInFront);
+                situation: situation,
+                product: product,
+                isFullScreen: true,
+                isInFront: isInFront,
+                cursor: _paginationService.firstCursor,
+              );
             },
           ),
           if (widget.interactiveCard != null)
@@ -272,10 +274,10 @@ class _MainProductsState extends State<MainProducts> {
                     return InteractiveCard(
                         triggerByServer: _triggerByServer,
                         interactiveCardData: item,
-                        currentCursor: _paginationService.cursor,
+                        currentCursor: _paginationService.firstCursor,
                         closeCard: _onCloseInteractiveCard,
                         userCardId: _userCardId,
-                        connectUser: _connectUser);
+                        connectUser: GlobalManager().connectUser);
                   },
                 )),
           if (_showAnimation)

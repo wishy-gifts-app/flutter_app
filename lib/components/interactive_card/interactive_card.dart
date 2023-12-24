@@ -3,6 +3,7 @@ import 'package:Wishy/components/interactive_card/message_card.dart';
 import 'package:Wishy/components/interactive_card/processing_animation.dart';
 import 'package:Wishy/components/interactive_card/question_card.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/utils.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -37,33 +38,35 @@ class _InteractiveCardState extends State<InteractiveCard> {
   bool? _refetchProducts = null;
   final displayAt = DateTime.now();
 
-  _closeCard(dynamic response, String message) async {
-    setState(() {
-      _message = message;
-    });
+  _onSelect(dynamic response, String message) async {
+    if (mounted)
+      setState(() {
+        _message = message;
+      });
 
-    final result = await graphQLQueryHandler("interactiveCardHandler", {
+    graphQLQueryHandler("interactiveCardHandler", {
       "id": widget.userCardId,
       "response": response,
       "card_id": widget.interactiveCardData.id,
       "displayed_at": displayAt,
       "type": widget.interactiveCardData.type.name,
-      "current_cursor": widget.currentCursor
+      "current_cursor": widget.currentCursor,
+      "custom_trigger_id": widget.interactiveCardData.customTriggerId,
+    }).then((result) {
+      if (mounted)
+        setState(() {
+          _message = result["message"];
+          _refetchProducts = result["cursor"] != null;
+        });
+
+      if (_refetchProducts != true && result?["message"] != null) {
+        Future.delayed(Duration(seconds: 2), () {
+          widget.closeCard(result["cursor"], result["connect_user"]);
+        });
+      } else {
+        widget.closeCard(result?["cursor"], result?["connect_user"]);
+      }
     });
-
-    if (mounted)
-      setState(() {
-        _message = result["message"];
-        _refetchProducts = result["cursor"] != null;
-      });
-
-    if (_refetchProducts != true && result["message"] != null) {
-      Future.delayed(Duration(seconds: 2), () {
-        widget.closeCard(result["cursor"], result["connect_user"]);
-      });
-    } else {
-      widget.closeCard(result["cursor"], result["connect_user"]);
-    }
   }
 
   @override
@@ -102,11 +105,14 @@ class _InteractiveCardState extends State<InteractiveCard> {
                 : SingleChildScrollView(
                     child: Padding(
                         padding: EdgeInsets.all(20),
-                        child: getCustomCard(widget.interactiveCardData.type,
-                            widget.interactiveCardData.additionalData)))));
+                        child: getCustomCard(
+                            widget.interactiveCardData.type,
+                            widget.interactiveCardData.additionalData,
+                            widget.interactiveCardData.customData)))));
   }
 
-  Widget getCustomCard(CardTypes cardType, Map<String, dynamic> data) {
+  Widget getCustomCard(CardTypes cardType, Map<String, dynamic> data,
+      Map<String, dynamic> customData) {
     switch (cardType) {
       case CardTypes.question:
         return QuestionCard(
@@ -116,20 +122,23 @@ class _InteractiveCardState extends State<InteractiveCard> {
           priceRanges: convertValue<List<Map<String, String>>>(
               data, "price_ranges", true),
           withBudget: convertValue<bool>(data, "with_budget", true),
-          onSelect: _closeCard,
+          onSelect: _onSelect,
         );
       case CardTypes.invite:
         return InviteCard(
-          question: widget.interactiveCardData.question,
-          onSelect: _closeCard,
-          CTA: data["CTA"],
-          connectUser: widget.connectUser,
-        );
+            question: widget.interactiveCardData.question,
+            onSelect: _onSelect,
+            CTA: data["CTA"],
+            connectUser: widget.connectUser,
+            suggestUser: customData["suggest_user"] != null
+                ? Follower.fromJson(customData["suggest_user"])
+                : null);
       case CardTypes.message:
         return MessageCard(
           question: widget.interactiveCardData.question,
           CTA: data["CTA"],
           closeCard: widget.closeCard,
+          onSelect: _onSelect,
         );
       default:
         return SizedBox.shrink();

@@ -36,6 +36,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
   String? name, phoneNumber;
   late bool _isGift;
   int? _recipientId;
+  bool _loading = false;
   final _formKey = GlobalKey<FormState>();
   Completer<bool>? _phoneValidationCompleter;
 
@@ -88,7 +89,9 @@ class _PurchaseFormState extends State<PurchaseForm> {
         );
         return;
       }
-
+      setState(() {
+        _loading = true;
+      });
       final result = await graphQLQueryHandler("checkoutHandler", {
         "variant_id": widget.variantId,
         "quantity": 1,
@@ -123,6 +126,10 @@ class _PurchaseFormState extends State<PurchaseForm> {
         throw Exception('Payment URL not available');
       }
     } catch (error) {
+      setState(() {
+        _loading = false;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
             'Unable to upload payment method. Please check your information and try again.'),
@@ -278,6 +285,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 }),
             SizedBox(height: getProportionateScreenHeight(20)),
             PaymentButton(
+              loading: _loading,
               price: widget.price,
               onSubmit: onSubmit,
               enable: _addresses != null && _addresses!.length > 0,

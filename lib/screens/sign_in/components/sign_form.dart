@@ -28,6 +28,8 @@ class _SignFormState extends State<SignForm> {
   int selectedIcon = 1;
   Completer<bool>? _phoneValidationCompleter;
   final TextEditingController _phoneController = TextEditingController();
+  bool _loadingGuest = false;
+  bool _loading = false;
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -44,6 +46,9 @@ class _SignFormState extends State<SignForm> {
   }
 
   Future<void> skipSignIn() async {
+    setState(() {
+      _loadingGuest = true;
+    });
     if (GlobalManager().token != null) {
       RouterUtils.routeToHomePage(context, false, GlobalManager().token, false);
       return;
@@ -62,6 +67,10 @@ class _SignFormState extends State<SignForm> {
         RouterUtils.routeToHomePage(context, false, result.token, false);
       }
     } catch (error) {
+      setState(() {
+        _loadingGuest = false;
+      });
+
       print(error);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -85,19 +94,29 @@ class _SignFormState extends State<SignForm> {
       _phoneValidationCompleter = Completer<bool>();
       await _phoneValidationCompleter!.future;
 
-      try {
-        removeError(error: kInvalidPhoneNumberError);
-        authServices.sendOTPService(phoneNumber!);
-        Navigator.pushNamed(
-          context,
-          OtpScreen.routeName,
-          arguments: {'phoneNumber': phoneNumber},
-        );
-      } catch (error) {
-        print(error);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send OTP. Please try again.')),
-        );
+      if (phoneNumber != null) {
+        setState(() {
+          _loading = true;
+        });
+
+        try {
+          removeError(error: kInvalidPhoneNumberError);
+          authServices.sendOTPService(phoneNumber!);
+          Navigator.pushNamed(
+            context,
+            OtpScreen.routeName,
+            arguments: {'phoneNumber': phoneNumber},
+          );
+        } catch (error) {
+          setState(() {
+            _loading = false;
+          });
+
+          print(error);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to send OTP. Please try again.')),
+          );
+        }
       }
     }
   }
@@ -171,6 +190,7 @@ class _SignFormState extends State<SignForm> {
             visible: selectedIcon == 1,
             child: Column(children: [
               PhoneNumberField(
+                hintOptions: ["Add your phone number", "E.g. +1123456789"],
                 controller: _phoneController,
                 onSaved: _onPhoneChanged,
                 onError: (String error) => _onPhoneChanged(null),
@@ -209,6 +229,7 @@ class _SignFormState extends State<SignForm> {
               DefaultButton(
                 eventName: analyticEvents["PHONE_SIGN_IN_SUBMITTED"]!,
                 text: "continue",
+                loading: _loading,
                 press: () async {
                   FocusScope.of(context).unfocus();
                   await sendOPTNumber();
@@ -216,17 +237,15 @@ class _SignFormState extends State<SignForm> {
               ),
               SizedBox(height: getProportionateScreenHeight(20)),
               DefaultButton(
-                backgroundColor: Colors.black54,
-                eventName: analyticEvents["SKIP_SIGN_IN"]!,
-                eventData: {
-                  "Related To Product Id":
-                      GlobalManager().signInRelatedProductId
-                },
-                text: "Explore as Guest",
-                press: () async {
-                  skipSignIn();
-                },
-              ),
+                  loading: _loadingGuest,
+                  backgroundColor: Colors.black54,
+                  eventName: analyticEvents["SKIP_SIGN_IN"]!,
+                  eventData: {
+                    "Related To Product Id":
+                        GlobalManager().signInRelatedProductId
+                  },
+                  text: "Explore as Guest",
+                  press: skipSignIn),
             ])),
       ]),
     );

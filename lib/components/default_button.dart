@@ -12,6 +12,7 @@ class DefaultButton extends StatefulWidget {
     this.text,
     this.press,
     this.enable = true,
+    required this.loading,
     this.pressBackgroundColor = kPrimaryLightColor,
     this.backgroundColor = kPrimaryColor,
   }) : super(key: key);
@@ -20,6 +21,7 @@ class DefaultButton extends StatefulWidget {
   final String? text;
   final Function? press;
   final bool enable;
+  final bool loading;
   final Color backgroundColor, pressBackgroundColor;
 
   @override
@@ -74,13 +76,13 @@ class _DefaultButtonState extends State<DefaultButton>
     super.dispose();
   }
 
-  void onPress() {
-    setState(() {
-      _isPressed = true;
-    });
-    _startAnimation();
+  void onPress() async{
+    if (widget.press != null) {await widget.press!();
+    if(mounted)setState((){
+          _isPressed = false;
 
-    if (widget.press != null) widget.press!();
+    });
+    }
     if (widget.eventName != null) {
       AnalyticsService.trackEvent(widget.eventName!,
           properties: widget.eventData);
@@ -88,9 +90,27 @@ class _DefaultButtonState extends State<DefaultButton>
   }
 
   @override
+  void didUpdateWidget(covariant DefaultButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.loading != oldWidget.loading) {
+      if (widget.loading) {
+        setState(() {
+          _isPressed = true;
+        });
+        _startAnimation();
+      } else {
+        setState(() {
+          _isPressed = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.enable ? onPress : null,
+      onTap: widget.enable && !_isPressed ? onPress : null,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -116,7 +136,7 @@ class _DefaultButtonState extends State<DefaultButton>
                     ),
             ),
           ),
-          if (_isPressed)
+          if (widget.loading)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (index) {

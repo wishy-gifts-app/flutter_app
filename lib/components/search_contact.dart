@@ -10,12 +10,14 @@ class SearchContactWidget extends StatefulWidget {
   final Function(int? userId, bool? isActiveUser) onUserSelected;
   final Function(String?) onNameChanged;
   final Function(String?) onPhoneChanged;
+  final Follower? defaultUser;
   final bool withIcon;
 
   SearchContactWidget({
     required this.onUserSelected,
     required this.onNameChanged,
     required this.onPhoneChanged,
+    this.defaultUser,
     this.withIcon = true,
   });
 
@@ -43,6 +45,16 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
 
     widget.onNameChanged(_phoneController.text);
     widget.onPhoneChanged(_nameController.text);
+  }
+
+  @override
+  void initState() {
+    if (widget.defaultUser != null) {
+      _nameController.text = widget.defaultUser!.name;
+      _phoneController.text = widget.defaultUser!.phoneNumber;
+    }
+
+    super.initState();
   }
 
   @override

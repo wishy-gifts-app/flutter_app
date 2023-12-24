@@ -1,4 +1,6 @@
 import 'package:Wishy/utils/contacts.dart';
+import 'package:Wishy/utils/notification.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -18,32 +20,56 @@ class CompleteProfileForm extends StatefulWidget {
 
 class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
-  String? fullName;
-  String? email;
-  bool _givePermission = false;
+  String? _fullName;
+  String? _email;
+  bool _giveNotificationPermission = true;
+  bool _loading = false;
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        _loading = true;
+      });
 
+      final email = _fullName?.trim();
+      final fullName = _fullName?.trim();
       try {
-        // if (_givePermission) {
-        //   await fetchContacts();
-        // }
-        await graphQLQueryHandler("updateUserById",
-            {"email": email, "name": fullName, "id": GlobalManager().userId});
-        await GlobalManager()
-            .setParams(newProfileCompleted: true, newUsername: fullName);
+        Map<String, dynamic> notificationParams = {};
+        if (_giveNotificationPermission &&
+            GlobalManager().notificationAvailable == null) {
+          final result = await requestNotificationPermission();
+
+          notificationParams = {
+            "notification_available": result["available"],
+            "fcm_token": result["fcmToken"]
+          };
+        }
+
+        await graphQLQueryHandler("updateUserById", {
+          "email": email,
+          "name": fullName,
+          "id": GlobalManager().userId,
+          ...notificationParams
+        });
+        await GlobalManager().setParams(
+            newProfileCompleted: true,
+            newUsername: fullName,
+            newNotificationAvailable:
+                notificationParams["notification_available"]);
         AnalyticsService.trackEvent(
             analyticEvents["COMPLETE_PROFILE_SUBMITTED"]!);
 
         AnalyticsService.setUserProfile(GlobalManager().userId!, {
           "Email": email,
           "Name": fullName,
-          "Contacts Permission": _givePermission
+          "Notification Permission": _giveNotificationPermission
         });
         Navigator.pushNamed(context, LoginSuccessScreen.routeName);
       } catch (error) {
+        setState(() {
+          _loading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text('Error completing profile. Please try again.')),
@@ -61,7 +87,9 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           buildFullNameFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(20)),
+          SizedBox(
+              height: getProportionateScreenHeight(
+                  GlobalManager().notificationAvailable == true ? 80 : 50)),
           // CheckboxListTile(
           //   title: Text(
           //     "Give permission to get contacts for matching with them",
@@ -75,8 +103,27 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           //   },
           //   controlAffinity: ListTileControlAffinity.leading,
           // ),
-          SizedBox(height: getProportionateScreenHeight(60)),
-          DefaultButton(text: "continue", press: onSubmit),
+          if (GlobalManager().notificationAvailable == null) ...[
+            CheckboxListTile(
+              title: Text(
+                "Get Personalized Alerts: Receive notifications for customized product recommendations",
+                style: TextStyle(fontSize: 12),
+              ),
+              value: _giveNotificationPermission,
+              onChanged: (bool? value) {
+                setState(() {
+                  _giveNotificationPermission = value!;
+                });
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            SizedBox(height: getProportionateScreenHeight(10)),
+          ],
+          DefaultButton(
+            text: "continue",
+            press: onSubmit,
+            loading: _loading,
+          ),
         ],
       ),
     );
@@ -122,7 +169,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   TextFormField buildFullNameFormField() {
     return TextFormField(
-      onSaved: (newValue) => fullName = newValue,
+      onSaved: (newValue) => _fullName = newValue,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         if (value!.isEmpty) {
@@ -141,10 +188,10 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   TextFormField buildEmailFormField() {
     return TextFormField(
-      onSaved: (newValue) => email = newValue,
+      onSaved: (newValue) => _email = newValue,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
-        if (value!.isEmpty || !EmailValidator.validate(value)) {
+        if (value!.isEmpty || !EmailValidator.validate(value.trim())) {
           return kInvalidEmailError;
         }
         return null;

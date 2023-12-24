@@ -35,7 +35,7 @@ class _BuyForYourselfState extends State<BuyForYourself> {
         "quantity": 1,
         "address_id": _addresses![_selectedAddressIndex].id,
       });
-      print(result);
+
       if (result != null && result["payment_url"] != null) {
         showDialog(
           context: context,
@@ -135,6 +135,7 @@ class _BuyForYourselfState extends State<BuyForYourself> {
             }),
         SizedBox(height: getProportionateScreenHeight(100)),
         PaymentButton(
+          loading: false,
           price: widget.price,
           onSubmit: onSubmit,
           enable: _addresses != null && _addresses!.length > 0,

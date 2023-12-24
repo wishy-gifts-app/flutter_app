@@ -55,6 +55,7 @@ class BuyAsGift extends StatelessWidget {
         ),
         SizedBox(height: getProportionateScreenHeight(90)),
         PaymentButton(
+          loading: false,
           price: price,
           onSubmit: () => onSubmit(
             context,

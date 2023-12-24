@@ -35,9 +35,11 @@ class _HomeHeaderState extends State<HomeHeader> {
   void _fetchInteractiveCardsData() async {
     try {
       final _inviteCardResult = await graphQLQueryHandler(
-          "getInteractiveCardByType", {"type": CardTypes.invite.name});
+          "getInteractiveCardByType",
+          {"type": CardTypes.invite.name, "is_default": true});
       final _questionCardResult = await graphQLQueryHandler(
-          "getInteractiveCardByType", {"type": CardTypes.question.name});
+          "getInteractiveCardByType",
+          {"type": CardTypes.question.name, "is_default": true});
       if (mounted) {
         setState(() {
           _questionCard = InteractiveCardData.fromJson(_questionCardResult);

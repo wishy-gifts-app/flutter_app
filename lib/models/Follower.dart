@@ -10,8 +10,9 @@ class Follower {
   factory Follower.fromJson(Map<String, dynamic> json) {
     return Follower(
       id: convertValue<int?>(json, 'id', false),
-      name: convertValue<String>(json, 'name', true),
-      phoneNumber: convertValue<String>(json, 'phone_number', true),
+      name: convertValue<String>(json, 'name', true, defaultValue: ""),
+      phoneNumber:
+          convertValue<String>(json, 'phone_number', true, defaultValue: ""),
     );
   }
 }

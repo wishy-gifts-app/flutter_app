@@ -112,7 +112,7 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
     });
   }
 
-  Future<void> _fetchItems({bool isNextSet = false}) async {
+  Future<void> _fetchItems() async {
     final results = await widget.nextPage();
 
     if (mounted) {

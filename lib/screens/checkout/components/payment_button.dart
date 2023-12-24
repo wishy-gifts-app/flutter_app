@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/constants.dart';
-import 'package:Wishy/models/Product.dart';
-import 'package:Wishy/screens/checkout/components/buy_as_gift_form.dart';
-import 'package:Wishy/screens/checkout/components/buy_for_yourself_form.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/gestures.dart';
 
 class PaymentButton extends StatelessWidget {
   final onSubmit;
   final bool enable;
+  final bool loading;
   final double price;
   final Map<String, dynamic>? eventData;
 
   PaymentButton(
       {required this.price,
       required this.onSubmit,
+      required this.loading,
       this.enable = true,
       this.eventData});
 
@@ -45,6 +44,7 @@ class PaymentButton extends StatelessWidget {
         ),
         SizedBox(height: getProportionateScreenHeight(10)),
         DefaultButton(
+          loading: loading,
           text: "Proceed with ${marketDetails["symbol"]}${price} Purchase",
           press: onSubmit,
           enable: enable,

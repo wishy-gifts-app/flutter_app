@@ -28,10 +28,14 @@ class QuestionCard extends StatefulWidget {
 
 class _QuestionCardState extends State<QuestionCard> {
   int currentStage = 0;
+  bool _loading = false;
   late String? selectedPriceRange;
   final TextEditingController _controller = TextEditingController();
 
   _onSubmit() {
+    setState(() {
+      _loading = true;
+    });
     widget.onSelect(
         {"message": _controller.text, "price_range": selectedPriceRange},
         "Generating suggestions for you...");
@@ -147,6 +151,7 @@ class _QuestionCardState extends State<QuestionCard> {
             )),
         SizedBox(height: getProportionateScreenHeight(25)),
         DefaultButton(
+          loading: _loading,
           text: widget.CTA,
           press: _onSubmit,
         ),

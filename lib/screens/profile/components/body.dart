@@ -47,6 +47,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                 child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: DefaultButton(
+                      loading: false,
                       text: "Sign In",
                       press: () => Navigator.pushNamed(
                         context,

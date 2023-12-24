@@ -104,6 +104,7 @@ class Body extends StatelessWidget {
             "Variant Picked": false,
             "Delivery Availability": GlobalManager().isDeliveryAvailable
           },
+          loading: false,
           press: () async {
             if (!GlobalManager().isDeliveryAvailable!) {
               await DeliveryAvailabilityDialog.show(context);

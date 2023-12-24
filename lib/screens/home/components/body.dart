@@ -14,9 +14,10 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   int _currentProductNumber = 0;
   UniqueKey _homeKey = UniqueKey();
-  String? _connectUser = null;
+  String? _connectUser = GlobalManager().connectUser;
 
   void setConnectUser(String? value) {
+    GlobalManager().setConnectUser(value);
     setState(() {
       _connectUser = value;
     });

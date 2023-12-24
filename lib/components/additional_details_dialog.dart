@@ -26,6 +26,7 @@ class AdditionalDetailsDialog extends StatelessWidget {
             Text(description),
             SizedBox(height: 20),
             DefaultButton(
+              loading: false,
               text: "Back",
               press: () {
                 Navigator.pop(context);

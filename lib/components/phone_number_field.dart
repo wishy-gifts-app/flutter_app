@@ -9,11 +9,13 @@ class PhoneNumberField extends StatefulWidget {
   final Function(String) onError;
   final bool withIcon;
   final TextEditingController? controller;
+  final List<String> hintOptions;
 
   PhoneNumberField(
       {required this.onSaved,
       required this.onError,
       this.withIcon = true,
+      this.hintOptions = const ["Add manually instead", "E.g. +1123456789"],
       this.controller = null});
 
   @override
@@ -43,10 +45,11 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
           errorMessage = kInvalidPhoneNumberError;
         });
       } else {
+        if (mounted)
+          setState(() {
+            errorMessage = null;
+          });
         isValid = true;
-        setState(() {
-          errorMessage = null;
-        });
       }
     }
 
@@ -56,7 +59,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
   @override
   Widget build(BuildContext context) {
     return FadeHintTextField(
-        hintOptions: ["Add manually instead", "E.g. +1123456789"],
+        hintOptions: widget.hintOptions,
         textField: TextFormField(
           controller: widget.controller,
           keyboardType: TextInputType.phone,

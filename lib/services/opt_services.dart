@@ -1,5 +1,7 @@
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/SignInResponse.dart';
 import 'package:Wishy/models/UserLocationData.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -30,6 +32,8 @@ class AuthServices {
       headers: {
         'Content-Type': 'application/json',
       },
+      body: jsonEncode(
+          {"fcm_token": await FirebaseMessaging.instance.getToken()}),
     );
     final data = jsonDecode(response.body);
 
@@ -52,6 +56,8 @@ class AuthServices {
       body: jsonEncode({
         'phone_number': phoneNumber,
         'otp_code': otp,
+        "fcm_token": await FirebaseMessaging.instance.getToken(),
+        "user_id": GlobalManager().userId
       }),
     );
     final data = jsonDecode(response.body);
@@ -70,9 +76,7 @@ class AuthServices {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({
-        'phone_number': phoneNumber,
-      }),
+      body: jsonEncode({'phone_number': phoneNumber}),
     );
 
     final data = jsonDecode(response.body);

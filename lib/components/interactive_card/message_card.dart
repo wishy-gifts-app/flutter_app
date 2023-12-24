@@ -70,7 +70,6 @@ class _MessageCardState extends State<MessageCard> {
         ),
         SizedBox(height: getProportionateScreenHeight(50)),
         DefaultButton(
-          loading: false,
           press: () => widget.closeCard(null, null),
           text: widget.CTA,
         ),

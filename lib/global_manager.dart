@@ -12,6 +12,7 @@ class GlobalManager {
   bool? isDeliveryAvailable;
   UserLocationData? userLocation;
   bool showAnimation = false;
+  bool showUpAnimation = false;
   bool? profileCompleted;
   int? signInRelatedProductId = null;
   String? session = null;
@@ -89,6 +90,7 @@ class GlobalManager {
 
   void navigateToRequest(bool value) => shouldNavigateToRequest = value;
   void setShowAnimation(bool value) => showAnimation = value;
+  void setShowUpAnimation(bool value) => showUpAnimation = value;
   void setSession(String value) => session = value;
   void setDeliveryAvailability(bool value) => isDeliveryAvailable = value;
   void setNewConnectAvailable(bool value) => newConnectAvailable = value;

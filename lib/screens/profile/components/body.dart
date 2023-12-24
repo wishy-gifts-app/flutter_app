@@ -1,4 +1,5 @@
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/empty_state_widget.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/profile/components/profile_header.dart';
 import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
@@ -43,17 +44,12 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
       ProfileHeader(height: 50),
       if (GlobalManager().signedIn != true)
         Expanded(
-            child: Center(
-                child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: DefaultButton(
-                      loading: false,
-                      text: "Sign In",
-                      press: () => Navigator.pushNamed(
-                        context,
-                        SignInScreen.routeName,
-                      ),
-                    )))),
+            child: EmptyStateWidget(
+                title: "Personalize Your Journey",
+                body:
+                    "Dive into the world of Wishy. Sign in to tailor your profile and discover features crafted just for you.",
+                CTA: "Sign In & Explore",
+                routeName: SignInScreen.routeName)),
       if (GlobalManager().signedIn) ...[
         ProfilePic(),
         SizedBox(height: 10),

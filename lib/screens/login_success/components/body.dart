@@ -52,7 +52,6 @@ class _BodyState extends State<Body> {
             SizedBox(
               width: SizeConfig.screenWidth,
               child: DefaultButton(
-                loading: false,
                 text: "Go to home",
                 press: onPress,
               ),

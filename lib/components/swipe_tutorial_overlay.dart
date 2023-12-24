@@ -84,6 +84,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
                   animatedTexts: [
                     TypewriterAnimatedText(
                       _messages[_currentStep],
+                      textAlign: TextAlign.center,
                       textStyle: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,

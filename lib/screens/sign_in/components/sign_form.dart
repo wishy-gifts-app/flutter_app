@@ -26,10 +26,9 @@ class _SignFormState extends State<SignForm> {
   String? phoneNumber = "";
   final authServices = AuthServices();
   int selectedIcon = 1;
+  bool _pressed = false;
   Completer<bool>? _phoneValidationCompleter;
   final TextEditingController _phoneController = TextEditingController();
-  bool _loadingGuest = false;
-  bool _loading = false;
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -46,9 +45,9 @@ class _SignFormState extends State<SignForm> {
   }
 
   Future<void> skipSignIn() async {
-    setState(() {
-      _loadingGuest = true;
-    });
+    if (_pressed) return;
+
+    _pressed = true;
     if (GlobalManager().token != null) {
       RouterUtils.routeToHomePage(context, false, GlobalManager().token, false);
       return;
@@ -67,18 +66,15 @@ class _SignFormState extends State<SignForm> {
         RouterUtils.routeToHomePage(context, false, result.token, false);
       }
     } catch (error) {
-      if (mounted)
-        setState(() {
-          _loadingGuest = false;
-        });
-
-      print(error);
+      if (mounted) print(error);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
                 "Sorry, we're unable to access the products page. Please retry shortly.")),
       );
     }
+
+    _pressed = false;
   }
 
   void _onPhoneChanged(String? phone) {
@@ -90,16 +86,16 @@ class _SignFormState extends State<SignForm> {
   }
 
   Future<void> sendOPTNumber() async {
+    if (_pressed) return;
+
+    _pressed = true;
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       _phoneValidationCompleter = Completer<bool>();
       await _phoneValidationCompleter!.future;
 
       if (phoneNumber != null) {
-        setState(() {
-          _loading = true;
-        });
-
         try {
           removeError(error: kInvalidPhoneNumberError);
           authServices.sendOTPService(phoneNumber!);
@@ -109,10 +105,6 @@ class _SignFormState extends State<SignForm> {
             arguments: {'phoneNumber': phoneNumber},
           );
         } catch (error) {
-          if (mounted)
-            setState(() {
-              _loading = false;
-            });
           print(error);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to send OTP. Please try again.')),
@@ -120,6 +112,8 @@ class _SignFormState extends State<SignForm> {
         }
       }
     }
+
+    _pressed = false;
   }
 
   @override
@@ -230,7 +224,6 @@ class _SignFormState extends State<SignForm> {
               DefaultButton(
                 eventName: analyticEvents["PHONE_SIGN_IN_SUBMITTED"]!,
                 text: "continue",
-                loading: _loading,
                 press: () async {
                   FocusScope.of(context).unfocus();
                   await sendOPTNumber();
@@ -238,7 +231,6 @@ class _SignFormState extends State<SignForm> {
               ),
               SizedBox(height: getProportionateScreenHeight(20)),
               DefaultButton(
-                  loading: _loadingGuest,
                   backgroundColor: Colors.black54,
                   eventName: analyticEvents["SKIP_SIGN_IN"]!,
                   eventData: {

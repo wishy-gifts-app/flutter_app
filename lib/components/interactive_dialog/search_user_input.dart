@@ -21,7 +21,6 @@ class SearchUserInput extends StatefulWidget {
 class _SearchUserInputState extends State<SearchUserInput> {
   final _formKey = GlobalKey<FormState>();
   Completer<bool>? _phoneValidationCompleter;
-  bool _loading = false;
 
   String? _name;
   String? _phone;
@@ -49,9 +48,6 @@ class _SearchUserInputState extends State<SearchUserInput> {
       }
 
       if (_userId != null || (_name != null && _phone != null)) {
-        setState(() {
-          _loading = true;
-        });
         widget.onSelect({"name": _name, "userId": _userId, "phone": _phone});
       }
     }
@@ -71,7 +67,6 @@ class _SearchUserInputState extends State<SearchUserInput> {
                     withIcon: false),
                 SizedBox(height: getProportionateScreenHeight(25)),
                 DefaultButton(
-                  loading: _loading,
                   press: _handleSendInvitation,
                   text: widget.cta,
                 ),

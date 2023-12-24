@@ -46,7 +46,6 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   Map<String, dynamic> variants = {};
   RequestData requestData = RequestData();
   Completer<bool>? _phoneValidationCompleter;
-  bool _loading = false;
 
   void _onUserSelected(int? userId, bool? isActiveUser) {
     requestData.userId = userId;
@@ -89,9 +88,6 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
               requestData.selectedVariant != null &&
               requestData.userId != null ||
           (requestData.name != null && requestData.phone != null)) {
-        setState(() {
-          _loading = true;
-        });
         try {
           await graphQLQueryHandler("requestProduct", {
             "product_id": widget.productId,
@@ -236,7 +232,6 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                       height: getProportionateScreenHeight(20),
                     ),
                     DefaultButton(
-                      loading: _loading,
                       text: "Submit",
                       // eventName: analyticEvents["REQUEST_SUBMITTED"]!,
                       // eventData: {
@@ -255,16 +250,16 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 void showRequestModal(BuildContext context, int productId, String productTitle,
     List<Variant> variants, String situation,
     {String? cursor = null}) async {
-  if (!GlobalManager().isDeliveryAvailable!) {
-    await DeliveryAvailabilityDialog.show(context);
-
-    if (!GlobalManager().isDeliveryAvailable!) return;
-  }
-
   if (GlobalManager().signedIn != true) {
     GlobalManager().setSignInRelatedProductId(productId);
     Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     return;
+  }
+
+  if (!GlobalManager().isDeliveryAvailable!) {
+    await DeliveryAvailabilityDialog.show(context);
+
+    if (!GlobalManager().isDeliveryAvailable!) return;
   }
 
   showModalBottomSheet<void>(

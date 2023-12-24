@@ -18,7 +18,7 @@ class MatchesHeader extends StatelessWidget {
         padding:
             EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
         child: Text(
-          "Wishy",
+          "Secrets Wishy",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: getProportionateScreenWidth(16),

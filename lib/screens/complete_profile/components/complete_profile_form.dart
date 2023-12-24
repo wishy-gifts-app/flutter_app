@@ -23,16 +23,12 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   String? _fullName;
   String? _email;
   bool _giveNotificationPermission = true;
-  bool _loading = false;
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      setState(() {
-        _loading = true;
-      });
 
-      final email = _fullName?.trim();
+      final email = _email?.trim();
       final fullName = _fullName?.trim();
       try {
         Map<String, dynamic> notificationParams = {};
@@ -52,6 +48,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           "id": GlobalManager().userId,
           ...notificationParams
         });
+        GlobalManager().setShowUpAnimation(true);
         await GlobalManager().setParams(
             newProfileCompleted: true,
             newUsername: fullName,
@@ -67,9 +64,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         });
         Navigator.pushNamed(context, LoginSuccessScreen.routeName);
       } catch (error) {
-        setState(() {
-          _loading = false;
-        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text('Error completing profile. Please try again.')),
@@ -122,7 +116,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           DefaultButton(
             text: "continue",
             press: onSubmit,
-            loading: _loading,
           ),
         ],
       ),

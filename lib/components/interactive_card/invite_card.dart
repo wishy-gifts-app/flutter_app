@@ -37,7 +37,6 @@ class _InviteCardState extends State<InviteCard> {
   int? _userId;
   bool? _isActiveUser;
   bool _giveNotificationPermission = true;
-  bool _loading = false;
   bool _press = false;
 
   void _handleNameChanged(String? name) {
@@ -45,6 +44,7 @@ class _InviteCardState extends State<InviteCard> {
   }
 
   void _handlePhoneChanged(String? phone) {
+    print(1111);
     setState(() => _phone = phone);
     _phoneValidationCompleter!.complete(true);
 
@@ -62,17 +62,12 @@ class _InviteCardState extends State<InviteCard> {
     _press = true;
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
       if (_userId == null) {
         _phoneValidationCompleter = Completer<bool>();
         await _phoneValidationCompleter!.future;
       }
 
-      if (_userId != null || _phone != null) {
-        setState(() {
-          _loading = true;
-        });
-
+      if (_phone != null && _phone != "") {
         if (_giveNotificationPermission &&
             GlobalManager().notificationAvailable == null) {
           Map<String, dynamic> notificationData =
@@ -98,10 +93,6 @@ class _InviteCardState extends State<InviteCard> {
   }
 
   void _handleDisconnect() async {
-    setState(() {
-      _loading = true;
-    });
-
     widget.onSelect({"disconnect": true}, "Disconnecting...");
   }
 
@@ -149,7 +140,6 @@ class _InviteCardState extends State<InviteCard> {
           ),
           SizedBox(height: getProportionateScreenHeight(50)),
           DefaultButton(
-            loading: _loading,
             press: _handleDisconnect,
             text: "Disconnect",
           ),
@@ -204,7 +194,6 @@ class _InviteCardState extends State<InviteCard> {
               ),
             SizedBox(height: getProportionateScreenHeight(5)),
             DefaultButton(
-              loading: _loading,
               press: _handleSendInvitation,
               text: widget.CTA,
             ),

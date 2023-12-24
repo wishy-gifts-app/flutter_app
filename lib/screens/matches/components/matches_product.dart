@@ -78,7 +78,10 @@ class _MatchesProductsState extends State<MatchesProducts> {
         height: SizeConfig.screenHeight,
         child: new SwipeableLeftProducts<Match>(
           situation: situation,
-          emptyString: "You don't have matches yet",
+          emptyCTA: "Find Friends' Wishes",
+          emptyTitle: "Discover Shared Wishes",
+          emptyString:
+              "Your circle of surprises is just a swipe away. Connect and uncover the wishes you and your friends have in common!",
           onSwipeLeft: (int id) => saveLike(id, false, context),
           nextPage: fetchData,
           cardBuilder: (context, item) {

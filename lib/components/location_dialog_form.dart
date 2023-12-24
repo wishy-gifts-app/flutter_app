@@ -42,7 +42,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
   final _postalCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   PlacesDetailsResponse? detail;
-  bool _loading = false;
 
   String? validateAddress(PlacesDetailsResponse detail) {
     final country = getSpecificComponent(detail, "country");
@@ -66,9 +65,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _loading = true;
-      });
       final currentStreetNumber =
           getSpecificComponent(detail!, "street_number")?.longName;
 
@@ -105,10 +101,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
 
         Navigator.of(context).pop(result["user_id"]);
       } catch (error) {
-        setState(() {
-          _loading = false;
-        });
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address. Please try again.')),
         );
@@ -273,7 +265,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16),
         child: DefaultButton(
-            loading: _loading,
             text: 'Add',
             press: _onSubmit,
             eventName: analyticEvents["ADDRESS_ADDED"],

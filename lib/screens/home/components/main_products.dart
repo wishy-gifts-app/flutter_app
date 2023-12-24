@@ -39,6 +39,7 @@ class _MainProductsState extends State<MainProducts> {
   bool _isInteractiveClose = true;
   Key _swipeableProductsKey = UniqueKey();
   bool _showAnimation = GlobalManager().showAnimation;
+  bool _showUpAnimation = GlobalManager().showUpAnimation;
   List<InteractiveCardData> _triggerCards = [];
   int _currentProduct = 0;
   int? _startNumber = null;
@@ -288,6 +289,17 @@ class _MainProductsState extends State<MainProducts> {
                     this._showAnimation = false;
                   });
                   GlobalManager().setShowAnimation(false);
+                }),
+          if (_showUpAnimation)
+            SwipeTutorialOverlay(
+                right: false,
+                left: false,
+                up: true,
+                onFinished: () {
+                  setState(() {
+                    this._showUpAnimation = false;
+                  });
+                  GlobalManager().setShowUpAnimation(false);
                 }),
         ]));
   }

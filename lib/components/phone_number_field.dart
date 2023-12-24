@@ -82,7 +82,8 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
               filled: true,
               fillColor: Colors.white,
               labelText: "Phone Number",
-              labelStyle: TextStyle(backgroundColor: Colors.white),
+              labelStyle:
+                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
               helperStyle:
                   TextStyle(backgroundColor: Colors.white, fontSize: 14),
               // helperText: "Add manually instead",

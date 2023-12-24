@@ -44,7 +44,6 @@ class PaymentButton extends StatelessWidget {
         ),
         SizedBox(height: getProportionateScreenHeight(10)),
         DefaultButton(
-          loading: loading,
           text: "Proceed with ${marketDetails["symbol"]}${price} Purchase",
           press: onSubmit,
           enable: enable,

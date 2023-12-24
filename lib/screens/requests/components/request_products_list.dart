@@ -1,8 +1,10 @@
 import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/empty_state_widget.dart';
 import 'package:Wishy/components/variants/variants_modal.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
@@ -162,17 +164,18 @@ class _RequestProductsState extends State<RequestProductsList> {
   @override
   Widget build(BuildContext context) {
     if (requests.length == 0) {
-      return Center(
-          child: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(30)),
-        child: isLoading
-            ? CircularProgressIndicator()
-            : Text(
-                "You don't have requests yet",
-                textAlign: TextAlign.center,
-              ),
-      ));
+      return isLoading
+          ? Center(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(30)),
+                  child: CircularProgressIndicator()))
+          : EmptyStateWidget(
+              title: "Whisper Your Wishes",
+              body:
+                  "Eager for that special something? Swipe up to hint, and let us send a whisper.",
+              CTA: "Browse More Wishes",
+              routeName: HomeScreen.routeName);
     }
 
     return Container(

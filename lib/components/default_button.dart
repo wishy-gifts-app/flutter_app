@@ -70,7 +70,7 @@ class _DefaultButtonState extends State<DefaultButton>
     for (var controller in _controllers) {
       controller.dispose();
     }
-
+    _isPressed = false;
     super.dispose();
   }
 

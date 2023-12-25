@@ -400,7 +400,7 @@ const Map<String, String> graphqlQueries = {
     mutation requestProduct(
       \$variant_id: Int!,
       \$product_id: Int!,
-      \$reason: String!,
+      \$reason: String,
       \$recipient_id: Int,
       \$name: String,
       \$phone_number: String,

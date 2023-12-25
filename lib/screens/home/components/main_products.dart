@@ -38,8 +38,8 @@ class _MainProductsState extends State<MainProducts> {
   late GraphQLPaginationService _paginationService;
   bool _isInteractiveClose = true;
   Key _swipeableProductsKey = UniqueKey();
-  bool _showAnimation = GlobalManager().showAnimation;
-  bool _showUpAnimation = GlobalManager().showUpAnimation;
+  bool _showAnimation =
+      GlobalManager().showAnimation || GlobalManager().showUpAnimation;
   List<InteractiveCardData> _triggerCards = [];
   int _currentProduct = 0;
   int? _startNumber = null;
@@ -282,23 +282,13 @@ class _MainProductsState extends State<MainProducts> {
                 )),
           if (_showAnimation)
             SwipeTutorialOverlay(
-                right: true,
-                left: true,
+                swipes: GlobalManager().showAnimation,
+                up: GlobalManager().showUpAnimation,
                 onFinished: () {
                   setState(() {
                     this._showAnimation = false;
                   });
                   GlobalManager().setShowAnimation(false);
-                }),
-          if (_showUpAnimation)
-            SwipeTutorialOverlay(
-                right: false,
-                left: false,
-                up: true,
-                onFinished: () {
-                  setState(() {
-                    this._showUpAnimation = false;
-                  });
                   GlobalManager().setShowUpAnimation(false);
                 }),
         ]));

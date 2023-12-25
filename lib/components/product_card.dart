@@ -39,6 +39,8 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   int _currentImageIndex = 0;
   bool _isAnalyticsSent = false;
+  Color? _imageHoverColorRight = Colors.transparent;
+  Color? _imageHoverColorLeft = Colors.transparent;
 
   @override
   void initState() {
@@ -90,7 +92,7 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void _onCheckoutPressed() async {
-    if (!GlobalManager().isDeliveryAvailable!) {
+    if (GlobalManager().isDeliveryAvailable != true) {
       await DeliveryAvailabilityDialog.show(context);
 
       if (!GlobalManager().isDeliveryAvailable!) {
@@ -232,39 +234,25 @@ class _ProductCardState extends State<ProductCard> {
                         : Text(
                             "Image not available",
                           )),
-                if (widget.product.images.isNotEmpty)
-                  Positioned.fill(
-                    left: 0,
-                    child: Align(
-                      alignment: widget.isFullScreen
+                if (widget.product.images.isNotEmpty) ...[
+                  generateArrow(
+                      _showPreviousImage,
+                      widget.isFullScreen
                           ? Alignment.centerLeft
                           : Alignment(-1.1, -0.3),
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: _showPreviousImage,
-                        disabledColor: Colors.grey,
-                        color: _currentImageIndex == 0 ? Colors.grey : null,
-                      ),
-                    ),
-                  ),
-                if (widget.product.images.isNotEmpty)
-                  Positioned.fill(
-                    right: 0,
-                    child: Align(
-                      alignment: widget.isFullScreen
+                      Icons.arrow_back_ios_new,
+                      _currentImageIndex == 0,
+                      left: 0),
+                  generateArrow(
+                      _showNextImage,
+                      widget.isFullScreen
                           ? Alignment.centerRight
                           : Alignment(1.1, -0.3),
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: _showNextImage,
-                        disabledColor: Colors.grey,
-                        color: _currentImageIndex ==
-                                widget.product.images.length - 1
-                            ? Colors.grey
-                            : null,
-                      ),
-                    ),
-                  ),
+                      Icons.arrow_forward_ios,
+                      _currentImageIndex == widget.product.images.length - 1,
+                      right: 0,
+                      isRight: true),
+                ],
                 Positioned(
                   bottom: widget.isFullScreen ? 30 : 60,
                   left: 5,
@@ -274,20 +262,6 @@ class _ProductCardState extends State<ProductCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      // if (widget.product.likedByUserName != null) ...[
-                      //   Chip(
-                      //     backgroundColor: Colors.purple
-                      //         .withOpacity(0.85), // Distinctive badge color
-                      //     label: Text(
-                      //       "${widget.product.likedByUserName} Likes it",
-                      //       style: TextStyle(
-                      //         color: Colors.white,
-                      //         fontSize: widget.isFullScreen ? 16 : 11,
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   // SizedBox(height: 5),
-                      // ],
                       DeliveryAvailabilityIcon(
                         size: widget.isFullScreen ? 20 : 15,
                       ),
@@ -396,14 +370,19 @@ class _ProductCardState extends State<ProductCard> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.card_giftcard,
+                          child: SvgPicture.asset(
+                            "assets/icons/buy_now.svg",
                             color: Colors.black,
-                            size: widget.isFullScreen ? 50 : 25,
+                            height: widget.isFullScreen ? 50 : 25,
                           ),
+// Icon(
+//                             Icons.card_giftcard,
+//                             color: Colors.black,
+//                             size: widget.isFullScreen ? 50 : 25,
+//                           ),
                         ),
                       )),
-                  if (!widget.isFullScreen)
+                  if (!widget.isFullScreen && GlobalManager().signedIn)
                     Positioned(
                         left: 0,
                         bottom: 10,
@@ -417,11 +396,11 @@ class _ProductCardState extends State<ProductCard> {
                             shape: CircleBorder(),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.message,
+                            padding: const EdgeInsets.all(1.0),
+                            child: SvgPicture.asset(
+                              "assets/icons/request.svg",
                               color: Colors.black,
-                              size: widget.isFullScreen ? 50 : 25,
+                              height: 39,
                             ),
                           ),
                         )),
@@ -445,5 +424,45 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
         ));
+  }
+
+  Widget generateArrow(void Function()? callback, AlignmentGeometry alignment,
+      IconData icon, bool disable,
+      {double? left, double? right, bool isRight = false}) {
+    return Positioned.fill(
+        left: left,
+        right: right,
+        child: Align(
+            alignment: alignment,
+            child: GestureDetector(
+                onTapUp: disable
+                    ? null
+                    : (e) {
+                        setState(() {
+                          _imageHoverColorLeft = Colors.transparent;
+                          _imageHoverColorRight = Colors.transparent;
+                        });
+                        callback!();
+                      },
+                onTapDown: disable
+                    ? null
+                    : (e) {
+                        setState(() {
+                          setState(() {
+                            _imageHoverColorLeft =
+                                isRight ? Colors.transparent : Colors.white;
+                            _imageHoverColorRight =
+                                isRight ? Colors.white : Colors.transparent;
+                          });
+                        });
+                      },
+                child: CircleAvatar(
+                  backgroundColor:
+                      isRight ? _imageHoverColorRight : _imageHoverColorLeft,
+                  child: Icon(
+                    icon,
+                    color: disable ? Colors.grey : Colors.black,
+                  ),
+                ))));
   }
 }

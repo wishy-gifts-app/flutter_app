@@ -84,20 +84,27 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
       }
       _onVariantChosen();
 
-      if (requestData.reason != null &&
-              requestData.selectedVariant != null &&
-              requestData.userId != null ||
-          (requestData.name != null && requestData.phone != null)) {
+      if (requestData.selectedVariant != null && requestData.phone != null) {
         try {
-          await graphQLQueryHandler("requestProduct", {
-            "product_id": widget.productId,
-            "variant_id": requestData.selectedVariant!.id,
-            "phone_number": requestData.phone,
-            "reason": requestData.reason,
-            "name": requestData.name,
-            "recipient_id": requestData.userId,
-            "cursor": widget.cursor
-          });
+          // await graphQLQueryHandler("requestProduct", {
+          //   "product_id": widget.productId,
+          //   "variant_id": requestData.selectedVariant!.id,
+          //   "phone_number": requestData.phone,
+          //   "reason": requestData.reason,
+          //   "name": requestData.name,
+          //   "recipient_id": requestData.userId,
+          //   "cursor": widget.cursor
+          // });
+          print(requestData.selectedVariant);
+
+          AnalyticsService.trackEvent(analyticEvents["REQUEST_VARIANT_PICKED"]!,
+              properties: {
+                "Product Id": widget.productId,
+                "Variant Id": requestData.selectedVariant!.id,
+                "Reason": requestData.reason,
+                "Name": requestData.name,
+                "Recipient Id": requestData.userId,
+              });
 
           AnalyticsService.trackEvent(analyticEvents["PRODUCT_REQUESTED"]!,
               properties: {
@@ -109,7 +116,8 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                 "Variants Exist": widget.variants.length > 1
               });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Request sent successfully"),
+            content: Text(
+                "Wish whispered successfully! A notification will be sent when it's noticed."),
           ));
         } catch (error) {
           print(error);
@@ -125,77 +133,80 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   @override
   Widget build(BuildContext context) {
     if (widget.variants.length > 1) {
-      return Stepper(
-        currentStep: _currentStep,
-        onStepContinue: () {
-          if (_currentStep < 1) {
-            setState(() {
-              _currentStep += 1;
-            });
-            AnalyticsService.trackEvent(
-                analyticEvents["REQUEST_VARIANT_PICKED"]!,
-                properties: {
-                  "Product Id": widget.productId,
-                  "Variant Id": requestData.selectedVariant!.id,
-                  "Reason": requestData.reason,
-                  "Name": requestData.name,
-                  "Recipient Id": requestData.userId,
-                });
-          } else {
-            _onSubmit();
-          }
-        },
-        onStepCancel: () {
-          if (_currentStep > 0) {
-            setState(() {
-              _currentStep -= 1;
-            });
-          } else {
-            Navigator.pop(context);
-          }
-        },
-        steps: [
-          Step(
-            title: Text('Select Your Preferred Variant'),
-            content: Column(
-              children: [
-                VariantsWidget(
-                    productVariants: widget.variants,
-                    withBuyButton: false,
-                    situation: widget.situation,
-                    onVariantChange: _onVariantChange),
-              ],
+      return Column(mainAxisSize: MainAxisSize.min, children: [
+        SizedBox(
+          height: getProportionateScreenHeight(10),
+        ),
+        Text(
+          "Make a Wish Known",
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        Stepper(
+          currentStep: _currentStep,
+          onStepContinue: () {
+            if (_currentStep < 1) {
+              setState(() {
+                _currentStep += 1;
+              });
+            } else {
+              _onSubmit();
+            }
+          },
+          onStepCancel: () {
+            if (_currentStep > 0) {
+              setState(() {
+                _currentStep -= 1;
+              });
+            } else {
+              Navigator.pop(context);
+            }
+          },
+          steps: [
+            Step(
+              title: Text(
+                  'Select Your Wish: Choose preferences that define your ideal item.'),
+              content: Column(
+                children: [
+                  VariantsWidget(
+                      productVariants: widget.variants,
+                      withBuyButton: false,
+                      situation: widget.situation,
+                      onVariantChange: _onVariantChange),
+                ],
+              ),
             ),
-          ),
-          Step(
-            title: Text('Select Whom You\'d Like to Request From'),
-            content: Form(
-                key: _formKey,
-                child: Column(children: [
-                  SearchUserWidget(
-                    onUserSelected: _onUserSelected,
-                    onNameChanged: _onNameChanged,
-                    onPhoneChanged: _onPhoneChanged,
-                  ),
-                  SizedBox(
-                    height: getProportionateScreenHeight(20),
-                  ),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onSaved: _onReasonChanged,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return kReasonNullError;
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Request Reason'),
-                    maxLines: 3,
-                  ),
-                ])),
-          ),
-        ],
-      );
+            Step(
+              title: Text(
+                  "Send a Hint: Let friends know your desired item with a subtle suggestion."),
+              content: Form(
+                  key: _formKey,
+                  child: Column(children: [
+                    SearchContactWidget(
+                      onUserSelected: _onUserSelected,
+                      onNameChanged: _onNameChanged,
+                      onPhoneChanged: _onPhoneChanged,
+                    ),
+                    SizedBox(
+                      height: getProportionateScreenHeight(20),
+                    ),
+                    TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      onSaved: _onReasonChanged,
+                      validator: (value) {
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Request Reason',
+                          labelStyle: TextStyle(color: Colors.black),
+                          hintText:
+                              "I found the perfect thing to make our movie nights even better!"),
+                      maxLines: 3,
+                    ),
+                  ])),
+            ),
+          ],
+        )
+      ]);
     } else {
       return Container(
           height: MediaQuery.of(context).size.height * 0.6,
@@ -204,7 +215,16 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
               child: Form(
                   key: _formKey,
                   child: Column(children: [
-                    Text('Select Whom You\'d Like to Request From'),
+                    Text(
+                      "Make a Wish Known",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: getProportionateScreenHeight(10),
+                    ),
+                    Text(
+                        "Send a Hint: Let friends know your desired item with a subtle suggestion."),
                     SizedBox(
                       height: getProportionateScreenHeight(20),
                     ),
@@ -256,7 +276,7 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
     return;
   }
 
-  if (!GlobalManager().isDeliveryAvailable!) {
+  if (GlobalManager().isDeliveryAvailable != true) {
     await DeliveryAvailabilityDialog.show(context);
 
     if (!GlobalManager().isDeliveryAvailable!) return;

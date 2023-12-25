@@ -16,14 +16,8 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child:
-            //  DefaultTabController(
-            //   length: 2,
-            //   child: SizedBox(
-            //     width: double.infinity,
-            //     child:
-            SingleChildScrollView(
-                child: Padding(
+        child: SingleChildScrollView(
+            child: Padding(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
       child: Column(
@@ -35,31 +29,8 @@ class Body extends StatelessWidget {
               variantId: variant.id,
               recipientId: recipientId,
               price: variant.price),
-
-          // TabBar(
-          //   labelColor: kPrimaryColor,
-          //   indicatorColor: kPrimaryColor,
-          //   tabs: [
-          //     Tab(text: 'Buy for Yourself'),
-          //     Tab(text: 'Buy as a Gift'),
-          //   ],
-          // ),
-          // Expanded(
-          //   child: TabBarView(
-          //     children: [
-          //       BuyForYourself(
-          //         variantId: variant.id,
-          //       ),
-          //       BuyAsGift(variantId: variant.id),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
-    ))
-        //   ),
-        // ),
-        // ),
-        );
+    )));
   }
 }

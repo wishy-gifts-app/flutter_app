@@ -1,3 +1,4 @@
+import 'package:Wishy/components/addresses_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Address.dart';
@@ -64,21 +65,10 @@ class _PersonalInfoTabState extends State<PersonalInfoTab> {
         Text("Addresses",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
-        if (_addresses != null && _addresses!.length > 0)
-          ..._addresses!.map((address) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: Text(address.country +
-                  ", " +
-                  address.city +
-                  ", " +
-                  address.streetAddress +
-                  " " +
-                  address.streetNumber),
-            );
-          }).toList(),
-        if (_addresses == null || _addresses!.isEmpty)
-          Text("You haven't added an address yet."),
+        AddressesWidget(
+          height: 255,
+          addresses: _addresses ?? [],
+        ),
       ],
     );
   }

@@ -19,7 +19,7 @@ class Body extends StatelessWidget {
             ),
             SizedBox(height: getProportionateScreenHeight(15)),
             Text(
-              "Welcome",
+              "Welcome to Wishy",
               style: TextStyle(
                 fontSize: getProportionateScreenWidth(28),
                 fontWeight: FontWeight.bold,
@@ -27,7 +27,7 @@ class Body extends StatelessWidget {
             ),
             Text(
               GlobalManager().signInRelatedProductId == null
-                  ? "Enter your phone number to start exploring your Wishy world"
+                  ? "Unlock the magic of gifting! Sign up to curate your wishlist and surprise friends with the perfect gifts."
                   : "Please add your phone number to finalize your action",
               textAlign: TextAlign.center,
             ),

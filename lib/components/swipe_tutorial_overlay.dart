@@ -5,15 +5,13 @@ import 'dart:ui';
 
 class SwipeTutorialOverlay extends StatefulWidget {
   final VoidCallback onFinished;
-  final bool right;
-  final bool left;
+  final bool swipes;
   final bool up;
 
   const SwipeTutorialOverlay(
       {Key? key,
       required this.onFinished,
-      this.right = false,
-      this.left = false,
+      this.swipes = false,
       this.up = false})
       : super(key: key);
 
@@ -32,7 +30,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
   static const _messages = [
     'Love this item? Swipe right to add it to your Wishlist.',
     'Not a fan? Swipe left to skip.',
-    'Want this? Swipe up to request!',
+    "Swipe up to hint this wish to your lover and edge closer to your dream gift!"
   ];
 
   List<int> currentAnimations = [];
@@ -49,8 +47,8 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
 
   @override
   void initState() {
-    if (widget.right) currentAnimations.add(0);
-    if (widget.left) currentAnimations.add(1);
+    if (widget.swipes) currentAnimations.add(0);
+    if (widget.swipes) currentAnimations.add(1);
     if (widget.up) currentAnimations.add(2);
 
     if (currentAnimations.length == 0) currentAnimations.addAll([0, 1, 2]);
@@ -93,7 +91,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
                       speed: const Duration(milliseconds: 50),
                     ),
                   ],
-                  pause: Duration(milliseconds: 400),
+                  pause: Duration(milliseconds: widget.up ? 1500 : 400),
                   totalRepeatCount: 1,
                   onFinished: _nextStep,
                 ),

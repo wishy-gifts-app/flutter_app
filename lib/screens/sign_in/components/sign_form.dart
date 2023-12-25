@@ -223,7 +223,7 @@ class _SignFormState extends State<SignForm> {
               SizedBox(height: getProportionateScreenHeight(10)),
               DefaultButton(
                 eventName: analyticEvents["PHONE_SIGN_IN_SUBMITTED"]!,
-                text: "continue",
+                text: "Start Now",
                 press: () async {
                   FocusScope.of(context).unfocus();
                   await sendOPTNumber();

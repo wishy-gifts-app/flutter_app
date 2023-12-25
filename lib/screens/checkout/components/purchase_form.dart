@@ -1,3 +1,4 @@
+import 'package:Wishy/components/addresses_widget.dart';
 import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/global_manager.dart';
@@ -166,136 +167,114 @@ class _PurchaseFormState extends State<PurchaseForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            SizedBox(
-              height: getProportionateScreenHeight(10),
-            ),
-            CheckboxListTile(
-              title: Text("Is this purchase a gift?"),
-              value: _isGift,
-              onChanged: (bool? newValue) {
-                setState(() {
-                  _addresses = [];
-                  _recipientId =
-                      (newValue ?? false) ? null : GlobalManager().userId!;
-                  _isGift = newValue ?? false;
-                });
+    return Center(
+        child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: getProportionateScreenHeight(10),
+                ),
+                CheckboxListTile(
+                  title: Text("Gift Purchase?"),
+                  value: _isGift,
+                  onChanged: (bool? newValue) {
+                    setState(() {
+                      _addresses = [];
+                      _recipientId =
+                          (newValue ?? false) ? null : GlobalManager().userId!;
+                      _isGift = newValue ?? false;
+                    });
 
-                if (!_isGift) {
-                  fetchData(GlobalManager().userId!);
-                }
-              },
-              secondary: const Icon(Icons.card_giftcard),
-            ),
-            SizedBox(
-              height: getProportionateScreenHeight(10),
-            ),
-            if (_isGift) ...[
-              SearchContactWidget(
-                onUserSelected: _onUserSelected,
-                onNameChanged: _onNameChanged,
-                onPhoneChanged: _onPhoneChanged,
-              ),
-              SizedBox(
-                height: getProportionateScreenHeight(10),
-              ),
-            ],
-            if (_addresses != null && _addresses!.length > 0)
-              Container(
-                height: 180,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: _addresses!.asMap().entries.map((entry) {
-                      int idx = entry.key;
-                      Address address = entry.value;
-                      return ListTile(
-                        title: Text(address.country +
-                            " " +
-                            address.city +
-                            " " +
-                            address.streetAddress +
-                            " " +
-                            address.streetNumber),
-                        trailing: idx == _selectedAddressIndex
-                            ? Icon(Icons.check_circle, color: kPrimaryColor)
-                            : null,
-                        onTap: () {
-                          setState(() {
-                            _selectedAddressIndex = idx;
-                          });
-                        },
-                      );
-                    }).toList(),
+                    if (!_isGift) {
+                      fetchData(GlobalManager().userId!);
+                    }
+                  },
+                  secondary: const Icon(Icons.card_giftcard),
+                ),
+                SizedBox(
+                  height: getProportionateScreenHeight(10),
+                ),
+                if (_isGift) ...[
+                  SearchContactWidget(
+                    onUserSelected: _onUserSelected,
+                    onNameChanged: _onNameChanged,
+                    onPhoneChanged: _onPhoneChanged,
                   ),
+                ],
+                SizedBox(
+                  height: getProportionateScreenHeight(10),
                 ),
-              ),
-            if (_addresses == null || _addresses!.isEmpty)
-              Text(
-                _isGift ? "" : "You haven't added an address yet.",
-                textAlign: TextAlign.center,
-              ),
-            IconButton(
-                icon: Icon(
-                  Icons.add_location,
-                  size: 50,
-                ),
-                tooltip: "Add address",
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (_isGift) {
-                      _formKey.currentState!.save();
-
-                      if (userId == null) {
-                        _phoneValidationCompleter = Completer<bool>();
-                        await _phoneValidationCompleter!.future;
-                      }
-                    }
-
-                    if (_recipientId != null ||
-                        (name != null && phoneNumber != null)) {
-                      AnalyticsService.trackEvent(
-                          analyticEvents["ADD_ADDRESS_PRESSED"]!,
-                          properties: {
-                            "Variant Id": widget.variantId,
-                            "Is Gift": _isGift
-                          });
-                      showDialog<int>(
-                        context: context,
-                        builder: (context) => Dialog.fullscreen(
-                            child: LocationDialogForm(
-                          userId: _recipientId,
-                          userName: name,
-                          userPhoneNumber: phoneNumber,
-                        )),
-                      ).then((result) {
-                        if (result != null) {
-                          setState(() {
-                            _recipientId = result;
-                            _selectedAddressIndex = 0;
-                          });
-
-                          fetchData(_recipientId!);
-                        }
+                AddressesWidget(
+                    addresses: _addresses ?? [],
+                    emptyMessage:
+                        "To deliver your order, please tap the plus icon to add a shipping address.",
+                    selectedIndex: _selectedAddressIndex,
+                    onTap: (idx) {
+                      setState(() {
+                        _selectedAddressIndex = idx;
                       });
-                    }
-                  }
-                }),
-            SizedBox(height: getProportionateScreenHeight(20)),
-            PaymentButton(
-              loading: _loading,
-              price: widget.price,
-              onSubmit: onSubmit,
-              enable: _addresses != null && _addresses!.length > 0,
-              eventData: {
-                "Is Gift": _isGift,
-                "Recipient Id": _recipientId,
-                "Variant Id": widget.variantId,
-              },
-            ),
-          ],
-        ));
+                    }),
+                IconButton(
+                    icon: Icon(
+                      Icons.add_location,
+                      size: 50,
+                    ),
+                    tooltip: "Add address",
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        if (_isGift) {
+                          _formKey.currentState!.save();
+
+                          if (userId == null) {
+                            _phoneValidationCompleter = Completer<bool>();
+                            await _phoneValidationCompleter!.future;
+                          }
+                        }
+
+                        if (_recipientId != null || phoneNumber != null) {
+                          AnalyticsService.trackEvent(
+                              analyticEvents["ADD_ADDRESS_PRESSED"]!,
+                              properties: {
+                                "Variant Id": widget.variantId,
+                                "Is Gift": _isGift
+                              });
+                          showDialog<int>(
+                            context: context,
+                            builder: (context) => Dialog.fullscreen(
+                                child: LocationDialogForm(
+                              userId: _recipientId,
+                              userName: name,
+                              userPhoneNumber: phoneNumber,
+                            )),
+                          ).then((result) {
+                            if (result != null) {
+                              setState(() {
+                                _recipientId = result;
+                                _selectedAddressIndex = 0;
+                              });
+
+                              fetchData(_recipientId!);
+                            }
+                          });
+                        }
+                      }
+                    }),
+                SizedBox(
+                    height: getProportionateScreenHeight(_isGift ? 20 : 60)),
+                PaymentButton(
+                  loading: _loading,
+                  price: widget.price,
+                  onSubmit: onSubmit,
+                  enable: _addresses != null && _addresses!.length > 0,
+                  eventData: {
+                    "Is Gift": _isGift,
+                    "Recipient Id": _recipientId,
+                    "Variant Id": widget.variantId,
+                  },
+                ),
+              ],
+            )));
   }
 }

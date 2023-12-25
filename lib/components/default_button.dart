@@ -81,7 +81,7 @@ class _DefaultButtonState extends State<DefaultButton>
       });
       _startAnimation();
 
-      await widget.press!();
+      if (mounted) await widget.press!();
 
       if (widget.eventName != null) {
         AnalyticsService.trackEvent(widget.eventName!,

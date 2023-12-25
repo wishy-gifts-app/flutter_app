@@ -72,9 +72,7 @@ class SwipeableProducts extends StatefulWidget {
 
 class _SwipeableProductsState extends State<SwipeableProducts> {
   List<SwipeItem> _currentSwipeItems = <SwipeItem>[];
-  List<SwipeItem> _nextSwipeItems = <SwipeItem>[];
   MatchEngine? _currentMatchEngine;
-  MatchEngine? _nextMatchEngine;
   bool isStateEmpty = false;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
   bool _isFirstCard = true;
@@ -121,25 +119,6 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
           _currentSwipeItems = buildSwipeItems(
               results, onSwipeRight, onSwipeLeft, onSwipeUp, context);
           _currentMatchEngine = MatchEngine(swipeItems: _currentSwipeItems);
-          isStateEmpty = false;
-        });
-      } else {
-        setState(() {
-          isStateEmpty = true;
-        });
-      }
-    }
-  }
-
-  void _fetchNextItems() async {
-    final nextResults = await widget.nextPage();
-
-    if (mounted) {
-      if (nextResults != null && nextResults.length > 0) {
-        setState(() {
-          _nextSwipeItems = buildSwipeItems(
-              nextResults, onSwipeRight, onSwipeLeft, onSwipeUp, context);
-          _nextMatchEngine = MatchEngine(swipeItems: _nextSwipeItems);
           isStateEmpty = false;
         });
       } else {

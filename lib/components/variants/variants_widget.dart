@@ -61,7 +61,7 @@ class VariantsWidget extends StatefulWidget {
     this.productTitle,
     required this.productVariants,
     this.onVariantChange,
-    this.buttonText = "Buy Now",
+    this.buttonText = "Checkout",
     this.variantId,
     this.withBuyButton = true,
     this.recipientId,

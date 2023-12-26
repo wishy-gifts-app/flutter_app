@@ -110,14 +110,21 @@ class _ProductCardState extends State<ProductCard> {
         });
 
     if (widget.product.variants!.length > 1) {
-      showVariantsModal(context, widget.product.id, widget.product.title,
-          widget.product.variants!, null, widget.situation,
+      showVariantsModal(
+          context,
+          widget.product.id,
+          widget.product.title,
+          widget.product.variants!,
+          widget.isFullScreen ? GlobalManager().connectUserId : null,
+          widget.situation,
           cursor: widget.cursor);
     } else {
       Navigator.pushNamed(
         context,
         CheckoutScreen.routeName,
         arguments: {
+          "recipientId":
+              widget.isFullScreen ? GlobalManager().connectUserId : null,
           'variant': widget.product.variants![0],
           'productId': widget.product.id,
           "cursor": widget.cursor
@@ -162,7 +169,11 @@ class _ProductCardState extends State<ProductCard> {
               context,
               DetailsScreen.routeName,
               arguments: ProductDetailsArguments(
-                  product: widget.product, cursor: widget.cursor),
+                product: widget.product,
+                cursor: widget.cursor,
+                recipientId:
+                    widget.isFullScreen ? GlobalManager().connectUserId : null,
+              ),
             )
           },
           child: Container(
@@ -420,6 +431,15 @@ class _ProductCardState extends State<ProductCard> {
                           ),
                         )),
                 ],
+                Positioned.fill(
+                    bottom: 0,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Icon(
+                        Icons.arrow_drop_down_circle_outlined,
+                        // color: Colors.white,
+                      ),
+                    )),
               ],
             ),
           ),

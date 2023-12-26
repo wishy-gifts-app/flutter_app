@@ -16,6 +16,10 @@ import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class SignForm extends StatefulWidget {
+  final bool navigateToRequest;
+
+  SignForm({required this.navigateToRequest});
+
   @override
   _SignFormState createState() => new _SignFormState();
 }
@@ -63,7 +67,8 @@ class _SignFormState extends State<SignForm> {
       );
 
       if (mounted) {
-        RouterUtils.routeToHomePage(context, false, result.token, false);
+        RouterUtils.routeToHomePage(context, false, result.token, false,
+            navigateToRequest: widget.navigateToRequest);
       }
     } catch (error) {
       if (mounted) print(error);
@@ -82,7 +87,8 @@ class _SignFormState extends State<SignForm> {
       phoneNumber = phone;
     });
 
-    _phoneValidationCompleter!.complete(true);
+    if (_phoneValidationCompleter != null)
+      _phoneValidationCompleter!.complete(true);
   }
 
   Future<void> sendOPTNumber() async {
@@ -116,8 +122,78 @@ class _SignFormState extends State<SignForm> {
     _pressed = false;
   }
 
+  Future<void> _notificationSignIn() async {
+    try {
+      final result = await authServices.notificationSignInService();
+
+      await GlobalManager().setParams(
+        newToken: result.token,
+        newUserId: result.userId,
+        newUsername: "",
+        newSignedIn: true,
+      );
+
+      if (mounted) {
+        RouterUtils.routeToHomePage(context, false, result.token, false,
+            skipProfileCompleted: true,
+            navigateToRequest: widget.navigateToRequest);
+      }
+    } catch (error) {
+      if (mounted) print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Sorry, we're unable to access the products page. Please retry shortly.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (GlobalManager().notificationToken != null)
+      return Form(
+        key: _formKey,
+        child: Column(children: [
+          SizedBox(height: getProportionateScreenHeight(90)),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodySmall,
+              children: <TextSpan>[
+                TextSpan(
+                  text: "By continuing you confirm that you agree with our ",
+                ),
+                TextSpan(
+                  text: "Privacy Terms",
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return Dialog.fullscreen(child: PrivacyWebView());
+                        },
+                      );
+                    },
+                  style: TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: getProportionateScreenHeight(10)),
+          DefaultButton(
+              eventName: analyticEvents["NOTIFICATION_SIGN_IN"]!,
+              eventData: {
+                "Notification token": GlobalManager().notificationToken
+              },
+              text: "Start Now",
+              press: _notificationSignIn),
+        ]),
+      );
+
     return Form(
       key: _formKey,
       child: Column(children: [

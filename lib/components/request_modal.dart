@@ -57,7 +57,8 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   void _onPhoneChanged(String? phone) {
     requestData.phone = phone;
-    _phoneValidationCompleter!.complete(true);
+    if (_phoneValidationCompleter != null)
+      _phoneValidationCompleter!.complete(true);
   }
 
   void _onReasonChanged(String? reason) {

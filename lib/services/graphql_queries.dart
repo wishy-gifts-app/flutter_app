@@ -286,10 +286,11 @@ const Map<String, String> graphqlQueries = {
       \$zip_code: String!,
       \$apartment: String,
       \$extra_details: String,
+      \$allow_share: Boolean,
     ) {
       saveUserAddress(user_id: \$user_id, country: \$country, state: \$state, city: \$city, zip_code: \$zip_code,
       street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, 
-      extra_details: \$extra_details, name: \$name, phone_number: \$phone_number ) {
+      extra_details: \$extra_details, name: \$name, phone_number: \$phone_number, allow_share: \$allow_share ) {
         id
         user_id
       }
@@ -313,6 +314,8 @@ const Map<String, String> graphqlQueries = {
           street_number
           apartment
           extra_details
+          allow_share
+          created_user_id
         }
         pageInfo {
           hasNextPage
@@ -360,8 +363,9 @@ const Map<String, String> graphqlQueries = {
       \$phone_number: String!,
     ) {
       isPhoneExists(phone_number: \$phone_number) {
-        user_id
+        id
         is_active_user
+        name
     }
   }
 """,
@@ -683,6 +687,7 @@ const Map<String, String> graphqlQueries = {
           cursor,
           message,
           connect_user
+          connect_user_id
       }
     }
   """,

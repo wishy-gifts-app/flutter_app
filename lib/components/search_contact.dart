@@ -28,33 +28,77 @@ class SearchContactWidget extends StatefulWidget {
 class _SearchContactWidgetState extends State<SearchContactWidget> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  int? _selectedUser;
+  bool _nameUpdatedByUser = false;
+  int? _selectedUserId;
   bool _isActiveUser = false;
 
-  void afterContactSelect() async {
+  void _onPhoneChange(String? number) {
+    if (number != null)
+      _afterPhoneAdded();
+    else if (_selectedUserId != null) {
+      widget.onUserSelected(null, null);
+      widget.onNameChanged(null);
+      widget.onPhoneChanged(null);
+
+      if (_nameUpdatedByUser) _nameController.text = "";
+      if (mounted)
+        setState(() {
+          _selectedUserId = null;
+        });
+    }
+  }
+
+  void _afterPhoneAdded() async {
     final result = await graphQLQueryHandler(
         "isPhoneExists", {"phone_number": _phoneController.text});
 
-    if (result["user_id"] != null) {
+    if (mounted) {
       setState(() {
         _isActiveUser = result["is_active_user"];
+        _selectedUserId = result["id"];
       });
-
-      widget.onUserSelected(result["user_id"], _isActiveUser);
     }
 
-    widget.onNameChanged(_phoneController.text);
-    widget.onPhoneChanged(_nameController.text);
+    widget.onUserSelected(result["id"], _isActiveUser);
+
+    if (result["name"] != null && result["name"] != "") {
+      _nameController.text = result["name"];
+
+      if (mounted)
+        setState(() {
+          _nameUpdatedByUser = true;
+        });
+    }
+
+    widget.onPhoneChanged(_phoneController.text);
+    widget.onNameChanged(_nameController.text);
+  }
+
+  void _setDefaultUser() {
+    if (widget.defaultUser != null) {
+      if (_nameController.text != widget.defaultUser!.name) {
+        _nameController.text = widget.defaultUser!.name;
+      }
+      if (_phoneController.text != widget.defaultUser!.phoneNumber) {
+        _phoneController.text = widget.defaultUser!.phoneNumber;
+      }
+    }
   }
 
   @override
   void initState() {
-    if (widget.defaultUser != null) {
-      _nameController.text = widget.defaultUser!.name;
-      _phoneController.text = widget.defaultUser!.phoneNumber;
-    }
+    _setDefaultUser();
 
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchContactWidget oldWidget) {
+    if (widget.defaultUser != oldWidget.defaultUser) {
+      Future.delayed(Duration.zero, _setDefaultUser);
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -114,6 +158,8 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
           _nameController.text = contact.name;
           _phoneController.text = contact.phoneNumber;
         });
+
+        _afterPhoneAdded();
       },
     );
   }
@@ -121,8 +167,8 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
   Widget _buildPhoneInput() {
     return PhoneNumberField(
       controller: _phoneController,
-      onSaved: widget.onPhoneChanged,
-      onError: (String error) => widget.onPhoneChanged(null),
+      onSaved: _onPhoneChange,
+      onError: (String error) => _onPhoneChange(null),
       withIcon: widget.withIcon,
     );
   }

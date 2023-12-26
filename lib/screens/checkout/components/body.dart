@@ -22,7 +22,7 @@ class Body extends StatelessWidget {
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
       child: Column(
         children: [
-          SizedBox(height: getProportionateScreenHeight(10)),
+          // SizedBox(height: getProportionateScreenHeight(10)),
           Text("Complete Purchase", style: headingStyle),
           SizedBox(height: getProportionateScreenHeight(20)),
           PurchaseForm(

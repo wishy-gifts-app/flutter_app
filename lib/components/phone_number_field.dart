@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_number/phone_number.dart';
 
 class PhoneNumberField extends StatefulWidget {
-  final Function(String?) onSaved;
+  final Function(String) onSaved;
   final Function(String) onError;
   final bool withIcon;
   final TextEditingController? controller;
@@ -26,13 +26,11 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
   String? errorMessage;
   String phoneNumber = "";
 
-  Future<bool> isValidPhoneNumber(String? number) async {
+  Future<String?> isValidPhoneNumber(String? number) async {
     bool isValid = false;
 
     if (number == null || number.isEmpty) {
-      setState(() {
-        errorMessage = kPhoneNumberNullError;
-      });
+      return kPhoneNumberNullError;
     } else {
       final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil();
       try {
@@ -41,19 +39,20 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
         isValid = false;
       }
       if (!isValid) {
-        setState(() {
-          errorMessage = kInvalidPhoneNumberError;
-        });
+        return kInvalidPhoneNumberError;
       } else {
-        if (mounted)
-          setState(() {
-            errorMessage = null;
-          });
-        isValid = true;
+        return null;
       }
     }
+  }
 
-    return isValid;
+  void updateIfValid(String? number) async {
+    String? result = await isValidPhoneNumber(number);
+
+    if (result == null)
+      widget.onSaved(number!);
+    else
+      widget.onError("");
   }
 
   @override
@@ -64,8 +63,14 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
           controller: widget.controller,
           keyboardType: TextInputType.phone,
           onSaved: (newValue) async {
-            if (await isValidPhoneNumber(newValue)) {
-              widget.onSaved(newValue);
+            final result = await isValidPhoneNumber(newValue);
+            if (mounted)
+              setState(() {
+                errorMessage = result;
+              });
+
+            if (result == null) {
+              widget.onSaved(newValue!);
             } else {
               widget.onError(errorMessage ?? "");
             }
@@ -76,6 +81,8 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
               setState(() {
                 this.errorMessage = null;
               });
+
+              updateIfValid(value);
             }
           },
           decoration: InputDecoration(

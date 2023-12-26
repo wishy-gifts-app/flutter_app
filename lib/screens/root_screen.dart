@@ -12,6 +12,7 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> {
+  bool _navigateToRequest = false;
   @override
   void initState() {
     super.initState();
@@ -26,7 +27,14 @@ class _RootScreenState extends State<RootScreen> {
       Uri? initialUri = await getInitialUri();
 
       if (initialUri != null && initialUri.path == '/requests') {
-        GlobalManager().navigateToRequest(true);
+        _navigateToRequest = true;
+        GlobalManager().setNotificationToken(
+          initialUri.queryParameters["token"],
+        );
+      } else if (initialUri != null && initialUri.path == '/invites') {
+        GlobalManager().setNotificationToken(
+          initialUri.queryParameters["token"],
+        );
       }
     } on Exception {
       print("Failed to fetch the URI parameters");
@@ -36,7 +44,8 @@ class _RootScreenState extends State<RootScreen> {
     bool? profileCompleted = GlobalManager().profileCompleted;
 
     RouterUtils.routeToHomePage(
-        context, profileCompleted, token, GlobalManager().signedIn);
+        context, profileCompleted, token, GlobalManager().signedIn,
+        navigateToRequest: _navigateToRequest);
   }
 
   @override

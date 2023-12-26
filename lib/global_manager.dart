@@ -8,7 +8,7 @@ class GlobalManager {
   int? userId;
   String? username;
   bool signedIn = false;
-  bool shouldNavigateToRequest = false;
+  String? notificationToken = null;
   bool? isDeliveryAvailable;
   UserLocationData? userLocation;
   bool showAnimation = false;
@@ -20,6 +20,7 @@ class GlobalManager {
   bool? notificationAvailable = null;
   bool? newConnectAvailable = null;
   String? connectUser = null;
+  int? connectUserId = null;
   String? firstFeedCursor = null;
 
   factory GlobalManager() {
@@ -88,7 +89,6 @@ class GlobalManager {
     }
   }
 
-  void navigateToRequest(bool value) => shouldNavigateToRequest = value;
   void setShowAnimation(bool value) => showAnimation = value;
   void setShowUpAnimation(bool value) => showUpAnimation = value;
   void setSession(String value) => session = value;
@@ -98,5 +98,7 @@ class GlobalManager {
   void setRecommendationExists(bool value) => recommendationExists = value;
   void setSignInRelatedProductId(int? value) => signInRelatedProductId = value;
   void setConnectUser(String? value) => connectUser = value;
+  void setConnectUserId(int? value) => connectUserId = value;
   void setFirstFeedCursor(String? value) => firstFeedCursor = value;
+  void setNotificationToken(String? value) => notificationToken = value;
 }

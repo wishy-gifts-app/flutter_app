@@ -41,6 +41,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
   final _extraDetailsController = TextEditingController();
   final _postalCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _allowShareAddress = true;
   PlacesDetailsResponse? detail;
 
   String? validateAddress(PlacesDetailsResponse detail) {
@@ -65,9 +66,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      final currentStreetNumber =
-          getSpecificComponent(detail!, "street_number")?.longName;
-
       final country = getSpecificComponent(detail!, "country")?.longName;
       final state =
           getSpecificComponent(detail!, ["administrative_area_level_1"])
@@ -92,7 +90,8 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           "extra_details": extraDetails,
           "user_id": widget.userId,
           "phone_number": widget.userPhoneNumber,
-          "name": widget.userName
+          "name": widget.userName,
+          "allow_share": _allowShareAddress,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -263,13 +262,35 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16),
-        child: DefaultButton(
-            text: 'Add',
-            press: _onSubmit,
-            eventName: analyticEvents["ADDRESS_ADDED"],
-            eventData: {"Is Gift": widget.userId == null}),
-      ),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            if (widget.userId == null && widget.userPhoneNumber == null) ...[
+              CheckboxListTile(
+                title: Text(
+                  "Check this to make gift-giving a breeze! It allows gift buyers to send items directly to this address.",
+                  style: TextStyle(fontSize: 12),
+                ),
+                value: _allowShareAddress,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _allowShareAddress = value!;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              SizedBox(
+                height: getProportionateScreenHeight(3),
+              ),
+            ],
+            DefaultButton(
+                text: 'Add Address',
+                press: _onSubmit,
+                eventName: analyticEvents["ADDRESS_ADDED"],
+                eventData: {
+                  "Is Gift":
+                      widget.userId == null && widget.userPhoneNumber == null
+                }),
+          ])),
     );
   }
 }

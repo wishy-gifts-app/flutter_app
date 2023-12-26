@@ -31,7 +31,7 @@ class InviteCard extends StatefulWidget {
 
 class _InviteCardState extends State<InviteCard> {
   final _formKey = GlobalKey<FormState>();
-  Completer<bool>? _phoneValidationCompleter;
+  Completer<bool>? _phoneValidationCompleter = null;
   String? _name;
   String? _phone;
   int? _userId;
@@ -40,26 +40,58 @@ class _InviteCardState extends State<InviteCard> {
   bool _press = false;
 
   void _handleNameChanged(String? name) {
-    setState(() => _name = name);
+    if (mounted) setState(() => _name = name);
   }
 
   void _handlePhoneChanged(String? phone) {
-    print(1111);
-    setState(() => _phone = phone);
-    _phoneValidationCompleter!.complete(true);
+    if (mounted) setState(() => _phone = phone);
 
-    if (!_press) _handleSendInvitation();
+    if (_phoneValidationCompleter != null) {
+      _phoneValidationCompleter!.complete(true);
+    }
+
+    if (!_press) {
+      _send();
+    }
+    ;
   }
 
   void _handleUserSelected(int? userId, bool? isActiveUser) {
-    setState(() {
-      _userId = userId;
-      _isActiveUser = isActiveUser;
-    });
+    if (mounted)
+      setState(() {
+        _userId = userId;
+        _isActiveUser = isActiveUser;
+      });
+  }
+
+  Future<void> _send() async {
+    if (_press) return;
+
+    _press = true;
+
+    if (_giveNotificationPermission &&
+        GlobalManager().notificationAvailable == null) {
+      Map<String, dynamic> notificationData =
+          await requestNotificationPermission();
+
+      graphQLQueryHandler("updateUserById", {
+        "id": GlobalManager().userId,
+        "notification_available": notificationData["available"],
+        "fcm_token": notificationData["fcmToken"],
+      }).then((v) => GlobalManager()
+          .setParams(newNotificationAvailable: notificationData["available"]));
+    }
+
+    widget.onSelect(
+        {"name": _name, "user_id": _userId, "phone_number": _phone},
+        this._isActiveUser == true
+            ? "Fetching ${_name}'s Favorite Picks..."
+            : "Inviting ${_name} to Share...");
+
+    _press = false;
   }
 
   void _handleSendInvitation() async {
-    _press = true;
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       if (_userId == null) {
@@ -68,28 +100,9 @@ class _InviteCardState extends State<InviteCard> {
       }
 
       if (_phone != null && _phone != "") {
-        if (_giveNotificationPermission &&
-            GlobalManager().notificationAvailable == null) {
-          Map<String, dynamic> notificationData =
-              await requestNotificationPermission();
-
-          graphQLQueryHandler("updateUserById", {
-            "id": GlobalManager().userId,
-            "notification_available": notificationData["available"],
-            "fcm_token": notificationData["fcmToken"],
-          }).then((v) => GlobalManager().setParams(
-              newNotificationAvailable: notificationData["available"]));
-        }
-
-        widget.onSelect(
-            {"name": _name, "user_id": _userId, "phone_number": _phone},
-            this._isActiveUser == true
-                ? "Fetching ${_name}'s Favorite Picks..."
-                : "Inviting ${_name} to Share...");
+        await _send();
       }
     }
-
-    _press = false;
   }
 
   void _handleDisconnect() async {

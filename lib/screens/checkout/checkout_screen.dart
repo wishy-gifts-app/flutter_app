@@ -19,9 +19,8 @@ class CheckoutScreen extends StatelessWidget {
       this.cursor = null});
 
   void _redirectToSignInIfNeeded(BuildContext context) {
-    if (GlobalManager().signedIn != true) {
+    if (GlobalManager().profileCompleted != true) {
       GlobalManager().setSignInRelatedProductId(productId);
-      GlobalManager().navigateToRequest(recipientId != null);
       Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     }
   }

@@ -46,6 +46,26 @@ class AuthServices {
     }
   }
 
+  Future<SignInResponse> notificationSignInService() async {
+    final response = await http.post(
+      Uri.parse(dotenv.get("NOTIFICATION_SIGN_IN_API_URL")),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body:
+          jsonEncode({"notification_token": GlobalManager().notificationToken}),
+    );
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return SignInResponse.fromJson(data);
+    } else {
+      print(
+          'Failed to handling notification sign in, error_message: ${data["message"]}');
+      throw Exception('Failed to handling notification sign in');
+    }
+  }
+
   Future<SignInResponse> verifyOTPService(
       String phoneNumber, String otp) async {
     final response = await http.post(

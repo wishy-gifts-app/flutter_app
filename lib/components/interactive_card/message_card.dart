@@ -11,7 +11,7 @@ class MessageCard extends StatefulWidget {
 
   final String CTA;
   final String question;
-  final Function(String?, String?) closeCard;
+  final Function(String?, String?, int?) closeCard;
   final Function(Map<String, dynamic>, String) onSelect;
 
   MessageCard({
@@ -32,7 +32,7 @@ class _MessageCardState extends State<MessageCard> {
       MessageCard.sent = true;
 
       widget.onSelect(new Map(), "");
-      widget.closeCard(null, null);
+      widget.closeCard(null, null, null);
     }
   }
 
@@ -70,7 +70,7 @@ class _MessageCardState extends State<MessageCard> {
         ),
         SizedBox(height: getProportionateScreenHeight(50)),
         DefaultButton(
-          press: () => widget.closeCard(null, null),
+          press: () => widget.closeCard(null, null, null),
           text: widget.CTA,
         ),
       ],

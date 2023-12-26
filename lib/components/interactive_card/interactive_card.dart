@@ -2,18 +2,20 @@ import 'package:Wishy/components/interactive_card/invite_card.dart';
 import 'package:Wishy/components/interactive_card/message_card.dart';
 import 'package:Wishy/components/interactive_card/processing_animation.dart';
 import 'package:Wishy/components/interactive_card/question_card.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/utils.dart';
 import 'package:Wishy/services/graphql_service.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 
 enum CardTypes { question, invite, message, newVersion }
 
 class InteractiveCard extends StatefulWidget {
   final InteractiveCardData interactiveCardData;
-  final Function(String?, String?) closeCard;
+  final Function(String?, String?, int?) closeCard;
   final bool triggerByServer;
   final String? currentCursor;
   final int? userCardId;
@@ -39,6 +41,15 @@ class _InteractiveCardState extends State<InteractiveCard> {
   final displayAt = DateTime.now();
 
   _onSelect(dynamic response, String message) async {
+    AnalyticsService.trackEvent(analyticEvents["INTERACTIVE_CARD_HANDLED"]!,
+        properties: {
+          "Id": widget.userCardId,
+          "Response": response,
+          "Card Id": widget.interactiveCardData.id,
+          "Type": widget.interactiveCardData.type.name,
+          "Custom Trigger Id": widget.interactiveCardData.customTriggerId,
+          "Trigger By Server": widget.triggerByServer
+        });
     if (mounted)
       setState(() {
         _message = message;
@@ -61,10 +72,12 @@ class _InteractiveCardState extends State<InteractiveCard> {
 
       if (_refetchProducts != true && result?["message"] != null) {
         Future.delayed(Duration(seconds: 2), () {
-          widget.closeCard(result["cursor"], result["connect_user"]);
+          widget.closeCard(result["cursor"], result["connect_user"],
+              result?["connect_user_id"]);
         });
       } else {
-        widget.closeCard(result?["cursor"], result?["connect_user"]);
+        widget.closeCard(result?["cursor"], result?["connect_user"],
+            result?["connect_user_id"]);
       }
     });
   }

@@ -4,6 +4,10 @@ import '../../../size_config.dart';
 import 'sign_form.dart';
 
 class Body extends StatelessWidget {
+  final bool navigateToRequest;
+
+  Body({required this.navigateToRequest});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -32,7 +36,9 @@ class Body extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: getProportionateScreenHeight(30)),
-            SignForm(),
+            SignForm(
+              navigateToRequest: navigateToRequest,
+            ),
             SizedBox(height: getProportionateScreenHeight(20)),
           ],
         ),

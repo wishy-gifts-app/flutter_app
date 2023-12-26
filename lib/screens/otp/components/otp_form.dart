@@ -26,6 +26,7 @@ class _OtpFormState extends State<OtpForm> {
   final otpServices = AuthServices();
   String otpValue = "";
   bool? completedProfile = GlobalManager().profileCompleted;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +60,11 @@ class _OtpFormState extends State<OtpForm> {
   }
 
   Future<void> handleOtpSubmission() async {
+    if (_isPressed) return;
+
+    setState(() {
+      _isPressed = true;
+    });
     try {
       final result =
           await otpServices.verifyOTPService(widget.phoneNumber, otpValue);
@@ -71,6 +77,7 @@ class _OtpFormState extends State<OtpForm> {
         newNotificationAvailable: result.notificationAvailable,
         newSignedIn: true,
       );
+
       if (result.profileCompleted) {
         GlobalManager().setShowAnimation(false);
       }
@@ -92,5 +99,7 @@ class _OtpFormState extends State<OtpForm> {
         SnackBar(content: Text('Error verifying OTP. Please try again.')),
       );
     }
+
+    _isPressed = false;
   }
 }

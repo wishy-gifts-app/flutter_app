@@ -1,7 +1,7 @@
 import 'package:Wishy/components/addresses_widget.dart';
 import 'package:Wishy/components/search_contact.dart';
-import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/shopify_payment_widget.dart';
@@ -40,19 +40,23 @@ class _PurchaseFormState extends State<PurchaseForm> {
   bool _loading = false;
   final _formKey = GlobalKey<FormState>();
   Completer<bool>? _phoneValidationCompleter;
+  Follower? _defaultUser;
 
   void _onUserSelected(int? userId, bool? isActiveUser) {
     setState(() {
       this.userId = userId;
     });
 
-    if (this.userId != null) {
-      setState(() {
-        this._recipientId = this.userId!;
-      });
-    }
+    setState(() {
+      this._recipientId = this.userId;
+    });
 
-    if (_recipientId != null) fetchData(_recipientId!);
+    if (_recipientId != null)
+      fetchData(_recipientId!);
+    else
+      setState(() {
+        _addresses = [];
+      });
   }
 
   void _onNameChanged(String? name) {
@@ -66,7 +70,8 @@ class _PurchaseFormState extends State<PurchaseForm> {
       this.phoneNumber = phone;
     });
 
-    _phoneValidationCompleter!.complete(true);
+    if (_phoneValidationCompleter != null)
+      _phoneValidationCompleter!.complete(true);
   }
 
   Future<void> onSubmit() async {
@@ -143,6 +148,17 @@ class _PurchaseFormState extends State<PurchaseForm> {
       queryName: "getUserAddresses",
       variables: {"limit": 20, "user_id": userId},
     );
+    if (_isGift) {
+      graphQLQueryHandler("userById", {"id": userId}).then((result) {
+        if (mounted)
+          setState(() {
+            _defaultUser = Follower(
+                name: result["name"],
+                phoneNumber: result["phone_number"],
+                id: result["id"]);
+          });
+      });
+    }
     final result = await _paginationServices.run();
 
     if (mounted && result["data"] != null && _recipientId != null) {
@@ -194,13 +210,21 @@ class _PurchaseFormState extends State<PurchaseForm> {
                   secondary: const Icon(Icons.card_giftcard),
                 ),
                 SizedBox(
-                  height: getProportionateScreenHeight(10),
+                  height: getProportionateScreenHeight(_isGift ? 8 : 30),
                 ),
                 if (_isGift) ...[
+                  Text(
+                    "Please add the recipient's details",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: getProportionateScreenHeight(4),
+                  ),
                   SearchContactWidget(
                     onUserSelected: _onUserSelected,
                     onNameChanged: _onNameChanged,
                     onPhoneChanged: _onPhoneChanged,
+                    defaultUser: _defaultUser,
                   ),
                 ],
                 SizedBox(

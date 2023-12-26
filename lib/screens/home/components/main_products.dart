@@ -15,10 +15,11 @@ import 'package:Wishy/services/graphql_service.dart';
 import '../../../size_config.dart';
 
 class MainProducts extends StatefulWidget {
-  final void Function(InteractiveCardData? card) setInteractiveCard;
+  final void Function(InteractiveCardData? card, {bool? triggerByServer})
+      setInteractiveCard;
   final InteractiveCardData? interactiveCard;
   final Function nextProductCounter;
-  final Function(String?) setConnectUser;
+  final Function(String?, int?) setConnectUser;
 
   MainProducts({
     Key? key,
@@ -171,21 +172,22 @@ class _MainProductsState extends State<MainProducts> {
     widget.setInteractiveCard(null);
   }
 
-  void _onCloseInteractiveCard(String? cursor, String? connectUser) {
+  void _onCloseInteractiveCard(
+      String? cursor, String? connectUser, int? connectUserId) {
     setState(() {
       _isInteractiveClose = cursor == null;
       _cardResult = cursor != null;
       _triggerByServer = false;
       _userCardId = null;
     });
-    widget.setConnectUser(connectUser);
+    widget.setConnectUser(connectUser, connectUserId);
 
     if (_isInteractiveClose) return;
 
     GlobalManager().setFirstFeedCursor(cursor);
     _initializePaginationService(cursor);
 
-    widget.setConnectUser(connectUser);
+    widget.setConnectUser(connectUser, connectUserId);
 
     setState(() {
       _swipeableProductsKey = ValueKey<String?>(cursor);
@@ -209,7 +211,7 @@ class _MainProductsState extends State<MainProducts> {
         .toList();
 
     if (activeCards.length > 0) {
-      widget.setInteractiveCard(activeCards[0]);
+      widget.setInteractiveCard(activeCards[0], triggerByServer: true);
 
       setState(() {
         _triggerCards.remove(activeCards[0]);

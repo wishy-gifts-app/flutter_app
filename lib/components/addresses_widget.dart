@@ -8,12 +8,14 @@ class AddressesWidget extends StatelessWidget {
   final double? height;
   final Function(int)? onTap;
   final String emptyMessage;
+  final bool isGift;
 
   AddressesWidget({
     this.addresses = const [],
     this.selectedIndex,
     this.onTap,
     this.height = 160,
+    this.isGift = false,
     this.emptyMessage = "You haven't added an address yet.",
   });
 
@@ -32,8 +34,18 @@ class AddressesWidget extends StatelessWidget {
                   Address address = entry.value;
                   return ListTile(
                       title: Text(
-                          address.streetAddress + " " + address.streetNumber),
-                      subtitle: Text(address.city + ", " + address.country),
+                        address.streetAddress + " " + address.streetNumber,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      subtitle: Text(
+                          (address.apartment != "" && address.apartment != null
+                                  ? address.apartment! + ", "
+                                  : "") +
+                              address.city +
+                              ", " +
+                              address.state +
+                              ", " +
+                              address.country),
                       trailing: selectedIndex != null && idx == selectedIndex
                           ? Icon(Icons.check_circle, color: kPrimaryColor)
                           : null,

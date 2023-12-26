@@ -1,4 +1,3 @@
-import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/requests/requests_screen.dart';
 import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +6,20 @@ import 'package:Wishy/screens/home/home_screen.dart';
 
 class RouterUtils {
   static void routeToHomePage(BuildContext context, bool? profileCompleted,
-      String? token, bool signedIn) {
+      String? token, bool signedIn,
+      {bool navigateToRequest = false, bool skipProfileCompleted = false}) {
     if (token == null || token.isEmpty) {
-      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
+      Navigator.pushReplacementNamed(
+        context,
+        SignInScreen.routeName,
+        arguments: {'navigateToRequest': navigateToRequest},
+      );
     } else if ((profileCompleted == null || !profileCompleted) &&
-        signedIn == true) {
+        signedIn == true &&
+        !skipProfileCompleted) {
       Navigator.pushReplacementNamed(context, CompleteProfileScreen.routeName);
     } else {
-      if (GlobalManager().shouldNavigateToRequest) {
-        GlobalManager().navigateToRequest(false);
+      if (navigateToRequest) {
         Navigator.pushReplacementNamed(context, RequestsScreen.routeName);
         return;
       }

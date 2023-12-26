@@ -36,6 +36,9 @@ const analyticEvents = {
   "PAGE_OPENED": "Page Opened",
   "PROFILE_TAB_PRESSED": "Profile Tab Pressed",
   "SKIP_SIGN_IN": "Skip Sign In",
+  "NOTIFICATION_SIGN_IN": "Notification Sign In",
+  "INTERACTIVE_CARD_HANDLED": "Interactive Card Handled",
+  "INTERACTIVE_CARD_DISPLAYED": "Interactive Card Displayed",
 };
 
 const kPrimaryColor = Colors.black;

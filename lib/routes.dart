@@ -16,7 +16,12 @@ import 'package:Wishy/screens/likes/likes_screen.dart';
 // We use name route
 // All our routes will be available here
 final Map<String, WidgetBuilder> routes = {
-  SignInScreen.routeName: (context) => SignInScreen(),
+  SignInScreen.routeName: (context) {
+    final args = (ModalRoute.of(context)?.settings.arguments ?? {}) as Map;
+    return SignInScreen(
+      navigateToRequest: (args['navigateToRequest'] ?? false) as bool,
+    );
+  },
   LoginSuccessScreen.routeName: (context) => LoginSuccessScreen(),
   CompleteProfileScreen.routeName: (context) => CompleteProfileScreen(),
   OtpScreen.routeName: (context) {

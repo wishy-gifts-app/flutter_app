@@ -665,6 +665,17 @@ const Map<String, String> graphqlQueries = {
         }
     }
   """,
+  'getDeliveryTime': """
+    query getDeliveryTime(
+      \$product_id: Int!, \$address_id: Int!
+    ) {
+      getDeliveryTime(
+        product_id: \$product_id, address_id: \$address_id
+      ) {
+          result
+        }
+    }
+  """,
   'interactiveCardHandler': """
     mutation interactiveCardHandler(
       \$id: Int,  

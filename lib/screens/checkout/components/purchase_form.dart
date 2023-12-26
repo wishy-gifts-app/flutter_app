@@ -15,12 +15,13 @@ import 'dart:async';
 import 'package:Wishy/utils/analytics.dart';
 
 class PurchaseForm extends StatefulWidget {
-  final int variantId;
+  final int variantId, productId;
   final int? recipientId;
   final double price;
 
   PurchaseForm({
     required this.variantId,
+    required this.productId,
     required this.price,
     this.recipientId,
   });
@@ -41,6 +42,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
   final _formKey = GlobalKey<FormState>();
   Completer<bool>? _phoneValidationCompleter;
   Follower? _defaultUser;
+  String? _deliveryTime;
 
   void _onUserSelected(int? userId, bool? isActiveUser) {
     setState(() {
@@ -56,6 +58,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
     else
       setState(() {
         _addresses = [];
+        _deliveryTime = null;
       });
   }
 
@@ -143,12 +146,43 @@ class _PurchaseFormState extends State<PurchaseForm> {
     }
   }
 
+  Future<void> _fetchDeliveryTime() async {
+    if (_addresses == null || _addresses!.isEmpty) return;
+
+    final addressId = _addresses![_selectedAddressIndex].id;
+
+    final temp = await graphQLQueryHandler("getDeliveryTime",
+        {"product_id": widget.productId, "address_id": addressId});
+
+    if (mounted &&
+        _addresses!.length - 1 > _selectedAddressIndex &&
+        _addresses![_selectedAddressIndex].id == addressId)
+      setState(() {
+        _deliveryTime = temp["result"];
+      });
+  }
+
   Future<void> fetchData(int userId) async {
     _paginationServices = new GraphQLPaginationService(
       queryName: "getUserAddresses",
       variables: {"limit": 20, "user_id": userId},
     );
-    if (_isGift) {
+
+    final result = await _paginationServices.run();
+
+    if (mounted && result["data"] != null && _recipientId != null) {
+      setState(() {
+        _addresses = (result["data"] as List<dynamic>)
+            .map((item) => Address.fromJson(item))
+            .toList();
+      });
+    }
+
+    _fetchDeliveryTime();
+  }
+
+  void _fetchRecipient(int? userId) {
+    if (_isGift && _defaultUser == null && userId != null) {
       graphQLQueryHandler("userById", {"id": userId}).then((result) {
         if (mounted)
           setState(() {
@@ -157,15 +191,6 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 phoneNumber: result["phone_number"],
                 id: result["id"]);
           });
-      });
-    }
-    final result = await _paginationServices.run();
-
-    if (mounted && result["data"] != null && _recipientId != null) {
-      setState(() {
-        _addresses = (result["data"] as List<dynamic>)
-            .map((item) => Address.fromJson(item))
-            .toList();
       });
     }
   }
@@ -178,6 +203,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
     ;
 
     fetchData(_recipientId!);
+    _fetchRecipient(widget.recipientId);
     super.initState();
   }
 
@@ -198,13 +224,19 @@ class _PurchaseFormState extends State<PurchaseForm> {
                   onChanged: (bool? newValue) {
                     setState(() {
                       _addresses = [];
-                      _recipientId =
-                          (newValue ?? false) ? null : GlobalManager().userId!;
+                      _deliveryTime = null;
+                      name = null;
+                      phoneNumber = null;
+                      _recipientId = (newValue ?? false)
+                          ? _defaultUser?.id
+                          : GlobalManager().userId!;
                       _isGift = newValue ?? false;
                     });
 
-                    if (!_isGift) {
-                      fetchData(GlobalManager().userId!);
+                    if (!_isGift || _defaultUser?.id != null) {
+                      fetchData(_isGift
+                          ? _defaultUser!.id!
+                          : GlobalManager().userId!);
                     }
                   },
                   secondary: const Icon(Icons.card_giftcard),
@@ -238,7 +270,10 @@ class _PurchaseFormState extends State<PurchaseForm> {
                     onTap: (idx) {
                       setState(() {
                         _selectedAddressIndex = idx;
+                        _deliveryTime = null;
                       });
+
+                      _fetchDeliveryTime();
                     }),
                 IconButton(
                     icon: Icon(
@@ -285,13 +320,21 @@ class _PurchaseFormState extends State<PurchaseForm> {
                         }
                       }
                     }),
-                SizedBox(
-                    height: getProportionateScreenHeight(_isGift ? 20 : 60)),
+                if (_deliveryTime != null) ...[
+                  SizedBox(height: getProportionateScreenHeight(20)),
+                  Text(
+                    _deliveryTime!,
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  )
+                ],
+                SizedBox(height: getProportionateScreenHeight(5)),
                 PaymentButton(
                   loading: _loading,
                   price: widget.price,
                   onSubmit: onSubmit,
-                  enable: _addresses != null && _addresses!.length > 0,
+                  enable: _addresses != null &&
+                      _addresses!.length > 0 &&
+                      _deliveryTime != null,
                   eventData: {
                     "Is Gift": _isGift,
                     "Recipient Id": _recipientId,

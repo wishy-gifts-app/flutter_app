@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>NSContactsUsageDescription</key>
-	<string>We require access to your contact list to help you connect and match with people you know on Wishy. This enhances your experience and ensures you have meaningful interactions on our platform.</string>
+    <string>To enhance your gifting experience, Wishy needs access to your contact list. This allows you to easily find friends and family, suggest gifts, and send gift requests directly from your contacts.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flutter App</string>
+	<string>Wishy</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

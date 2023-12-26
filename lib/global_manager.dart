@@ -22,6 +22,7 @@ class GlobalManager {
   String? connectUser = null;
   int? connectUserId = null;
   String? firstFeedCursor = null;
+  bool navigateToRequest = false;
 
   factory GlobalManager() {
     return _singleton;
@@ -101,4 +102,5 @@ class GlobalManager {
   void setConnectUserId(int? value) => connectUserId = value;
   void setFirstFeedCursor(String? value) => firstFeedCursor = value;
   void setNotificationToken(String? value) => notificationToken = value;
+  void setNavigateToRequest(bool value) => navigateToRequest = value;
 }

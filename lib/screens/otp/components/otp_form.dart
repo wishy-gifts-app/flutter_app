@@ -35,6 +35,7 @@ class _OtpFormState extends State<OtpForm> {
         children: [
           SizedBox(height: SizeConfig.screenHeight * 0.15),
           OTPTextField(
+            onChanged: (v) => {},
             length: 4,
             width: MediaQuery.of(context).size.width,
             fieldWidth: 50,
@@ -91,8 +92,7 @@ class _OtpFormState extends State<OtpForm> {
       );
 
       if (mounted) {
-        RouterUtils.routeToHomePage(
-            context, result.profileCompleted, result.token, true);
+        RouterUtils.routeToHomePage();
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(

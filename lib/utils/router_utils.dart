@@ -1,30 +1,30 @@
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/main.dart';
 import 'package:Wishy/screens/requests/requests_screen.dart';
 import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 
 class RouterUtils {
-  static void routeToHomePage(BuildContext context, bool? profileCompleted,
-      String? token, bool signedIn,
-      {bool navigateToRequest = false, bool skipProfileCompleted = false}) {
-    if (token == null || token.isEmpty) {
-      Navigator.pushReplacementNamed(
-        context,
+  static void routeToHomePage({bool skipProfileCompleted = false}) {
+    if (GlobalManager().token == null) {
+      navigatorKey.currentState?.pushReplacementNamed(
         SignInScreen.routeName,
-        arguments: {'navigateToRequest': navigateToRequest},
       );
-    } else if ((profileCompleted == null || !profileCompleted) &&
-        signedIn == true &&
+    } else if (GlobalManager().profileCompleted != true &&
+        GlobalManager().signedIn == true &&
         !skipProfileCompleted) {
-      Navigator.pushReplacementNamed(context, CompleteProfileScreen.routeName);
+      navigatorKey.currentState
+          ?.pushReplacementNamed(CompleteProfileScreen.routeName);
     } else {
-      if (navigateToRequest) {
-        Navigator.pushReplacementNamed(context, RequestsScreen.routeName);
+      if (GlobalManager().navigateToRequest) {
+        GlobalManager().setNavigateToRequest(false);
+        navigatorKey.currentState
+            ?.pushReplacementNamed(RequestsScreen.routeName);
         return;
       }
 
-      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+      navigatorKey.currentState?.pushReplacementNamed(HomeScreen.routeName);
     }
   }
 }

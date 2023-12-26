@@ -57,7 +57,8 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   void _onPhoneChanged(String? phone) {
     requestData.phone = phone;
-    if (_phoneValidationCompleter != null)
+    if (_phoneValidationCompleter != null &&
+        !_phoneValidationCompleter!.isCompleted)
       _phoneValidationCompleter!.complete(true);
   }
 
@@ -87,16 +88,15 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
       if (requestData.selectedVariant != null && requestData.phone != null) {
         try {
-          // await graphQLQueryHandler("requestProduct", {
-          //   "product_id": widget.productId,
-          //   "variant_id": requestData.selectedVariant!.id,
-          //   "phone_number": requestData.phone,
-          //   "reason": requestData.reason,
-          //   "name": requestData.name,
-          //   "recipient_id": requestData.userId,
-          //   "cursor": widget.cursor
-          // });
-          print(requestData.selectedVariant);
+          await graphQLQueryHandler("requestProduct", {
+            "product_id": widget.productId,
+            "variant_id": requestData.selectedVariant!.id,
+            "phone_number": requestData.phone,
+            "reason": requestData.reason,
+            "name": requestData.name,
+            "recipient_id": requestData.userId,
+            "cursor": widget.cursor
+          });
 
           AnalyticsService.trackEvent(analyticEvents["REQUEST_VARIANT_PICKED"]!,
               properties: {

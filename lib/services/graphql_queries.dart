@@ -30,12 +30,14 @@ const Map<String, String> graphqlQueries = {
       \$skip: Int
       \$cursor: String,
       \$tag_id: Int
+      \$start_id: Int
     ) {
       getProductsFeed(
         limit: \$limit,
         skip: \$skip,
         cursor: \$cursor,
         tag_id: \$tag_id
+        start_id: \$start_id
       ) {
         results {
           id

@@ -1,3 +1,4 @@
+import 'package:Wishy/global_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/size_config.dart';
@@ -18,10 +19,16 @@ class Body extends StatelessWidget {
                 child: Column(
               children: [
                 Text("Complete Profile", style: headingStyle),
-                Text(
-                  "Complete your personal details",
-                  textAlign: TextAlign.center,
-                ),
+                if (GlobalManager().signInRelatedProductId == null)
+                  Text(
+                    "Complete your personal details",
+                    textAlign: TextAlign.center,
+                  ),
+                if (GlobalManager().signInRelatedProductId != null)
+                  Text(
+                    "Complete your personal details to finalize your action",
+                    textAlign: TextAlign.center,
+                  ),
                 SizedBox(height: SizeConfig.screenHeight * 0.06),
                 CompleteProfileForm(),
               ],

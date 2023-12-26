@@ -44,7 +44,9 @@ class InteractiveCardData extends Identifiable {
           convertValue<String>(json, 'background_image_path', true),
       customTriggerId: convertValue<int?>(json, 'custom_trigger_id', false),
       additionalData: json["additional_data"],
-      customData: json["custom_data"] ?? {},
+      customData: json["custom_data"] == null || json["custom_data"]
+          ? {}
+          : json["custom_data"],
     );
   }
 }

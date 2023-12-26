@@ -53,7 +53,10 @@ class _MainProductsState extends State<MainProducts> {
     _paginationService = new GraphQLPaginationService(
       firstCursor: cursor,
       queryName: "getProductsFeed",
-      variables: {"limit": limit, "tag_id": null},
+      variables: {
+        "limit": limit,
+        "tag_id": null,
+      },
       infiniteScroll: true,
     );
   }
@@ -122,7 +125,13 @@ class _MainProductsState extends State<MainProducts> {
         .map((item) => new Product.fromJson(item))
         .toList();
 
-    final result = await _paginationService.run();
+    final result = await _paginationService.run(
+        startId: _currentProduct == 0
+            ? GlobalManager().signInRelatedProductId
+            : null);
+    if (GlobalManager().signInRelatedProductId != null)
+      GlobalManager().setSignInRelatedProductId(null);
+
     final formattedResult =
         result["data"] != null ? formatResponse(result["data"]) : null;
 

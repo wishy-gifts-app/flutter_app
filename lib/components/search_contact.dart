@@ -54,14 +54,14 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
 
     if (mounted) {
       setState(() {
-        _isActiveUser = result["is_active_user"];
-        _selectedUserId = result["id"];
+        _isActiveUser = result?["is_active_user"] == true;
+        _selectedUserId = result?["id"];
       });
     }
 
-    widget.onUserSelected(result["id"], _isActiveUser);
+    widget.onUserSelected(_selectedUserId, _isActiveUser);
 
-    if (result["name"] != null && result["name"] != "") {
+    if (result?["name"] != null && result?["name"] != "") {
       _nameController.text = result["name"];
 
       if (mounted)

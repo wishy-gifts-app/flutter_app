@@ -5,9 +5,6 @@ import 'components/body.dart';
 
 class SignInScreen extends StatelessWidget {
   static String routeName = "/sign_in";
-  final bool navigateToRequest;
-
-  SignInScreen({this.navigateToRequest = false});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +16,7 @@ class SignInScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Text("Sign In"),
       ),
-      body: Body(
-        navigateToRequest: navigateToRequest,
-      ),
+      body: Body(),
     );
   }
 }

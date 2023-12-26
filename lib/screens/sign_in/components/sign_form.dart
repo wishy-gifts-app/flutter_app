@@ -16,10 +16,6 @@ import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class SignForm extends StatefulWidget {
-  final bool navigateToRequest;
-
-  SignForm({required this.navigateToRequest});
-
   @override
   _SignFormState createState() => new _SignFormState();
 }
@@ -53,9 +49,10 @@ class _SignFormState extends State<SignForm> {
 
     _pressed = true;
     if (GlobalManager().token != null) {
-      RouterUtils.routeToHomePage(context, false, GlobalManager().token, false);
+      RouterUtils.routeToHomePage();
       return;
     }
+
     try {
       final result = await authServices.guestSignInService();
 
@@ -67,8 +64,7 @@ class _SignFormState extends State<SignForm> {
       );
 
       if (mounted) {
-        RouterUtils.routeToHomePage(context, false, result.token, false,
-            navigateToRequest: widget.navigateToRequest);
+        RouterUtils.routeToHomePage();
       }
     } catch (error) {
       if (mounted) print(error);
@@ -134,9 +130,7 @@ class _SignFormState extends State<SignForm> {
       );
 
       if (mounted) {
-        RouterUtils.routeToHomePage(context, false, result.token, false,
-            skipProfileCompleted: true,
-            navigateToRequest: widget.navigateToRequest);
+        RouterUtils.routeToHomePage(skipProfileCompleted: true);
       }
     } catch (error) {
       if (mounted) print(error);
@@ -305,16 +299,18 @@ class _SignFormState extends State<SignForm> {
                   await sendOPTNumber();
                 },
               ),
-              SizedBox(height: getProportionateScreenHeight(20)),
-              DefaultButton(
-                  backgroundColor: Colors.black54,
-                  eventName: analyticEvents["SKIP_SIGN_IN"]!,
-                  eventData: {
-                    "Related To Product Id":
-                        GlobalManager().signInRelatedProductId
-                  },
-                  text: "Explore as Guest",
-                  press: skipSignIn),
+              if (GlobalManager().token == null) ...[
+                SizedBox(height: getProportionateScreenHeight(20)),
+                DefaultButton(
+                    backgroundColor: Colors.black54,
+                    eventName: analyticEvents["SKIP_SIGN_IN"]!,
+                    eventData: {
+                      "Related To Product Id":
+                          GlobalManager().signInRelatedProductId
+                    },
+                    text: "Explore as Guest",
+                    press: skipSignIn)
+              ],
             ])),
       ]),
     );

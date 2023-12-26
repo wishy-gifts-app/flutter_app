@@ -378,8 +378,9 @@ const Map<String, String> graphqlQueries = {
       \$cursor: String,
     ) {
       checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, 
-      `recipient_id: \$recipient_id, cursor: \$cursor) {
+      recipient_id: \$recipient_id, cursor: \$cursor) {
         payment_url
+        checkout_available
       }
     }
 """,

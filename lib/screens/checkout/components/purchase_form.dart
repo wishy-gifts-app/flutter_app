@@ -78,46 +78,19 @@ class _PurchaseFormState extends State<PurchaseForm> {
   }
 
   Future<void> onSubmit() async {
-    try {
-      if (true) {
-        AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
-            properties: {
-              "Variant Id": widget.variantId,
-              "Is Gift": _isGift,
-              "Recipient Id": _recipientId
-            });
+    if (_addresses!.length - 1 > _selectedAddressIndex)
+      try {
+        setState(() {
+          _loading = true;
+        });
+        final result = await graphQLQueryHandler("checkoutHandler", {
+          "variant_id": widget.variantId,
+          "quantity": 1,
+          "address_id": _addresses![_selectedAddressIndex].id,
+          "recipient_id": _isGift ? _recipientId : null
+        });
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "Sorry, purchase feature is currently unavailable. We'll notify you when it's ready. Thank you!"),
-        ));
-
-        Navigator.pushNamed(
-          context,
-          HomeScreen.routeName,
-        );
-        return;
-      }
-      setState(() {
-        _loading = true;
-      });
-      final result = await graphQLQueryHandler("checkoutHandler", {
-        "variant_id": widget.variantId,
-        "quantity": 1,
-        "address_id": _addresses![_selectedAddressIndex].id,
-        "recipient_id": _isGift ? _recipientId : null
-      });
-
-      if (result != null && result["payment_url"] != null) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return Dialog.fullscreen(
-              child: CheckoutWebView(checkoutUrl: result["payment_url"]),
-            );
-          },
-        ).then((_) {
+        if (result != null && result["checkout_available"] == false) {
           AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
               properties: {
                 "Variant Id": widget.variantId,
@@ -125,25 +98,54 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 "Recipient Id": _recipientId
               });
 
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "Sorry, purchase feature is currently unavailable. We'll notify you when it's ready. Thank you!"),
+          ));
+
           Navigator.pushNamed(
             context,
             HomeScreen.routeName,
           );
-        });
-        ;
-      } else {
-        throw Exception('Payment URL not available');
-      }
-    } catch (error) {
-      setState(() {
-        _loading = false;
-      });
+          return;
+        }
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            'Unable to upload payment method. Please check your information and try again.'),
-      ));
-    }
+        if (result != null && result["payment_url"] != null) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return Dialog.fullscreen(
+                child: CheckoutWebView(checkoutUrl: result["payment_url"]),
+              );
+            },
+          ).then((_) {
+            AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
+                properties: {
+                  "Variant Id": widget.variantId,
+                  "Is Gift": _isGift,
+                  "Recipient Id": _recipientId
+                });
+
+            Navigator.pushNamed(
+              context,
+              HomeScreen.routeName,
+            );
+          });
+          ;
+        } else {
+          throw Exception('Payment URL not available');
+        }
+      } catch (error) {
+        setState(() {
+          _loading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Unable to upload payment method. Please check your information and try again.'),
+        ));
+      }
   }
 
   Future<void> _fetchDeliveryTime() async {

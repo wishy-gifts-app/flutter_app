@@ -46,7 +46,8 @@ class _InviteCardState extends State<InviteCard> {
   void _handlePhoneChanged(String? phone) {
     if (mounted) setState(() => _phone = phone);
 
-    if (_phoneValidationCompleter != null) {
+    if (_phoneValidationCompleter != null &&
+        !_phoneValidationCompleter!.isCompleted) {
       _phoneValidationCompleter!.complete(true);
     }
 

@@ -68,7 +68,7 @@ class _QuestionCardState extends State<QuestionCard> {
           ),
         ),
         SizedBox(
-            height: getProportionateScreenHeight(widget.withBudget ? 15 : 95)),
+            height: getProportionateScreenHeight(widget.withBudget ? 22 : 95)),
         if (widget.withBudget)
           Align(
               alignment: Alignment.bottomLeft,
@@ -90,7 +90,7 @@ class _QuestionCardState extends State<QuestionCard> {
                   ),
                 ),
                 SizedBox(
-                  height: getProportionateScreenHeight(10),
+                  height: getProportionateScreenHeight(6),
                 ),
                 Container(
                   width: 90,
@@ -128,7 +128,7 @@ class _QuestionCardState extends State<QuestionCard> {
                   ),
                 )
               ])),
-        SizedBox(height: getProportionateScreenHeight(25)),
+        SizedBox(height: getProportionateScreenHeight(7)),
         AnimatedHintTextField(
             hintOptions: widget.hintOptions,
             textField: TextField(
@@ -136,7 +136,7 @@ class _QuestionCardState extends State<QuestionCard> {
               maxLines: 4,
               decoration: InputDecoration(
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25),
                   borderSide: BorderSide.none,

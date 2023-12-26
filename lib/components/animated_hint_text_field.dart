@@ -38,8 +38,8 @@ class _AnimatedHintTextFieldState extends State<AnimatedHintTextField> {
           widget.textField,
           if (this._showHint)
             Positioned(
-                left: 15,
-                top: 8,
+                left: 18,
+                top: 12,
                 child: Container(
                   width: constraints.maxWidth - 30,
                   child: AnimatedTextKit(

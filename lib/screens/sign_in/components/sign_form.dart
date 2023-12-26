@@ -83,7 +83,8 @@ class _SignFormState extends State<SignForm> {
       phoneNumber = phone;
     });
 
-    if (_phoneValidationCompleter != null)
+    if (_phoneValidationCompleter != null &&
+        !_phoneValidationCompleter!.isCompleted)
       _phoneValidationCompleter!.complete(true);
   }
 

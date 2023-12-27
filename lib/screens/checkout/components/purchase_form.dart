@@ -79,7 +79,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
   }
 
   Future<void> onSubmit() async {
-    if (_addresses!.length - 1 > _selectedAddressIndex)
+    if (_addresses!.length > _selectedAddressIndex)
       try {
         setState(() {
           _loading = true;
@@ -158,7 +158,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
         {"product_id": widget.productId, "address_id": addressId});
 
     if (mounted &&
-        _addresses!.length - 1 > _selectedAddressIndex &&
+        _addresses!.length > _selectedAddressIndex &&
         _addresses![_selectedAddressIndex].id == addressId)
       setState(() {
         _deliveryTime = temp["result"];

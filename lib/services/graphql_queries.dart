@@ -59,6 +59,7 @@ const Map<String, String> graphqlQueries = {
             inventory_quantity
             size
             color
+            color_name
             material
             style
           }
@@ -109,6 +110,7 @@ const Map<String, String> graphqlQueries = {
             inventory_quantity
             size
             color
+            color_name
             material
             style
           }
@@ -159,6 +161,7 @@ const Map<String, String> graphqlQueries = {
             inventory_quantity
             size
             color
+            color_name
             material
             style
           }
@@ -219,6 +222,7 @@ const Map<String, String> graphqlQueries = {
               inventory_quantity
               size
               color
+              color_name
               material
               style
             }
@@ -456,6 +460,7 @@ const Map<String, String> graphqlQueries = {
               inventory_quantity
               size
               color
+              color_name
               material
               style
             }

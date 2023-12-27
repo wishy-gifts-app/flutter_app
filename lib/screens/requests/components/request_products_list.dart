@@ -6,6 +6,7 @@ import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -81,7 +82,7 @@ class _RequestProductsState extends State<RequestProductsList> {
         properties: {
           "Product Id": request.product.id,
           "Situation": situation,
-          "Variants Exist": request.product.variants!.length > 1,
+          "Variants Exist": isVariantsExists(request.product.variants),
           "Variant Picked": false,
           "Delivery Availability": GlobalManager().isDeliveryAvailable
         });
@@ -94,7 +95,7 @@ class _RequestProductsState extends State<RequestProductsList> {
       }
     }
 
-    if (request.product.variants!.length > 1) {
+    if (isVariantsExists(request.product.variants)) {
       showVariantsModal(context, request.product.id, request.product.title,
           request.product.variants!, null, situation);
     } else {

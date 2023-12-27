@@ -10,6 +10,7 @@ import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -114,7 +115,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                 "Reason": requestData.reason,
                 "Name": requestData.name,
                 "Recipient Id": requestData.userId,
-                "Variants Exist": widget.variants.length > 1
+                "Variants Exist": isVariantsExists(widget.variants)
               });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -280,7 +281,7 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
   if (GlobalManager().isDeliveryAvailable != true) {
     await DeliveryAvailabilityDialog.show(context);
 
-    if (!GlobalManager().isDeliveryAvailable!) return;
+    if (GlobalManager().isDeliveryAvailable != true) return;
   }
 
   showModalBottomSheet<void>(

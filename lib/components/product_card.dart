@@ -3,6 +3,7 @@ import 'package:Wishy/components/delivery_availability_icon.dart';
 import 'package:Wishy/components/request_modal.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/size_config.dart';
+import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/variants/variants_modal.dart';
 import 'package:Wishy/constants.dart';
@@ -95,7 +96,7 @@ class _ProductCardState extends State<ProductCard> {
     if (GlobalManager().isDeliveryAvailable != true) {
       await DeliveryAvailabilityDialog.show(context);
 
-      if (!GlobalManager().isDeliveryAvailable!) {
+      if (GlobalManager().isDeliveryAvailable != true) {
         return;
       }
     }
@@ -104,12 +105,12 @@ class _ProductCardState extends State<ProductCard> {
         properties: {
           "Product Id": widget.product.id,
           "Situation": widget.situation,
-          "Variants Exist": widget.product.variants!.length > 1,
+          "Variants Exist": isVariantsExists(widget.product.variants),
           "Variant Picked": false,
           "Delivery Availability": GlobalManager().isDeliveryAvailable
         });
 
-    if (widget.product.variants!.length > 1) {
+    if (isVariantsExists(widget.product.variants)) {
       showVariantsModal(
           context,
           widget.product.id,
@@ -368,7 +369,7 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 if (widget.product.variants != null) ...[
                   Positioned(
-                      right: widget.isFullScreen ? 20 : 0,
+                      right: widget.isFullScreen ? 10 : -10,
                       bottom: widget.isFullScreen ? 40 : 10,
                       child: ElevatedButton(
                         onPressed: () {
@@ -395,7 +396,7 @@ class _ProductCardState extends State<ProductCard> {
                       )),
                   if (!widget.isFullScreen && GlobalManager().signedIn)
                     Positioned(
-                        left: 0,
+                        left: -10,
                         bottom: 10,
                         child: ElevatedButton(
                           onPressed: () {

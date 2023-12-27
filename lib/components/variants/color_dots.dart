@@ -4,6 +4,13 @@ import 'package:string_to_color/string_to_color.dart';
 import '../../constants.dart';
 import '../../size_config.dart';
 
+Color getColorFromHex(String hexString) {
+  final buffer = StringBuffer();
+  if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+  buffer.write(hexString.replaceFirst('#', ''));
+  return Color(int.parse(buffer.toString(), radix: 16));
+}
+
 class ColorDots extends StatefulWidget {
   const ColorDots({
     Key? key,
@@ -12,7 +19,7 @@ class ColorDots extends StatefulWidget {
     this.chosenVariant,
   }) : super(key: key);
 
-  final List<String> values;
+  final List<Map<String, dynamic>> values;
   final String? chosenVariant;
   final Function(String, String) onVariantChange;
 
@@ -34,7 +41,7 @@ class _ColorDotsState extends State<ColorDots> {
       selectedColor = index;
     });
 
-    widget.onVariantChange("color", widget.values[index]);
+    widget.onVariantChange("color", widget.values[index]["color"]);
   }
 
   @override
@@ -60,19 +67,21 @@ class _ColorDotsState extends State<ColorDots> {
               child: Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: List.generate(
-                    widget.values.length,
-                    (index) => GestureDetector(
-                      onTap: widget.chosenVariant == null
+                  children: List.generate(widget.values.length, (index) {
+                    print(widget.values[index]);
+                    return Tooltip(
+                      message: widget.values[index]["color_name"] ?? "",
+                      onTriggered: widget.chosenVariant == null
                           ? () => handleChange(index)
                           : null,
+                      triggerMode: TooltipTriggerMode.tap,
+                      showDuration: const Duration(seconds: 1),
                       child: ColorDot(
-                        color: ColorUtils.stringToColor(
-                            widget.values[index].toLowerCase()),
+                        color: getColorFromHex(widget.values[index]["color"]),
                         isSelected: index == selectedColor,
                       ),
-                    ),
-                  ))),
+                    );
+                  }))),
         ],
       ),
     );

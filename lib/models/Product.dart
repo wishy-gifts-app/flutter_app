@@ -69,7 +69,7 @@ class Product extends Identifiable {
 class Variant {
   final int id;
   final String title;
-  final String? size, color, material, style;
+  final String? size, color, material, style, colorName;
   final double price;
   final double? weight;
   final int inventoryQuantity;
@@ -84,6 +84,7 @@ class Variant {
     this.style,
     this.color,
     this.material,
+    this.colorName,
   });
 
   factory Variant.fromJson(Map<String, dynamic> json) {
@@ -93,6 +94,7 @@ class Variant {
       weight: convertValue<double?>(json, 'weight', false),
       price: convertValue<double>(json, 'price', true),
       color: convertValue<String?>(json, 'color', false),
+      colorName: convertValue<String?>(json, 'color_name', false),
       size: convertValue<String?>(json, 'size', false),
       material: convertValue<String?>(json, 'material', false),
       style: convertValue<String?>(json, 'style', false),

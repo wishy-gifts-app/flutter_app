@@ -90,7 +90,7 @@ class _OrdersTabState extends State<OrdersTab> {
       SliverList(
           delegate: SliverChildListDelegate(
         [
-          SizedBox(height: getProportionateScreenHeight(20)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           if (activeOrders.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -145,7 +145,7 @@ class _OrdersTabState extends State<OrdersTab> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(10),
                 child: GridView.count(
                   shrinkWrap: true,
                   childAspectRatio: MediaQuery.of(context).size.width /
@@ -155,6 +155,7 @@ class _OrdersTabState extends State<OrdersTab> {
                   physics: NeverScrollableScrollPhysics(),
                   controller: _historyOrdersController,
                   crossAxisCount: 2,
+                  padding: EdgeInsets.all(0),
                   children: historyOrders.map((order) {
                     return HistoryProductCard(
                       product: order.product,

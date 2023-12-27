@@ -8,6 +8,7 @@ class DeliveryAvailabilityDialog {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Color(0xFFFFFFFF),
           insetPadding: EdgeInsets.symmetric(horizontal: 20),
           title: Text('Delivery Availability Notice'),
           content: Text(

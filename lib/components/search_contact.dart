@@ -70,8 +70,8 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
         });
     }
 
-    widget.onPhoneChanged(_phoneController.text);
     widget.onNameChanged(_nameController.text);
+    widget.onPhoneChanged(_phoneController.text);
   }
 
   void _setDefaultUser() {

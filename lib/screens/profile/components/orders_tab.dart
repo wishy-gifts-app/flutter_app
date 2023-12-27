@@ -169,7 +169,7 @@ class _OrdersTabState extends State<OrdersTab> {
             EmptyStateWidget(
                 title: "Begin Your Wishy Saga",
                 body:
-                    "A world of wonders is just a click away. Sign in to start your story and curate your first collection of favorites.",
+                    "A world of wonders is just a click away. Explore your story and curate your collection of favorites.",
                 CTA: "Discover & Order",
                 routeName: HomeScreen.routeName)
         ],

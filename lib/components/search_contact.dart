@@ -45,6 +45,8 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
         setState(() {
           _selectedUserId = null;
         });
+    } else {
+      widget.onPhoneChanged(null);
     }
   }
 

@@ -51,7 +51,7 @@ class _InviteCardState extends State<InviteCard> {
       _phoneValidationCompleter!.complete(true);
     }
 
-    if (!_press) {
+    if (phone != null && !_press) {
       _send();
     }
     ;
@@ -93,12 +93,12 @@ class _InviteCardState extends State<InviteCard> {
   }
 
   void _handleSendInvitation() async {
+    if (_press) return;
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (_userId == null) {
-        _phoneValidationCompleter = Completer<bool>();
-        await _phoneValidationCompleter!.future;
-      }
+      _phoneValidationCompleter = Completer<bool>();
+      await _phoneValidationCompleter!.future;
 
       if (_phone != null && _phone != "") {
         await _send();

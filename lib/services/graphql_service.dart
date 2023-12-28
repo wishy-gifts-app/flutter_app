@@ -99,9 +99,14 @@ class GraphQLPaginationService {
       };
     }
 
-    final result = this._nextPagePromise != null
+    List<dynamic> result = this._nextPagePromise != null
         ? await this._nextPagePromise!
         : await runGraphQLQueryWithPagination(startId);
+
+    if (infiniteScroll && this.cursor == null && result.length == 0) {
+      this.variables["skip"] = 0;
+      result = await runGraphQLQueryWithPagination(startId);
+    }
 
     if (!infiniteScroll && this.cursor == null) {
       this._hasNextPage = false;

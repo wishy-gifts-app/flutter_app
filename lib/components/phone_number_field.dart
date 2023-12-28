@@ -15,7 +15,7 @@ class PhoneNumberField extends StatefulWidget {
       {required this.onSaved,
       required this.onError,
       this.withIcon = true,
-      this.hintOptions = const ["Add manually instead", "E.g. +1123456789"],
+      this.hintOptions = const ["Add manually instead", "E.g. +1 212-555-1234"],
       this.controller = null});
 
   @override
@@ -86,21 +86,21 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
             }
           },
           decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              labelText: "Phone Number",
-              labelStyle:
-                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
-              helperStyle:
-                  TextStyle(backgroundColor: Colors.white, fontSize: 14),
-              // helperText: "Add manually instead",
-              // hintText: "e.g. +1123456789",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: widget.withIcon
-                  ? CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg")
-                  : null,
-              errorText: errorMessage,
-              errorStyle: TextStyle(backgroundColor: Colors.white)),
+            filled: true,
+            fillColor: Colors.white,
+            labelText: "Phone Number",
+            labelStyle:
+                TextStyle(backgroundColor: Colors.white, color: Colors.black),
+            helperStyle: TextStyle(backgroundColor: Colors.white, fontSize: 14),
+            // helperText: "Add manually instead",
+            // hintText: "e.g. +1123456789",
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            suffixIcon: widget.withIcon
+                ? CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg")
+                : null,
+            errorText: errorMessage,
+            errorStyle: TextStyle(backgroundColor: Colors.white, fontSize: 11),
+          ),
         ));
   }
 }

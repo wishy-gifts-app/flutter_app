@@ -256,7 +256,7 @@ class _SignFormState extends State<SignForm> {
             visible: selectedIcon == 1,
             child: Column(children: [
               PhoneNumberField(
-                hintOptions: ["Add your phone number", "E.g. +1123456789"],
+                hintOptions: ["Add your phone number", "E.g. +1 212-555-1234"],
                 controller: _phoneController,
                 onSaved: _onPhoneChanged,
                 onError: (String error) => _onPhoneChanged(null),

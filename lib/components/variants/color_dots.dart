@@ -68,7 +68,6 @@ class _ColorDotsState extends State<ColorDots> {
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(widget.values.length, (index) {
-                    print(widget.values[index]);
                     return Tooltip(
                       message: widget.values[index]["color_name"] ?? "",
                       onTriggered: widget.chosenVariant == null

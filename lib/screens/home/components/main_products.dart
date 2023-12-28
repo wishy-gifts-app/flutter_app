@@ -132,7 +132,7 @@ class _MainProductsState extends State<MainProducts> {
     if (GlobalManager().signInRelatedProductId != null)
       GlobalManager().setSignInRelatedProductId(null);
 
-    final formattedResult =
+    List<Product>? formattedResult =
         result["data"] != null ? formatResponse(result["data"]) : null;
 
     if (mounted && _cardResult)

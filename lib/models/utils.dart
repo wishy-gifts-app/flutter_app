@@ -1,3 +1,5 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
 T convertValue<T>(dynamic json, String key, bool required,
     {T? defaultValue = null}) {
   bool isTypeOf<T, V, Z>() => T == V || T == Z;
@@ -7,7 +9,9 @@ T convertValue<T>(dynamic json, String key, bool required,
     if (defaultValue != null) {
       return defaultValue;
     } else if (required) {
-      throw ArgumentError('${key} is required but is null');
+      FirebaseCrashlytics.instance.recordError(
+          Exception('${key} is required but is null'), StackTrace.current);
+      throw Exception('${key} is required but is null');
     } else if (!required) {
       return null as T;
     }
@@ -47,6 +51,13 @@ T convertValue<T>(dynamic json, String key, bool required,
     } catch (e) {
       throw ArgumentError('Failed to parse DateTime from value');
     }
+  } else if (isTypeOf<T, List<String>, List<String>?>()) {
+    return (value as List).cast<String>() as T;
+  } else if (isTypeOf<T, List<Map<String, String>>,
+      List<Map<String, String>>?>()) {
+    return (value as List)
+        .map((i) => Map<String, String>.from(i as Map))
+        .toList() as T;
   } else {
     throw ArgumentError('Unsupported type: ${T.toString()}');
   }

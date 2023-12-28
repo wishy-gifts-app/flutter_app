@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "flutter_app",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=initialUri=myapp://wishy.com/invites?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1MjIxLCJpbnZpdGVkX3R5cGUiOiJnaWZ0X2Nvbm5lY3QiLCJpYXQiOjE3MDM1OTk3NjMsImV4cCI6MTcwMzY4NjE2M30.AAiISbn0HY7TfUKTUK_Ys1N_QpkXqludL-jo5uGLAfA"
+            ]
+        },
+        {
+            "name": "flutter_app (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "flutter_app (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

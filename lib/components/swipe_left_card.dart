@@ -1,4 +1,6 @@
+import 'package:Wishy/components/empty_state_widget.dart';
 import 'package:Wishy/models/utils.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
@@ -9,7 +11,8 @@ class SwipeableLeftProducts<T extends Identifiable> extends StatefulWidget {
   final Function(int) onSwipeLeft;
   final Future<List<T>?> Function() nextPage;
   final Widget Function(BuildContext context, T item) cardBuilder;
-  final String emptyString;
+  final String emptyString, emptyCTA;
+  final String? emptyTitle;
   final String situation;
 
   SwipeableLeftProducts({
@@ -18,6 +21,8 @@ class SwipeableLeftProducts<T extends Identifiable> extends StatefulWidget {
     required this.cardBuilder,
     required this.situation,
     this.emptyString = "Sorry, but we don't have products yet",
+    this.emptyTitle,
+    this.emptyCTA = "Browse Products",
   });
 
   @override
@@ -80,17 +85,17 @@ class _SwipeableLeftProductsState<T extends Identifiable>
   @override
   Widget build(BuildContext context) {
     if (products.length == 0) {
-      return Center(
-          child: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(30)),
-        child: isLoading
-            ? CircularProgressIndicator()
-            : Text(
-                widget.emptyString,
-                textAlign: TextAlign.center,
-              ),
-      ));
+      return isLoading
+          ? Center(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(30)),
+                  child: CircularProgressIndicator()))
+          : EmptyStateWidget(
+              body: widget.emptyString,
+              title: widget.emptyTitle,
+              CTA: widget.emptyCTA,
+              routeName: HomeScreen.routeName);
     }
 
     return Padding(
@@ -114,7 +119,7 @@ class _SwipeableLeftProductsState<T extends Identifiable>
               alignment: Alignment.centerRight,
               padding: EdgeInsets.only(right: 20.0),
               child: Text(
-                'Nope',
+                'Dislike',
                 style: TextStyle(
                   color: Colors.red,
                   fontSize: 16.0,

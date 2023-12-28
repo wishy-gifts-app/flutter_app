@@ -1,4 +1,4 @@
-import 'package:Wishy/components/PhoneNumberField.dart';
+import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -7,15 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SearchUserWidget extends StatefulWidget {
-  final Function(int?) onUserSelected;
+  final Function(int? userId, bool? isActiveUser) onUserSelected;
   final Function(String?) onNameChanged;
   final Function(String?) onPhoneChanged;
+  final bool withIcon;
 
-  SearchUserWidget({
-    required this.onUserSelected,
-    required this.onNameChanged,
-    required this.onPhoneChanged,
-  });
+  SearchUserWidget(
+      {required this.onUserSelected,
+      required this.onNameChanged,
+      required this.onPhoneChanged,
+      this.withIcon = true});
 
   @override
   _SearchUserWidgetState createState() => _SearchUserWidgetState();
@@ -25,6 +26,7 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
   final TextEditingController _typeAheadController = TextEditingController();
   int? _selectedUser;
   bool _showPhoneField = false;
+  bool _isActiveUser = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +36,16 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
           height: getProportionateScreenHeight(10),
         ),
         TypeAheadFormField(
+          hideSuggestionsOnKeyboardHide: true,
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          direction: AxisDirection.up,
+          suggestionsBoxDecoration: SuggestionsBoxDecoration(
+              constraints: BoxConstraints(maxHeight: 150)),
           onSaved: (newValue) => {
             if (_showPhoneField)
               widget.onNameChanged(newValue)
             else
-              widget.onUserSelected(_selectedUser)
+              widget.onUserSelected(_selectedUser, _isActiveUser)
           },
           validator: (value) {
             if (value!.isEmpty) {
@@ -52,10 +58,14 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
               _showPhoneField = true;
             },
             controller: _typeAheadController,
-            decoration: InputDecoration(labelText: 'Search User'),
+            decoration: InputDecoration(
+                labelStyle: TextStyle(backgroundColor: Colors.white),
+                labelText: 'Search User',
+                filled: true,
+                fillColor: Colors.white),
           ),
           suggestionsCallback: (pattern) async {
-            if (pattern.length < 2) {
+            if (pattern.length < 1) {
               return [];
             }
             final result = await graphQLQueryHandler(
@@ -73,16 +83,25 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
               subtitle: Text(follower.phoneNumber.toString()),
             );
           },
-          onSuggestionSelected: (suggestion) {
+          onSuggestionSelected: (suggestion) async {
             final follower = suggestion as Follower;
 
             _typeAheadController.text = follower.name;
             _selectedUser = follower.id;
+
             setState(() {
               _showPhoneField = false;
             });
 
-            widget.onUserSelected(_selectedUser);
+            final result = await graphQLQueryHandler(
+                "isPhoneExists", {"id": follower.id, "is_active_user": true});
+
+            setState(() {
+              _isActiveUser = result["result"];
+            });
+
+            widget.onUserSelected(_selectedUser, _isActiveUser);
+            widget.onNameChanged(follower.name);
           },
           noItemsFoundBuilder: (context) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -100,6 +119,7 @@ class _SearchUserWidgetState extends State<SearchUserWidget> {
           PhoneNumberField(
             onSaved: widget.onPhoneChanged,
             onError: (String error) => widget.onPhoneChanged(null),
+            withIcon: widget.withIcon,
           )
         ],
       ],

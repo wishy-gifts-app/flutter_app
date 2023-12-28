@@ -1,8 +1,7 @@
-import 'package:Wishy/components/request_modal.dart';
+import 'package:Wishy/models/Match.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/swipe_left_card.dart';
 import 'package:Wishy/global_manager.dart';
-import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import '../../../size_config.dart';
 import 'package:Wishy/components/product_card.dart';
@@ -22,15 +21,33 @@ class _MatchesProductsState extends State<MatchesProducts> {
     super.initState();
   }
 
-  Future<List<Product>?> fetchData() async {
+  Future<List<Match>?> fetchData() async {
     final formatResponse = (dynamic result) => (result as List<dynamic>)
-        .map((item) => new Product.fromJson(item))
+        .map((item) => new Match.fromJson(item))
         .toList();
 
     final nextPageData = await _paginationService.run();
-    return nextPageData["data"] != null
+
+    final formattedResult = nextPageData["data"] != null
         ? formatResponse(nextPageData["data"])
         : null;
+
+    if (formattedResult != null) {
+      final newMatches =
+          formattedResult.where((newMatch) => newMatch.displayedAt == null);
+
+      for (var match in newMatches) {
+        graphQLQueryHandler(
+          "updateMatchById",
+          {
+            "id": match.id,
+            "displayed_at": DateTime.now(),
+          },
+        );
+      }
+    }
+
+    return formattedResult;
   }
 
   Future<bool> saveLike(
@@ -59,15 +76,18 @@ class _MatchesProductsState extends State<MatchesProducts> {
   Widget build(BuildContext context) {
     return Container(
         height: SizeConfig.screenHeight,
-        child: new SwipeableLeftProducts<Product>(
+        child: new SwipeableLeftProducts<Match>(
           situation: situation,
-          emptyString: "You don't have matches yet",
+          emptyCTA: "Find Friends' Wishes",
+          emptyTitle: "Discover Shared Wishes",
+          emptyString:
+              "Your circle of surprises is just a swipe away. Connect and uncover the wishes you and your friends have in common!",
           onSwipeLeft: (int id) => saveLike(id, false, context),
           nextPage: fetchData,
-          cardBuilder: (context, product) {
+          cardBuilder: (context, item) {
             return ProductCard(
               situation: situation,
-              product: product,
+              product: item.product,
               isFullScreen: false,
             );
           },

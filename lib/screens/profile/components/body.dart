@@ -1,3 +1,10 @@
+import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/empty_state_widget.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
+import 'package:Wishy/screens/profile/components/profile_header.dart';
+import 'package:Wishy/screens/sign_in/sign_in_screen.dart';
+import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
@@ -33,8 +40,22 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return Column(children: [
+      SizedBox(height: getProportionateScreenHeight(35)),
+      ProfileHeader(height: 50),
+      if (GlobalManager().profileCompleted != true)
+        Expanded(
+            child: EmptyStateWidget(
+                title: "Personalize Your Journey",
+                body:
+                    "Dive into the world of Wishy. Sign in to tailor your profile and discover features crafted just for you.",
+                CTA: GlobalManager().signedIn
+                    ? "Complete Your Profile"
+                    : "Sign In & Explore",
+                routeName: GlobalManager().signedIn
+                    ? CompleteProfileScreen.routeName
+                    : SignInScreen.routeName)),
+      if (GlobalManager().profileCompleted == true) ...[
         ProfilePic(),
         SizedBox(height: 10),
         TabBar(
@@ -56,6 +77,6 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
           ),
         ),
       ],
-    );
+    ]);
   }
 }

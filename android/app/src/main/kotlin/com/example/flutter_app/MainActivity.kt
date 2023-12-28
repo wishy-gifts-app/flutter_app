@@ -1,4 +1,4 @@
-package com.example.flutter_app
+package store.wishy.app
 
 import io.flutter.embedding.android.FlutterActivity
 

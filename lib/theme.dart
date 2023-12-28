@@ -1,9 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'constants.dart';
 
 ThemeData theme() {
+  ColorScheme colorSchemeLight = ColorScheme(
+    primary: kPrimaryColor,
+    secondary: kSecondaryColor,
+    surface: Colors.white,
+    surfaceTint: Colors.white,
+    background: Colors.white,
+    brightness: Brightness.light,
+    error: Colors.red,
+    onBackground: Colors.black,
+    onError: Colors.white,
+    onPrimary: Colors.white,
+    onSecondary: Colors.white,
+    onSurface: Colors.black,
+    primaryContainer: kPrimaryColor,
+    secondaryContainer: kSecondaryColor,
+  );
+
   return ThemeData(
+    brightness: Brightness.light,
+    colorScheme: colorSchemeLight,
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: kTextColor,
@@ -16,8 +36,8 @@ ThemeData theme() {
     textTheme: textTheme(),
     inputDecorationTheme: inputDecorationTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,
-    colorScheme: ColorScheme.fromSwatch()
-        .copyWith(secondary: kSecondaryColor, primary: kPrimaryColor),
+    // colorScheme: ColorScheme.fromSwatch()
+    //     .copyWith(secondary: kSecondaryColor, primary: kPrimaryColor),
   );
 }
 
@@ -41,8 +61,10 @@ InputDecorationTheme inputDecorationTheme() {
 
 TextTheme textTheme() {
   return TextTheme(
-    bodyText1: TextStyle(color: kTextColor),
-    bodyText2: TextStyle(color: kTextColor),
+    bodyLarge:
+        TextStyle(color: kTextColor, fontSize: 15, fontWeight: FontWeight.w500),
+    bodyMedium:
+        TextStyle(color: kTextColor, fontSize: 15, fontWeight: FontWeight.w500),
   );
 }
 
@@ -50,10 +72,12 @@ AppBarTheme appBarTheme() {
   return AppBarTheme(
     color: Colors.white,
     elevation: 0,
-    brightness: Brightness.light,
-    iconTheme: IconThemeData(color: Colors.black),
-    textTheme: TextTheme(
-      headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.light,
     ),
+    iconTheme: IconThemeData(color: Colors.black),
+    titleTextStyle: TextStyle(color: Color(0xFF8B8B8B), fontSize: 18),
+    toolbarTextStyle: TextStyle(color: Colors.black),
   );
 }

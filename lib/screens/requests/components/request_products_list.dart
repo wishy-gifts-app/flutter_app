@@ -1,9 +1,12 @@
 import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/empty_state_widget.dart';
 import 'package:Wishy/components/variants/variants_modal.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -79,7 +82,7 @@ class _RequestProductsState extends State<RequestProductsList> {
         properties: {
           "Product Id": request.product.id,
           "Situation": situation,
-          "Variants Exist": request.product.variants!.length > 1,
+          "Variants Exist": isVariantsExists(request.product.variants),
           "Variant Picked": false,
           "Delivery Availability": GlobalManager().isDeliveryAvailable
         });
@@ -92,7 +95,7 @@ class _RequestProductsState extends State<RequestProductsList> {
       }
     }
 
-    if (request.product.variants!.length > 1) {
+    if (isVariantsExists(request.product.variants)) {
       showVariantsModal(context, request.product.id, request.product.title,
           request.product.variants!, null, situation);
     } else {
@@ -162,17 +165,18 @@ class _RequestProductsState extends State<RequestProductsList> {
   @override
   Widget build(BuildContext context) {
     if (requests.length == 0) {
-      return Center(
-          child: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(30)),
-        child: isLoading
-            ? CircularProgressIndicator()
-            : Text(
-                "You don't have requests yet",
-                textAlign: TextAlign.center,
-              ),
-      ));
+      return isLoading
+          ? Center(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(30)),
+                  child: CircularProgressIndicator()))
+          : EmptyStateWidget(
+              title: "Whisper Your Wishes",
+              body:
+                  "Eager for that special something? Swipe up to hint, and let us send a whisper.",
+              CTA: "Browse More Wishes",
+              routeName: HomeScreen.routeName);
     }
 
     return Container(

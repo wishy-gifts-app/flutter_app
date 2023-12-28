@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "27583259432",
+    "project_id": "wishy-aeeb0",
+    "storage_bucket": "wishy-aeeb0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27583259432:android:2a6faedcd459729263261d",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA41IiJLTrlk56yQ0XCTZ4bx7nlTITCPEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

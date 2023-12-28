@@ -2,6 +2,7 @@ import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/additional_details_dialog.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -19,12 +20,14 @@ class Body extends StatelessWidget {
   final Product product;
   final int? variantId, recipientId;
   final String buttonText;
+  final String? cursor;
 
   Body(
       {Key? key,
       required this.product,
       this.buttonText = "Buy Now",
       this.variantId,
+      this.cursor,
       this.recipientId})
       : super(key: key);
   final firstColor = Colors.white;
@@ -62,7 +65,7 @@ class Body extends StatelessWidget {
               ),
               if (product.variants == null)
                 buildOutOfStock(secondColor)
-              else if (product.variants!.length > 1)
+              else if (isVariantsExists(product.variants))
                 VariantsWidget(
                     situation: situation,
                     productId: product.id,
@@ -115,7 +118,8 @@ class Body extends StatelessWidget {
               arguments: {
                 'variant': product.variants![0],
                 'productId': product.id,
-                'recipientId': recipientId
+                'recipientId': recipientId,
+                "cursor": cursor
               },
             );
           },

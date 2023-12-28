@@ -5,9 +5,7 @@ import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
-import 'package:lottie/lottie.dart';
 import 'package:swipe_cards/swipe_cards.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 
 List<SwipeItem> buildSwipeItems(
     List<Product> items,
@@ -22,7 +20,7 @@ List<SwipeItem> buildSwipeItems(
       likeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.green[900],
-          content: Text("Like saved"),
+          content: Text("Added to Wishlist!"),
           duration: Duration(milliseconds: 500),
         ));
 
@@ -31,7 +29,7 @@ List<SwipeItem> buildSwipeItems(
       nopeAction: () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red[900],
-          content: Text("Nope saved"),
+          content: Text("Item skipped"),
           duration: Duration(milliseconds: 500),
         ));
 
@@ -73,11 +71,11 @@ class SwipeableProducts extends StatefulWidget {
 }
 
 class _SwipeableProductsState extends State<SwipeableProducts> {
-  List<SwipeItem> _swipeItems = <SwipeItem>[];
-  MatchEngine? _matchEngine;
+  List<SwipeItem> _currentSwipeItems = <SwipeItem>[];
+  MatchEngine? _currentMatchEngine;
   bool isStateEmpty = false;
-  late bool _showAnimation = GlobalManager().showAnimation;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
+  bool _isFirstCard = true;
 
   @override
   void dispose() {
@@ -112,17 +110,16 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
     });
   }
 
-  Future<void> fetchItems() async {
+  Future<void> _fetchItems() async {
     final results = await widget.nextPage();
 
     if (mounted) {
       if (results != null && results.length > 0) {
-        currentIndex.value = 0;
         setState(() {
-          isStateEmpty = false;
-          _swipeItems = buildSwipeItems(
+          _currentSwipeItems = buildSwipeItems(
               results, onSwipeRight, onSwipeLeft, onSwipeUp, context);
-          _matchEngine = MatchEngine(swipeItems: _swipeItems);
+          _currentMatchEngine = MatchEngine(swipeItems: _currentSwipeItems);
+          isStateEmpty = false;
         });
       } else {
         setState(() {
@@ -135,12 +132,12 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
   @override
   void initState() {
     super.initState();
-    fetchItems();
+    _fetchItems();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_swipeItems.length == 0) {
+    if (_currentSwipeItems.length == 0) {
       return Center(
           child: Padding(
         padding:
@@ -159,52 +156,55 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
           padding:
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: Container(
-              child: SwipeCards(
-            onStackFinished: fetchItems,
-            matchEngine: _matchEngine!,
-            itemBuilder: (BuildContext context, int index) {
-              return widget.cardBuilder(
-                  context,
-                  _swipeItems[index].content as Product,
-                  currentIndex.value == index);
-            },
-            leftSwipeAllowed: true,
-            rightSwipeAllowed: true,
-            upSwipeAllowed: true,
-            fillSpace: true,
-            itemChanged: (SwipeItem item, int index) {
-              if (index != currentIndex.value) {
-                currentIndex.value = index;
-              }
-            },
-            likeTag: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.green)),
-              child: Text('Like'),
-            ),
-            nopeTag: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-              child: Text('Nope'),
-            ),
-            superLikeTag: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.orange)),
-              child: Text('Request'),
-            ),
-          ))),
-      if (_showAnimation)
-        SwipeTutorialOverlay(onFinished: () {
-          setState(() {
-            this._showAnimation = false;
-          });
-          GlobalManager().setShowAnimation(false);
-        }),
+              child: Stack(children: [
+            _buildSwipeCards(
+                _currentMatchEngine!, _currentSwipeItems, _fetchItems),
+          ]))),
     ]);
+  }
+
+  SwipeCards _buildSwipeCards(
+      MatchEngine matchEngine, List<SwipeItem> swipeItems, Function refetch) {
+    return SwipeCards(
+      onStackFinished: () {
+        setState(() {
+          _isFirstCard = !this._isFirstCard;
+        });
+
+        refetch();
+      },
+      matchEngine: matchEngine,
+      itemBuilder: (BuildContext context, int index) {
+        return widget.cardBuilder(context, swipeItems[index].content as Product,
+            currentIndex.value == index);
+      },
+      leftSwipeAllowed: true,
+      rightSwipeAllowed: true,
+      upSwipeAllowed: true,
+      fillSpace: true,
+      itemChanged: (SwipeItem item, int index) {
+        if (index != currentIndex.value) {
+          currentIndex.value = index;
+        }
+      },
+      likeTag: Container(
+        margin: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(border: Border.all(color: Colors.green)),
+        child: Text('Like'),
+      ),
+      nopeTag: Container(
+        margin: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+        child: Text('Dislike'),
+      ),
+      superLikeTag: Container(
+        margin: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(border: Border.all(color: Colors.orange)),
+        child: Text('Request'),
+      ),
+    );
   }
 }

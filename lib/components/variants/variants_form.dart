@@ -5,14 +5,15 @@ import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/components/variants/color_dots.dart';
 
 Map<String, dynamic> groupVariants(List<Variant> variants) {
-  List<String> colors = [];
+  List<Map<String, dynamic>> colors = [];
   List<String> styles = [];
   List<String> materials = [];
   List<String> sizes = [];
 
   variants.forEach((element) {
     if (element.color != null && element.color != "") {
-      if (!colors.contains(element.color)) colors.add(element.color!);
+      if (!colors.contains(element.color))
+        colors.add({"color": element.color!, "color_name": element.colorName});
     }
     if (element.style != null &&
         element.style != "" &&

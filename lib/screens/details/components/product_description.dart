@@ -22,6 +22,45 @@ class ProductDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (product.likedByUserName != null) ...[
+          Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  SvgPicture.asset(
+                    "assets/icons/Heart Icon_2.svg",
+                    color: Colors.white,
+                    height: getProportionateScreenWidth(16),
+                  ),
+                  SizedBox(
+                    width: getProportionateScreenWidth(5),
+                  ),
+                  Text(
+                    "${product.likedByUserName} Wishes",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
+                  ),
+                ]),
+              )),
+          SizedBox(height: getProportionateScreenHeight(5))
+        ],
         Padding(
           padding:
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),

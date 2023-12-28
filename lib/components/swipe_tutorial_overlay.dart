@@ -5,8 +5,14 @@ import 'dart:ui';
 
 class SwipeTutorialOverlay extends StatefulWidget {
   final VoidCallback onFinished;
+  final bool swipes;
+  final bool up;
 
-  const SwipeTutorialOverlay({Key? key, required this.onFinished})
+  const SwipeTutorialOverlay(
+      {Key? key,
+      required this.onFinished,
+      this.swipes = false,
+      this.up = false})
       : super(key: key);
 
   @override
@@ -22,19 +28,34 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
   ];
 
   static const _messages = [
-    'Like it? Swipe right!',
-    'Not your style? Swipe left.',
-    'Want this? Swipe up to request!',
+    'Love this item? Swipe right to add it to your Wishlist.',
+    'Not a fan? Swipe left to skip.',
+    "Swipe up to hint this wish to your lover and edge closer to your dream gift!"
   ];
 
+  List<int> currentAnimations = [];
+
   void _nextStep() {
-    if (_currentStep < _animations.length - 1) {
+    if (_currentStep < currentAnimations.length - 1) {
       setState(() {
         this._currentStep++;
       });
     } else {
       widget.onFinished();
     }
+  }
+
+  @override
+  void initState() {
+    if (widget.swipes) currentAnimations.add(0);
+    if (widget.swipes) currentAnimations.add(1);
+    if (widget.up) currentAnimations.add(2);
+
+    if (currentAnimations.length == 0) currentAnimations.addAll([0, 1, 2]);
+
+    _currentStep = currentAnimations[0];
+
+    super.initState();
   }
 
   @override
@@ -45,11 +66,13 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
       child: Container(
         color: Colors.black45,
         child: Center(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return ScaleTransition(child: child, scale: animation);
-            },
+            child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return ScaleTransition(child: child, scale: animation);
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
             child: Column(
               key: ValueKey<int>(_currentStep),
               mainAxisAlignment: MainAxisAlignment.center,
@@ -59,14 +82,16 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
                   animatedTexts: [
                     TypewriterAnimatedText(
                       _messages[_currentStep],
+                      textAlign: TextAlign.center,
                       textStyle: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                      speed: const Duration(milliseconds: 100),
+                      speed: const Duration(milliseconds: 50),
                     ),
                   ],
+                  pause: Duration(milliseconds: widget.up ? 1500 : 400),
                   totalRepeatCount: 1,
                   onFinished: _nextStep,
                 ),
@@ -81,7 +106,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay> {
               ],
             ),
           ),
-        ),
+        )),
       ),
     ));
   }

@@ -40,10 +40,14 @@ class Order {
       isOrderCompleted: convertValue<bool>(json, 'is_order_completed', true),
       isInDelivery: convertValue<bool>(json, 'is_in_delivery', true),
       isOrderApproved: convertValue<bool>(json, 'is_order_approved', true),
-      recipientUserId: convertValue<int>(json, 'recipient_user_id', false),
+      recipientUserId: convertValue<int?>(
+        json,
+        'recipient_user_id',
+        false,
+      ),
       recipientUserName:
-          convertValue<String>(json, 'recipient_user_name', false),
-      forDate: convertValue<DateTime>(json, 'for_date', false),
+          convertValue<String?>(json, 'recipient_user_name', false),
+      forDate: convertValue<DateTime?>(json, 'for_date', false),
     );
   }
 }

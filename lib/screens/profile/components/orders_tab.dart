@@ -1,3 +1,5 @@
+import 'package:Wishy/components/empty_state_widget.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/history_product_card.dart';
 import 'package:Wishy/components/order_state.dart';
@@ -88,7 +90,7 @@ class _OrdersTabState extends State<OrdersTab> {
       SliverList(
           delegate: SliverChildListDelegate(
         [
-          SizedBox(height: getProportionateScreenHeight(20)),
+          SizedBox(height: getProportionateScreenHeight(10)),
           if (activeOrders.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -143,7 +145,7 @@ class _OrdersTabState extends State<OrdersTab> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(10),
                 child: GridView.count(
                   shrinkWrap: true,
                   childAspectRatio: MediaQuery.of(context).size.width /
@@ -153,6 +155,7 @@ class _OrdersTabState extends State<OrdersTab> {
                   physics: NeverScrollableScrollPhysics(),
                   controller: _historyOrdersController,
                   crossAxisCount: 2,
+                  padding: EdgeInsets.all(0),
                   children: historyOrders.map((order) {
                     return HistoryProductCard(
                       product: order.product,
@@ -164,10 +167,12 @@ class _OrdersTabState extends State<OrdersTab> {
                 )),
           ],
           if (activeOrders.isEmpty && historyOrders.isEmpty)
-            Text(
-              "You don't have orders yet, return to home",
-              textAlign: TextAlign.center,
-            )
+            EmptyStateWidget(
+                title: "Begin Your Wishy Saga",
+                body:
+                    "A world of wonders is just a click away. Explore your story and curate your collection of favorites.",
+                CTA: "Discover & Order",
+                routeName: HomeScreen.routeName)
         ],
       ))
     ]);

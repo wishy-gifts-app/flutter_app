@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/components/privacy.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:phone_number/phone_number.dart';
-import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
-import 'package:Wishy/components/form_error.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:Wishy/services/opt_services.dart';
 import 'package:flutter/gestures.dart';
@@ -19,9 +23,12 @@ class SignForm extends StatefulWidget {
 class _SignFormState extends State<SignForm> {
   final _formKey = new GlobalKey<FormState>();
   final List<String?> errors = [];
-  String phoneNumber = "";
-  final otpServices = OTPServices();
+  String? phoneNumber = "";
+  final authServices = AuthServices();
   int selectedIcon = 1;
+  bool _pressed = false;
+  Completer<bool>? _phoneValidationCompleter;
+  final TextEditingController _phoneController = TextEditingController();
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -37,52 +44,151 @@ class _SignFormState extends State<SignForm> {
       });
   }
 
-  Future<bool> isValidPhoneNumber(String number) async {
-    final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil();
-    try {
-      return phoneNumberUtil.validate(number);
-    } catch (e) {
-      return false;
+  Future<void> skipSignIn() async {
+    if (_pressed) return;
+
+    _pressed = true;
+    if (GlobalManager().token != null) {
+      RouterUtils.routeToHomePage();
+      return;
     }
+
+    try {
+      final result = await authServices.guestSignInService();
+
+      await GlobalManager().setParams(
+        newToken: result.token,
+        newUserId: result.userId,
+        newUsername: "",
+        newSignedIn: false,
+      );
+
+      if (mounted) {
+        RouterUtils.routeToHomePage();
+      }
+    } catch (error) {
+      if (mounted) print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Sorry, we're unable to access the products page. Please retry shortly.")),
+      );
+    }
+
+    _pressed = false;
+  }
+
+  void _onPhoneChanged(String? phone) {
+    setState(() {
+      phoneNumber = phone;
+    });
+
+    if (_phoneValidationCompleter != null &&
+        !_phoneValidationCompleter!.isCompleted)
+      _phoneValidationCompleter!.complete(true);
   }
 
   Future<void> sendOPTNumber() async {
-    _formKey.currentState!.save();
+    if (_pressed) return;
 
-    if (phoneNumber.isEmpty) {
-      addError(error: kPhoneNumberNullError);
-      return;
-    } else {
-      try {
-        final isValid = await isValidPhoneNumber(phoneNumber);
-        if (!isValid) {
-          addError(error: kInvalidPhoneNumberError);
-          return;
+    _pressed = true;
+
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      _phoneValidationCompleter = Completer<bool>();
+      await _phoneValidationCompleter!.future;
+
+      if (phoneNumber != null) {
+        try {
+          removeError(error: kInvalidPhoneNumberError);
+          authServices.sendOTPService(phoneNumber!);
+          Navigator.pushNamed(
+            context,
+            OtpScreen.routeName,
+            arguments: {'phoneNumber': phoneNumber},
+          );
+        } catch (error) {
+          print(error);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to send OTP. Please try again.')),
+          );
         }
-      } catch (error) {
-        addError(error: kInvalidPhoneNumberError);
-        return;
       }
     }
 
+    _pressed = false;
+  }
+
+  Future<void> _notificationSignIn() async {
     try {
-      removeError(error: kInvalidPhoneNumberError);
-      otpServices.sendOTPService(phoneNumber);
-      Navigator.pushNamed(
-        context,
-        OtpScreen.routeName,
-        arguments: {'phoneNumber': phoneNumber},
+      final result = await authServices.notificationSignInService();
+
+      await GlobalManager().setParams(
+        newToken: result.token,
+        newUserId: result.userId,
+        newUsername: "",
+        newSignedIn: true,
       );
+
+      if (mounted) {
+        RouterUtils.routeToHomePage(skipProfileCompleted: true);
+      }
     } catch (error) {
-      print(error);
+      if (mounted) print(error);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send OTP. Please try again.')),
+        SnackBar(
+            content: Text(
+                "Sorry, we're unable to access the products page. Please retry shortly.")),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (GlobalManager().notificationToken != null)
+      return Form(
+        key: _formKey,
+        child: Column(children: [
+          SizedBox(height: getProportionateScreenHeight(90)),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodySmall,
+              children: <TextSpan>[
+                TextSpan(
+                  text: "By continuing you confirm that you agree with our ",
+                ),
+                TextSpan(
+                  text: "Privacy Terms",
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return Dialog.fullscreen(child: PrivacyWebView());
+                        },
+                      );
+                    },
+                  style: TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: getProportionateScreenHeight(10)),
+          DefaultButton(
+              eventName: analyticEvents["NOTIFICATION_SIGN_IN"]!,
+              eventData: {
+                "Notification token": GlobalManager().notificationToken
+              },
+              text: "Start Now",
+              press: _notificationSignIn),
+        ]),
+      );
+
     return Form(
       key: _formKey,
       child: Column(children: [
@@ -149,11 +255,13 @@ class _SignFormState extends State<SignForm> {
         Visibility(
             visible: selectedIcon == 1,
             child: Column(children: [
-              buildPhoneNumberFormField(),
-              SizedBox(height: getProportionateScreenHeight(30)),
-              FormError(errors: errors),
-              SizedBox(height: getProportionateScreenHeight(30)),
-              SizedBox(height: getProportionateScreenHeight(30)),
+              PhoneNumberField(
+                hintOptions: ["Add your phone number", "E.g. +1123456789"],
+                controller: _phoneController,
+                onSaved: _onPhoneChanged,
+                onError: (String error) => _onPhoneChanged(null),
+              ),
+              SizedBox(height: getProportionateScreenHeight(90)),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -164,7 +272,7 @@ class _SignFormState extends State<SignForm> {
                           "By continuing you confirm that you agree with our ",
                     ),
                     TextSpan(
-                      text: "Terms and Conditions",
+                      text: "Privacy Terms",
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           showDialog(
@@ -186,33 +294,26 @@ class _SignFormState extends State<SignForm> {
               SizedBox(height: getProportionateScreenHeight(10)),
               DefaultButton(
                 eventName: analyticEvents["PHONE_SIGN_IN_SUBMITTED"]!,
-                text: "continue",
+                text: "Start Now",
                 press: () async {
                   FocusScope.of(context).unfocus();
                   await sendOPTNumber();
                 },
               ),
+              if (GlobalManager().token == null) ...[
+                SizedBox(height: getProportionateScreenHeight(20)),
+                DefaultButton(
+                    backgroundColor: Colors.black54,
+                    eventName: analyticEvents["SKIP_SIGN_IN"]!,
+                    eventData: {
+                      "Related To Product Id":
+                          GlobalManager().signInRelatedProductId
+                    },
+                    text: "Explore as Guest",
+                    press: skipSignIn)
+              ],
             ])),
       ]),
-    );
-  }
-
-  TextFormField buildPhoneNumberFormField() {
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      onSaved: (newValue) => phoneNumber = newValue ?? "",
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kPhoneNumberNullError);
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: "Phone Number",
-        hintText: "Enter your phone number including international prefix",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
-      ),
     );
   }
 }

@@ -6,7 +6,7 @@ class Product extends Identifiable {
   final double price;
   final List<Variant>? variants;
   final List<ProductImage> images;
-  final String? vendorName, description, followerName;
+  final String? vendorName, description, followerName, likedByUserName;
   final DateTime? likeCreatedAt;
   final bool? isLike;
   final bool isAvailable;
@@ -27,6 +27,7 @@ class Product extends Identifiable {
     this.followerId = null,
     this.followerName = null,
     this.deletedAt = null,
+    this.likedByUserName = null,
     required this.isAvailable,
     required this.tags,
   });
@@ -53,10 +54,14 @@ class Product extends Identifiable {
               .toList()
           : null,
       vendorName: convertValue<String?>(json, 'vendor_name', false),
+      likedByUserName: convertValue<String?>(
+        json,
+        'liked_by_user_name',
+        false,
+      ),
       deletedAt: convertValue<DateTime?>(json, 'deleted_at', false),
-      tags: (json['tags'] as List<dynamic>)
-          .map((tag) => tag.toString())
-          .toList(), // You can adjust this based on the actual data structure
+      tags:
+          (json['tags'] as List<dynamic>).map((tag) => tag.toString()).toList(),
     );
   }
 }
@@ -64,7 +69,7 @@ class Product extends Identifiable {
 class Variant {
   final int id;
   final String title;
-  final String? size, color, material, style;
+  final String? size, color, material, style, colorName;
   final double price;
   final double? weight;
   final int inventoryQuantity;
@@ -79,6 +84,7 @@ class Variant {
     this.style,
     this.color,
     this.material,
+    this.colorName,
   });
 
   factory Variant.fromJson(Map<String, dynamic> json) {
@@ -88,6 +94,7 @@ class Variant {
       weight: convertValue<double?>(json, 'weight', false),
       price: convertValue<double>(json, 'price', true),
       color: convertValue<String?>(json, 'color', false),
+      colorName: convertValue<String?>(json, 'color_name', false),
       size: convertValue<String?>(json, 'size', false),
       material: convertValue<String?>(json, 'material', false),
       style: convertValue<String?>(json, 'style', false),

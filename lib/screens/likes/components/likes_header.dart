@@ -17,7 +17,7 @@ class LikesHeader extends StatelessWidget {
         child: Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: getProportionateScreenWidth(20)),
-            child: Text("Wishy",
+            child: Text("Your Wishlist",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: getProportionateScreenWidth(16),

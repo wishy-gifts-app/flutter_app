@@ -1,4 +1,5 @@
 import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
 
 import 'likes_header.dart';
 import 'package:flutter/material.dart';

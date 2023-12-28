@@ -10,6 +10,8 @@ class Address {
   final String zipCode;
   final String? apartment;
   final String? extraDetails;
+  final bool allowShare;
+  final int? createdUserId;
 
   Address({
     required this.id,
@@ -19,6 +21,8 @@ class Address {
     required this.streetNumber,
     required this.zipCode,
     required this.city,
+    required this.allowShare,
+    required this.createdUserId,
     this.apartment,
     this.extraDetails,
   });
@@ -48,6 +52,9 @@ class Address {
       zipCode: convertValue<String>(json, 'zip_code', false),
       apartment: convertValue<String>(json, 'apartment', false),
       extraDetails: convertValue<String>(json, 'extra_details', false),
+      allowShare:
+          convertValue<bool>(json, 'allow_share', false, defaultValue: false),
+      createdUserId: convertValue<int?>(json, 'created_user_id', false),
     );
   }
 }

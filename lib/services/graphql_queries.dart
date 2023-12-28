@@ -6,7 +6,9 @@ const Map<String, String> graphqlQueries = {
       \$name: String,
       \$email: String,
       \$gender: String,
-      \$birthday: Date
+      \$birthday: Date,
+      \$fcm_token: String,
+      \$notification_available: Boolean,
     ) {
       updateUserById(
         id: \$id,
@@ -15,6 +17,8 @@ const Map<String, String> graphqlQueries = {
         email: \$email,
         gender: \$gender,
         birthday: \$birthday
+        fcm_token: \$fcm_token
+        notification_available: \$notification_available
       ) {
         id
       }
@@ -23,13 +27,17 @@ const Map<String, String> graphqlQueries = {
   'getProductsFeed': """
     query getProductsFeed(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$tag_id: Int
+      \$start_id: Int
     ) {
       getProductsFeed(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
         tag_id: \$tag_id
+        start_id: \$start_id
       ) {
         results {
           id
@@ -42,6 +50,7 @@ const Map<String, String> graphqlQueries = {
           tags
           is_like
           is_available
+          liked_by_user_name
           variants {
             id
             title
@@ -50,6 +59,7 @@ const Map<String, String> graphqlQueries = {
             inventory_quantity
             size
             color
+            color_name
             material
             style
           }
@@ -71,11 +81,13 @@ const Map<String, String> graphqlQueries = {
   'getLikedProducts': """
     query getLikedProducts(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$is_like: Boolean!,
     ) {
       getLikedProducts(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
         is_like: \$is_like
       ) {
@@ -98,6 +110,7 @@ const Map<String, String> graphqlQueries = {
             inventory_quantity
             size
             color
+            color_name
             material
             style
           }
@@ -119,10 +132,12 @@ const Map<String, String> graphqlQueries = {
   'getMatchedProducts': """
     query getMatchedProducts(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
     ) {
       getMatchedProducts(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
       ) {
         results {
@@ -146,6 +161,7 @@ const Map<String, String> graphqlQueries = {
             inventory_quantity
             size
             color
+            color_name
             material
             style
           }
@@ -167,11 +183,13 @@ const Map<String, String> graphqlQueries = {
   'getUserOrders': """
     query getUserOrders(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$is_order_completed: Boolean!,
     ) {
       getUserOrders(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
         is_order_completed: \$is_order_completed
       ) {
@@ -204,6 +222,7 @@ const Map<String, String> graphqlQueries = {
               inventory_quantity
               size
               color
+              color_name
               material
               style
             }
@@ -228,8 +247,10 @@ const Map<String, String> graphqlQueries = {
       \$product_id: Int!,    
       \$user_id: Int!,
       \$is_like: Boolean!
+      \$cursor: String
     ) {
-      saveLike(product_id: \$product_id, user_id: \$user_id, is_like: \$is_like) {
+      saveLike(product_id: \$product_id, user_id: \$user_id, is_like: \$is_like,
+        cursor: \$cursor) {
         id
       }
     }
@@ -271,10 +292,11 @@ const Map<String, String> graphqlQueries = {
       \$zip_code: String!,
       \$apartment: String,
       \$extra_details: String,
+      \$allow_share: Boolean,
     ) {
       saveUserAddress(user_id: \$user_id, country: \$country, state: \$state, city: \$city, zip_code: \$zip_code,
       street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, 
-      extra_details: \$extra_details, name: \$name, phone_number: \$phone_number ) {
+      extra_details: \$extra_details, name: \$name, phone_number: \$phone_number, allow_share: \$allow_share ) {
         id
         user_id
       }
@@ -283,10 +305,11 @@ const Map<String, String> graphqlQueries = {
   'getUserAddresses': """
     query getUserAddresses(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
       \$user_id: Int!,
     ) {
-      getUserAddresses(limit: \$limit, cursor: \$cursor, user_id: \$user_id) {
+      getUserAddresses(limit: \$limit,skip:\$skip, cursor: \$cursor, user_id: \$user_id) {
         results {
           id
           country
@@ -297,6 +320,8 @@ const Map<String, String> graphqlQueries = {
           street_number
           apartment
           extra_details
+          allow_share
+          created_user_id
         }
         pageInfo {
           hasNextPage
@@ -329,15 +354,56 @@ const Map<String, String> graphqlQueries = {
     }
   }
 """,
+  'isUserActive': """
+    query isUserActive(
+      \$id: Int!,
+      \$is_active_user: Boolean!,
+    ) {
+      isUserActive(id: \$id, is_active_user: \$is_active_user) {
+        result
+    }
+  }
+""",
+  'isPhoneExists': """
+    query isPhoneExists(
+      \$phone_number: String!,
+    ) {
+      isPhoneExists(phone_number: \$phone_number) {
+        id
+        is_active_user
+        name
+    }
+  }
+""",
   'checkoutHandler': """
     mutation checkoutHandler(
       \$variant_id: Int!,
       \$quantity: Int!,
       \$address_id: Int!,
       \$recipient_id: Int,
+      \$cursor: String,
     ) {
-      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, recipient_id: \$recipient_id) {
+      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, 
+      recipient_id: \$recipient_id, cursor: \$cursor) {
         payment_url
+        checkout_available
+      }
+    }
+""",
+  'saveUserCard': """
+    mutation saveUserCard(
+      \$type: String!,
+      \$user_id: Int!,
+      \$card_id: Int!,
+      \$displayed_at: Date,
+      \$session: String,
+      \$trigger_by_server: Boolean,
+      \$custom_trigger_id: Int,
+    ) {
+      saveUserCard(user_id: \$user_id, card_id: \$card_id, type: \$type,
+      displayed_at: \$displayed_at, session: \$session, 
+      trigger_by_server: \$trigger_by_server, custom_trigger_id:\$custom_trigger_id) {
+        id
       }
     }
 """,
@@ -345,12 +411,14 @@ const Map<String, String> graphqlQueries = {
     mutation requestProduct(
       \$variant_id: Int!,
       \$product_id: Int!,
-      \$reason: String!,
+      \$reason: String,
       \$recipient_id: Int,
       \$name: String,
       \$phone_number: String,
+      \$cursor: String,
     ) {
-      requestProduct(variant_id: \$variant_id, product_id: \$product_id, reason: \$reason, recipient_id: \$recipient_id, name: \$name, phone_number: \$phone_number) {
+      requestProduct(variant_id: \$variant_id, product_id: \$product_id, reason: \$reason, 
+      recipient_id: \$recipient_id, name: \$name, phone_number: \$phone_number, cursor: \$cursor) {
         id
       }
     }
@@ -358,10 +426,12 @@ const Map<String, String> graphqlQueries = {
   'getUserRequests': """
     query getUserRequests(
       \$limit: Int!,
+      \$skip: Int
       \$cursor: String,
     ) {
       getUserRequests(
         limit: \$limit,
+        skip: \$skip,
         cursor: \$cursor,
       ) {
         results {
@@ -390,6 +460,7 @@ const Map<String, String> graphqlQueries = {
               inventory_quantity
               size
               color
+              color_name
               material
               style
             }
@@ -401,6 +472,30 @@ const Map<String, String> graphqlQueries = {
             }
             vendor_name
           }        
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  """,
+  'startSupport': """
+    query startSupport(
+      \$limit: Int!,
+      \$cursor: String,
+    ) {
+      startSupport(
+        limit: \$limit,
+        cursor: \$cursor,
+      ) {
+        results {
+          id,
+          message,
+          displayed_at,
+          is_consultant,
+          is_end_chat,
+          user_id
         }
         pageInfo {
           hasNextPage
@@ -429,6 +524,48 @@ const Map<String, String> graphqlQueries = {
       }
     }
   """,
+  'getInteractiveCardByType': """
+    query getInteractiveCardByType(
+      \$type: String!,
+      \$is_default: Boolean!,
+    ) {
+      getInteractiveCardByType(
+        type: \$type,
+        is_default: \$is_default,
+      ) {
+        id
+        type
+        question
+        products_count_trigger
+        background_image_path
+        additional_data
+        custom_data
+        custom_trigger_id
+      }
+    }
+  """,
+  'getFeedInteractiveCards': """
+    query getFeedInteractiveCards(
+      \$start_number: Int!,
+      \$end_number: Int!,
+      \$old_swipes: Int,
+    ) {
+      getFeedInteractiveCards(
+        start_number: \$start_number,
+        end_number: \$end_number,
+        old_swipes: \$old_swipes,
+      ) {cards {
+        id
+        type
+        question
+        products_count_trigger
+        background_image_path
+        additional_data
+        custom_trigger_id
+        custom_data
+      }}
+    }
+  """,
   'updateRequestById': """
     mutation updateRequestById(
       \$id: Int!,    
@@ -439,6 +576,137 @@ const Map<String, String> graphqlQueries = {
         show_request: \$show_request,
       ) {
         id
+      }
+    }
+  """,
+  'saveSupportMessage': """
+    mutation saveSupportMessage(
+      \$user_id: Int!,    
+      \$is_consultant: Boolean!,
+      \$is_end_chat: Boolean!,
+      \$displayed_at: Date!,
+      \$message: String!,
+    ) {
+      saveSupportMessage(
+        user_id: \$user_id,
+        is_consultant: \$is_consultant,
+        is_end_chat: \$is_end_chat,
+        displayed_at: \$displayed_at,
+        message: \$message,
+      ) {
+          id,
+          message,
+          displayed_at,
+          is_consultant,
+          is_end_chat,
+          user_id
+      }
+    }
+  """,
+  'updateSupportMessageById': """
+    mutation updateSupportMessageById(
+      \$id: Int!,  
+      \$displayed_at: Date!,  
+    ) {
+      updateSupportMessageById(
+        id: \$id,
+        displayed_at: \$displayed_at,
+      ) {
+          id,
+      }
+    }
+  """,
+  'updateMatchById': """
+    mutation updateMatchById(
+      \$id: Int!,  
+      \$displayed_at: Date!,  
+    ) {
+      updateMatchById(
+        id: \$id,
+        displayed_at: \$displayed_at,
+      ) {
+          id,
+      }
+    }
+  """,
+  'isProductAvailable': """
+    query isProductAvailable {
+      isProductAvailable {
+        is_product_available
+        user_country
+      }
+    }
+  """,
+  'userHasNewMessages': """
+    query userHasNewMessages {
+      userHasNewMessages {
+        user_has_new_messages
+      }
+    }
+  """,
+  'userHasNewMatches': """
+    query userHasNewMatches {
+      userHasNewMatches {
+        user_has_new_matches
+      }
+    }
+  """,
+  'getStepsProgressData': """
+    query getStepsProgressData {
+      getStepsProgressData {
+          id
+          type
+          step_number
+          tooltip_text
+          is_active
+        }
+    }
+  """,
+  'countOldUserSwipes': """
+    query countOldUserSwipes(
+      \$limit: Int!,
+    ) {
+      countOldUserSwipes(
+        limit: \$limit,
+      ) {
+          result
+        }
+    }
+  """,
+  'getDeliveryTime': """
+    query getDeliveryTime(
+      \$product_id: Int!, \$address_id: Int!
+    ) {
+      getDeliveryTime(
+        product_id: \$product_id, address_id: \$address_id
+      ) {
+          result
+        }
+    }
+  """,
+  'interactiveCardHandler': """
+    mutation interactiveCardHandler(
+      \$id: Int,  
+      \$card_id: Int,  
+      \$response: JSONObject,  
+      \$type: String!,  
+      \$displayed_at: String,  
+      \$current_cursor: String,  
+      \$custom_trigger_id: Int,  
+    ) {
+      interactiveCardHandler(
+        id: \$id,
+        card_id: \$card_id,
+        response: \$response,
+        type: \$type,
+        displayed_at: \$displayed_at,
+        current_cursor: \$current_cursor,
+        custom_trigger_id:\$custom_trigger_id
+      ) {
+          cursor,
+          message,
+          connect_user
+          connect_user_id
       }
     }
   """,

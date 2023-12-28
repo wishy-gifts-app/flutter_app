@@ -70,8 +70,10 @@ class _LikesProductsState extends State<LikesProducts> {
         height: SizeConfig.screenHeight,
         child: new SwipeableLeftProducts<Product>(
           situation: situation,
+          emptyCTA: "Start Swiping",
+          emptyTitle: "Your Wishlist Awaits",
           emptyString:
-              "You don't have ${widget.isLike ? "liked" : "unliked"} products yet, start to swiping",
+              "Ready to fall in love with products? Swipe to curate your Wishlist with everything that catches your eye!",
           onSwipeLeft: (int id) => saveLike(id, false, context),
           nextPage: fetchData,
           cardBuilder: (context, product) {

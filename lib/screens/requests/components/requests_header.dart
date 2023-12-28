@@ -18,7 +18,7 @@ class RequestsHeader extends StatelessWidget {
         padding:
             EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
         child: Text(
-          "Wishy",
+          "Requests",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: getProportionateScreenWidth(16),

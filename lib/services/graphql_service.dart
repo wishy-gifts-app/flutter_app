@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:Wishy/global_manager.dart';
@@ -32,20 +33,26 @@ Future<dynamic> graphQLQueryHandler(
     final token = GlobalManager().token;
     final http.Response response = await _client.post(
       Uri.parse(dotenv.get("GRAPHQL_API_URL")),
-      headers: {"Content-Type": "application/json", "auth": token!},
+      headers: {
+        "Content-Type": "application/json",
+        "auth": token!,
+        "user_country": GlobalManager().userLocation?.country ?? "",
+        "iso_code": GlobalManager().userLocation?.isoCode ?? "",
+        "session": GlobalManager().session ?? "",
+      },
       body: jsonEncode(requestBody),
     );
 
     final responseBody = jsonDecode(response.body);
 
-    if (response.statusCode != 200) throw requestBody;
+    if (response.statusCode != 200) throw Exception(requestBody);
     await GlobalManager()
         .setParams(newToken: response.headers["auth"] ?? token);
 
     return responseBody["data"][queryName];
-  } catch (error) {
+  } catch (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
     print("Error sending GraphQL query: $error");
-    throw error;
   } finally {
     _client.close();
   }
@@ -53,20 +60,26 @@ Future<dynamic> graphQLQueryHandler(
 
 class GraphQLPaginationService {
   final String queryName;
-  final Map<String, dynamic> variables;
+  Map<String, dynamic> variables;
   final bool infiniteScroll;
+  final bool cashNextPage;
   Future<List<dynamic>>? _nextPagePromise = null;
+  final String? firstCursor;
   String? cursor;
   bool _hasNextPage = true;
 
   GraphQLPaginationService(
       {required this.queryName,
       required this.variables,
+      this.firstCursor = null,
+      this.cashNextPage = true,
       this.infiniteScroll = false});
 
-  Future<List<dynamic>> runGraphQLQueryWithPagination() async {
-    final result = await graphQLQueryHandler(
-        this.queryName, {...this.variables, "cursor": this.cursor});
+  Future<List<dynamic>> runGraphQLQueryWithPagination(int? startId) async {
+    if (this.cursor == null) this.cursor = this.firstCursor;
+
+    final result = await graphQLQueryHandler(this.queryName,
+        {...this.variables, "start_id": startId, "cursor": this.cursor});
     final pageInfo = result['pageInfo'];
 
     if (pageInfo['hasNextPage']) {
@@ -78,7 +91,7 @@ class GraphQLPaginationService {
     return result["results"];
   }
 
-  Future<Map<String, dynamic>> run() async {
+  Future<Map<String, dynamic>> run({int? startId = null}) async {
     if (!this._hasNextPage) {
       return {
         "data": null,
@@ -86,10 +99,15 @@ class GraphQLPaginationService {
       };
     }
 
-    final result = await runGraphQLQueryWithPagination();
+    final result = this._nextPagePromise != null
+        ? await this._nextPagePromise!
+        : await runGraphQLQueryWithPagination(startId);
 
     if (!infiniteScroll && this.cursor == null) {
       this._hasNextPage = false;
+    } else if (this.cashNextPage) {
+      this.variables["skip"] = cursor == null ? 0 : result.length;
+      this._nextPagePromise = runGraphQLQueryWithPagination(null);
     }
 
     return {

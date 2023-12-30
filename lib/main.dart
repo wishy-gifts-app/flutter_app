@@ -66,9 +66,7 @@ void main() async {
 
 Future<void> initUniLinks() async {
   try {
-    StreamSubscription? _linkSubscription;
-
-    _linkSubscription = uriLinkStream.listen((Uri? uri) {
+    uriLinkStream.listen((Uri? uri) {
       handleDeepLink(uri);
     }, onError: (err) {
       print('Error on uriLinkStream: $err');

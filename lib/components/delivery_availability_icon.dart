@@ -13,7 +13,6 @@ class DeliveryAvailabilityIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isAvailable = GlobalManager().isDeliveryAvailable ?? true;
-    final String deliveryTime = "5-20d";
 
     if (!isAvailable) {
       return Container(

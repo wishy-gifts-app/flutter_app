@@ -1,6 +1,4 @@
-import 'package:Wishy/utils/contacts.dart';
 import 'package:Wishy/utils/notification.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';

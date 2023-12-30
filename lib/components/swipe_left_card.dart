@@ -3,7 +3,6 @@ import 'package:Wishy/models/utils.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
-import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/utils/analytics.dart';
 

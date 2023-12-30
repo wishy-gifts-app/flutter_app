@@ -13,7 +13,6 @@ import 'package:Wishy/utils/analytics.dart';
 import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:rounded_background_text/rounded_background_text.dart';
 
 class RequestData {
   int? userId;

@@ -1,4 +1,3 @@
-import 'package:Wishy/components/swipe_tutorial_overlay.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:string_to_color/string_to_color.dart';
 
 import '../../constants.dart';
 import '../../size_config.dart';

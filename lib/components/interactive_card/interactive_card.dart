@@ -3,7 +3,6 @@ import 'package:Wishy/components/interactive_card/message_card.dart';
 import 'package:Wishy/components/interactive_card/processing_animation.dart';
 import 'package:Wishy/components/interactive_card/question_card.dart';
 import 'package:Wishy/constants.dart';
-import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/utils.dart';

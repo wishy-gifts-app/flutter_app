@@ -14,7 +14,6 @@ class SignInScreen extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Sign In"),
       ),
       body: Body(),
     );

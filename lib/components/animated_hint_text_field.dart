@@ -4,11 +4,13 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 class AnimatedHintTextField extends StatefulWidget {
   final List<String> hintOptions;
   final TextField textField;
+  final double widthPadding;
 
   AnimatedHintTextField({
     Key? key,
     required this.hintOptions,
     required this.textField,
+    this.widthPadding = 18,
   }) : super(key: key);
 
   @override
@@ -38,10 +40,10 @@ class _AnimatedHintTextFieldState extends State<AnimatedHintTextField> {
           widget.textField,
           if (this._showHint)
             Positioned(
-                left: 18,
+                left: widget.widthPadding,
                 top: 12,
                 child: Container(
-                  width: constraints.maxWidth - 30,
+                  width: constraints.maxWidth - (widget.widthPadding * 2),
                   child: AnimatedTextKit(
                     totalRepeatCount: 100,
                     isRepeatingAnimation: true,

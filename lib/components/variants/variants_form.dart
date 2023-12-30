@@ -12,7 +12,7 @@ Map<String, dynamic> groupVariants(List<Variant> variants) {
 
   variants.forEach((element) {
     if (element.color != null && element.color != "") {
-      if (!colors.contains(element.color))
+      if (!colors.any((item) => item["color"] == element.color))
         colors.add({"color": element.color!, "color_name": element.colorName});
     }
     if (element.style != null &&

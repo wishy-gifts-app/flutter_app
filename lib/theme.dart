@@ -64,7 +64,7 @@ TextTheme textTheme() {
     bodyLarge:
         TextStyle(color: kTextColor, fontSize: 15, fontWeight: FontWeight.w500),
     bodyMedium:
-        TextStyle(color: kTextColor, fontSize: 15, fontWeight: FontWeight.w500),
+        TextStyle(color: kTextColor, fontSize: 14, fontWeight: FontWeight.w500),
   );
 }
 

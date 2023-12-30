@@ -324,7 +324,8 @@ class _PurchaseFormState extends State<PurchaseForm> {
                       }
                     }),
                 if (_deliveryTime != null) ...[
-                  SizedBox(height: getProportionateScreenHeight(20)),
+                  SizedBox(
+                      height: getProportionateScreenHeight(_isGift ? 5 : 20)),
                   Text(
                     _deliveryTime!,
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),

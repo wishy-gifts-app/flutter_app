@@ -4,7 +4,6 @@ import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/components/privacy.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
-import 'package:Wishy/utils/analytics.dart';
 import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -145,6 +144,13 @@ class _SignFormState extends State<SignForm> {
 
   @override
   Widget build(BuildContext context) {
+    if (GlobalManager().signedIn) {
+      Navigator.pushNamed(
+        context,
+        HomeScreen.routeName,
+      );
+    }
+
     if (GlobalManager().notificationToken != null)
       return Form(
         key: _formKey,
@@ -261,7 +267,15 @@ class _SignFormState extends State<SignForm> {
                 onSaved: _onPhoneChanged,
                 onError: (String error) => _onPhoneChanged(null),
               ),
-              SizedBox(height: getProportionateScreenHeight(90)),
+              SizedBox(height: getProportionateScreenHeight(5)),
+              Text(
+                "An OTP code will be sent via SMS to verify your phone number.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12),
+              ),
+              SizedBox(
+                  height: getProportionateScreenHeight(
+                      GlobalManager().token == null ? 55 : 70)),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -284,9 +298,9 @@ class _SignFormState extends State<SignForm> {
                           );
                         },
                       style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.blue),
                     ),
                   ],
                 ),

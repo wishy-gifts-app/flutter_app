@@ -35,17 +35,20 @@ class AddressesWidget extends StatelessWidget {
                   return ListTile(
                       title: Text(
                         address.streetAddress + " " + address.streetNumber,
-                        style: TextStyle(fontSize: 15),
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
-                          (address.apartment != "" && address.apartment != null
-                                  ? address.apartment! + ", "
-                                  : "") +
-                              address.city +
-                              ", " +
-                              address.state +
-                              ", " +
-                              address.country),
+                        (address.apartment != "" && address.apartment != null
+                                ? address.apartment! + ", "
+                                : "") +
+                            address.city +
+                            ", " +
+                            address.state +
+                            ", " +
+                            address.country,
+                        style: TextStyle(fontSize: 13),
+                      ),
                       trailing: selectedIndex != null && idx == selectedIndex
                           ? Icon(Icons.check_circle, color: kPrimaryColor)
                           : null,

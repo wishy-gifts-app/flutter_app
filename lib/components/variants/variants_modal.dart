@@ -8,8 +8,24 @@ void showVariantsModal(BuildContext context, int productId, String productTitle,
     List<Variant> variants, int? recipientId, String situation,
     {String? cursor}) {
   final variantsObjects = groupVariants(variants);
-  int nonNullValueCount =
-      variantsObjects.values.where((value) => value != null).length;
+  List<dynamic> nonNullValue =
+      variantsObjects.values.where((value) => value != null).toList();
+  int totalLength = 1;
+  variantsObjects.forEach((key, value) {
+    if (value != null) {
+      int lengthSum = value.fold<int>(
+          0, (int sum, dynamic item) => sum + item.length as int);
+
+      if (key == 'color') {
+        totalLength += lengthSum;
+      } else {
+        totalLength += key.length + lengthSum;
+      }
+    }
+  });
+  final modalHeight = (totalLength * 0.005 + nonNullValue.length * 0.2 > 0.5)
+      ? totalLength * 0.005 + nonNullValue.length * 0.1775
+      : 0.5;
 
   showModalBottomSheet<void>(
       context: context,
@@ -22,7 +38,7 @@ void showVariantsModal(BuildContext context, int productId, String productTitle,
       ),
       builder: (BuildContext context) {
         return FractionallySizedBox(
-            heightFactor: nonNullValueCount > 2 ? 0.72 : 0.5,
+            heightFactor: modalHeight,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,

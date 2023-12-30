@@ -34,9 +34,9 @@ class PaymentButton extends StatelessWidget {
               TextSpan(
                 text: "Purchase and Refund Terms",
                 style: TextStyle(
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
-                ),
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.blue),
                 recognizer: TapGestureRecognizer()..onTap = () {},
               ),
             ],

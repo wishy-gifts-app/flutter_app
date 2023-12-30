@@ -35,9 +35,7 @@ class CheckoutScreen extends StatelessWidget {
         .addPostFrameCallback((_) => _redirectToSignInIfNeeded(context));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Checkout'),
-      ),
+      appBar: AppBar(),
       body: Body(
         variant: variant,
         productId: productId,

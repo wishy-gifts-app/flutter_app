@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/components/privacy.dart';
 import 'package:Wishy/global_manager.dart';
@@ -10,6 +9,7 @@ import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:Wishy/services/opt_services.dart';
 import 'package:flutter/gestures.dart';
+import 'package:Wishy/utils/analytics.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -61,6 +61,7 @@ class _SignFormState extends State<SignForm> {
         newUsername: "",
         newSignedIn: false,
       );
+      AnalyticsService.registerSuperProperties({"User Id": result.userId});
 
       if (mounted) {
         RouterUtils.routeToHomePage();
@@ -128,6 +129,8 @@ class _SignFormState extends State<SignForm> {
         newUsername: "",
         newSignedIn: true,
       );
+
+      AnalyticsService.registerSuperProperties({"User Id": result.userId});
 
       if (mounted) {
         RouterUtils.routeToHomePage(skipProfileCompleted: true);

@@ -66,8 +66,9 @@ class _MainProductsState extends State<MainProducts> {
     super.initState();
     _initializePaginationService(GlobalManager().firstFeedCursor);
 
-    Future.delayed(
-        Duration(seconds: 6), () => _showAvailabilityDialogIfNeeded());
+    Future.delayed(Duration(seconds: 6), () {
+      if (mounted) _showAvailabilityDialogIfNeeded();
+    });
   }
 
   void _showAvailabilityDialogIfNeeded() {

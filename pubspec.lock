@@ -270,6 +270,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_branch_sdk:
+    dependency: "direct main"
+    description:
+      name: flutter_branch_sdk
+      sha256: "6c9c2bc04c9aed1d522b23c2a516f9fcc0a35fd9bf9ebefccf638cc00b74a0c1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.2"
   flutter_contacts:
     dependency: "direct main"
     description:

@@ -120,6 +120,7 @@ class _QuestionCardState extends State<QuestionCard> {
                       );
                     }).toList(),
                     onChanged: (newValue) {
+                      print(newValue);
                       setState(() {
                         selectedPriceRange = newValue;
                       });

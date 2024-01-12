@@ -84,6 +84,7 @@ const marketDetails = {
   "short": "USD"
 };
 const String privacyURL = "https://www.wishy.store/privacy";
+const String refoundTermsURL = "https://www.wishy.store/refound-terms";
 final otpInputDecoration = InputDecoration(
   contentPadding:
       EdgeInsets.symmetric(vertical: getProportionateScreenWidth(15)),

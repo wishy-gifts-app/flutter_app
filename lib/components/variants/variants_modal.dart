@@ -24,7 +24,7 @@ void showVariantsModal(BuildContext context, int productId, String productTitle,
     }
   });
   final modalHeight = (totalLength * 0.005 + nonNullValue.length * 0.2 > 0.5)
-      ? totalLength * 0.005 + nonNullValue.length * 0.1775
+      ? totalLength * 0.006 + nonNullValue.length * 0.176
       : 0.5;
 
   showModalBottomSheet<void>(

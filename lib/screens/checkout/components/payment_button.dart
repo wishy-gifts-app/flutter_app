@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/refound_terms.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/gestures.dart';
@@ -32,12 +33,21 @@ class PaymentButton extends StatelessWidget {
                     "By completing this purchase, you confirm that you agree with our ",
               ),
               TextSpan(
-                text: "Purchase and Refund Terms",
+                text: "Refound and Return Terms",
                 style: TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
                     decorationColor: Colors.blue),
-                recognizer: TapGestureRecognizer()..onTap = () {},
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return Dialog.fullscreen(child: RefoundTermsWebView());
+                      },
+                    );
+                  },
               ),
             ],
           ),

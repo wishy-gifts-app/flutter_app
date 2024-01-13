@@ -43,24 +43,27 @@ class _AnimatedHintTextFieldState extends State<AnimatedHintTextField> {
                 left: widget.widthPadding,
                 top: 12,
                 child: Container(
-                  width: constraints.maxWidth - (widget.widthPadding * 2),
-                  child: AnimatedTextKit(
-                    totalRepeatCount: 100,
-                    isRepeatingAnimation: true,
-                    animatedTexts: widget.hintOptions.map((option) {
-                      return TypewriterAnimatedText(
-                        option,
-                        textStyle: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.grey,
-                        ),
-                        speed: Duration(milliseconds: 50),
-                      );
-                    }).toList(),
-                    pause: Duration(milliseconds: 400),
-                    displayFullTextOnTap: true,
-                  ),
-                )),
+                    width: constraints.maxWidth - (widget.widthPadding * 2),
+                    child: IgnorePointer(
+                        child: Container(
+                      width: constraints.maxWidth - (widget.widthPadding * 2),
+                      child: AnimatedTextKit(
+                        totalRepeatCount: 100,
+                        isRepeatingAnimation: true,
+                        animatedTexts: widget.hintOptions.map((option) {
+                          return TypewriterAnimatedText(
+                            option,
+                            textStyle: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey,
+                            ),
+                            speed: Duration(milliseconds: 50),
+                          );
+                        }).toList(),
+                        pause: Duration(milliseconds: 400),
+                        displayFullTextOnTap: true,
+                      ),
+                    )))),
         ],
       );
     });

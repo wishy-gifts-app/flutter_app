@@ -34,6 +34,7 @@ void handleBranchDeepLink(Map<dynamic, dynamic> data) {
 
     GlobalManager().setNotificationToken(navigationToken);
   }
+
   GlobalManager().setShowAnimation(GlobalManager().token == null);
   RouterUtils.routeToHomePage();
 }

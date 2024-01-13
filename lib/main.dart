@@ -42,9 +42,7 @@ void main() async {
 
   await AnalyticsService.init({"User Id": GlobalManager().userId});
   await FlutterBranchSdk.init(
-      useTestKey: false,
-      enableLogging: true,
-      disableTracking: GlobalManager().token == null);
+      useTestKey: false, enableLogging: true, disableTracking: false);
 
   runApp(MyApp());
 }

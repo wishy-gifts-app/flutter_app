@@ -146,7 +146,7 @@ class _SignFormState extends State<SignForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     if (GlobalManager().signedIn) {
       Navigator.pushNamed(
         context,
@@ -154,6 +154,11 @@ class _SignFormState extends State<SignForm> {
       );
     }
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (GlobalManager().notificationToken != null)
       return Form(
         key: _formKey,

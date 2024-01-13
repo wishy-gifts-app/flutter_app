@@ -20,9 +20,9 @@ class Body extends StatelessWidget {
             Expanded(
               child: EmptyStateWidget(
                 CTA: "Sign In",
-                title: "Got a wish tucked away?",
+                title: "Unlock Your Gifting Magic",
                 body:
-                    "Sign in and share who holds the key to your desires. We'll nudge them with a secret whisper.",
+                    "Select a product and a special recipient, we'll subtly hint them your choice. Sign in to start your personalized gifting journey!",
                 routeName: SignInScreen.routeName,
               ),
             ),

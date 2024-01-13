@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/components/privacy.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
@@ -150,7 +151,9 @@ class _SignFormState extends State<SignForm> {
     if (GlobalManager().signedIn) {
       Navigator.pushNamed(
         context,
-        HomeScreen.routeName,
+        GlobalManager().profileCompleted == true
+            ? HomeScreen.routeName
+            : CompleteProfileScreen.routeName,
       );
     }
 

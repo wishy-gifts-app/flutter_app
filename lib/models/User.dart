@@ -2,15 +2,11 @@ import 'utils.dart';
 
 class User {
   final int id;
-  final String name;
-  final String phoneNumber;
-  final String email;
+  final String? name;
+  final String? phoneNumber;
+  final String? email;
 
-  User(
-      {required this.id,
-      required this.name,
-      required this.email,
-      required this.phoneNumber});
+  User({required this.id, this.name, this.email, this.phoneNumber});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

@@ -68,9 +68,7 @@ class Body extends StatelessWidget {
               else if (isVariantsExists(product.variants))
                 VariantsWidget(
                     situation: situation,
-                    productId: product.id,
-                    productTitle: product.title,
-                    productVariants: product.variants!,
+                    product: product,
                     buttonText: this.buttonText,
                     variantId: this.variantId,
                     recipientId: recipientId)

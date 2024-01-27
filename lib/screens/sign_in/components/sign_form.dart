@@ -59,7 +59,6 @@ class _SignFormState extends State<SignForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: "",
         newSignedIn: false,
       );
       AnalyticsService.registerSuperProperties({"User Id": result.userId});
@@ -127,7 +126,6 @@ class _SignFormState extends State<SignForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: "",
         newSignedIn: true,
       );
 

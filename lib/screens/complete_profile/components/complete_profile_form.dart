@@ -49,7 +49,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         GlobalManager().setShowUpAnimation(true);
         await GlobalManager().setParams(
             newProfileCompleted: true,
-            newUsername: fullName,
             newNotificationAvailable:
                 notificationParams["notification_available"]);
         AnalyticsService.trackEvent(

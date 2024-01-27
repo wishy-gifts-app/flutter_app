@@ -23,15 +23,12 @@ class RequestData {
 }
 
 class VariantsAndRequestModal extends StatefulWidget {
-  final int productId;
-  final String situation, productTitle;
+  final Product product;
+  final String situation;
   final String? cursor;
-  final List<Variant> variants;
 
   VariantsAndRequestModal({
-    required this.productId,
-    required this.productTitle,
-    required this.variants,
+    required this.product,
     required this.situation,
     this.cursor,
   });
@@ -64,12 +61,9 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
       _phoneValidationCompleter!.complete(true);
   }
 
-  void _onReasonChanged(String? reason) {
-    requestData.reason = reason;
-  }
-
   void _onVariantChosen() {
-    requestData.selectedVariant = getSelectedVariant(widget.variants, variants);
+    requestData.selectedVariant =
+        getSelectedVariant(widget.product.variants!, variants);
   }
 
   void _onVariantChange(String type, String value) {
@@ -93,7 +87,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
         try {
           await graphQLQueryHandler("requestProduct", {
-            "product_id": widget.productId,
+            "product_id": widget.product.id,
             "variant_id": requestData.selectedVariant!.id,
             "phone_number": requestData.phone,
             "reason": requestData.reason,
@@ -102,11 +96,11 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             "cursor": widget.cursor
           });
 
-          if (isVariantsExists(widget.variants))
+          if (isVariantsExists(widget.product.variants))
             AnalyticsService.trackEvent(
                 analyticEvents["REQUEST_VARIANT_PICKED"]!,
                 properties: {
-                  "Product Id": widget.productId,
+                  "Product Id": widget.product.id,
                   "Variant Id": requestData.selectedVariant!.id,
                   "Reason": requestData.reason,
                   "Name": requestData.name,
@@ -115,12 +109,12 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
           AnalyticsService.trackEvent(analyticEvents["PRODUCT_REQUESTED"]!,
               properties: {
-                "Product Id": widget.productId,
+                "Product Id": widget.product.id,
                 "Variant Id": requestData.selectedVariant!.id,
                 "Reason": requestData.reason,
                 "Name": requestData.name,
                 "Recipient Id": requestData.userId,
-                "Variants Exist": isVariantsExists(widget.variants)
+                "Variants Exist": isVariantsExists(widget.product.variants)
               });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -139,7 +133,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   @override
   Widget build(BuildContext context) {
-    if (isVariantsExists(widget.variants)) {
+    if (isVariantsExists(widget.product.variants)) {
       return SingleChildScrollView(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
         SizedBox(
@@ -199,7 +193,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                 ),
               ),
               content: VariantsWidget(
-                  productVariants: widget.variants,
+                  product: widget.product,
                   withBuyButton: false,
                   situation: widget.situation,
                   onVariantChange: _onVariantChange),
@@ -305,11 +299,10 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   }
 }
 
-void showRequestModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants, String situation,
+void showRequestModal(BuildContext context, Product product, String situation,
     {String? cursor = null}) async {
   if (GlobalManager().signedIn != true) {
-    GlobalManager().setSignInRelatedProductId(productId);
+    GlobalManager().setSignInRelatedProductId(product.id);
     Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     return;
   }
@@ -334,10 +327,8 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: VariantsAndRequestModal(
-              productId: productId,
+              product: product,
               situation: situation,
-              productTitle: productTitle,
-              variants: variants,
               cursor: cursor,
             ));
       });

@@ -1,4 +1,4 @@
-import 'package:Wishy/components/addresses_widget.dart';
+import 'package:Wishy/components/addresses_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Address.dart';
@@ -65,7 +65,7 @@ class _PersonalInfoTabState extends State<PersonalInfoTab> {
         Text("Addresses",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
-        AddressesWidget(
+        AddressesListWidget(
           height: 255,
           addresses: _addresses ?? [],
         ),

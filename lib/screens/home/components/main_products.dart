@@ -82,8 +82,7 @@ class _MainProductsState extends State<MainProducts> {
   void _onSwipeUp(Product product) {
     _nextProduct();
 
-    showRequestModal(
-        context, product.id, product.title, product.variants ?? [], situation,
+    showRequestModal(context, product, situation,
         cursor: _paginationService.firstCursor);
   }
 

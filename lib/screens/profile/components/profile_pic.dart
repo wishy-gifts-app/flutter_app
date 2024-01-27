@@ -13,7 +13,7 @@ class ProfilePic extends StatelessWidget {
       height: 80,
       width: 80,
       child: Initicon(
-        text: GlobalManager().username ?? "",
+        text: GlobalManager().user?.name ?? "",
         elevation: 4,
       ),
     );

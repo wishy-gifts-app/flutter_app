@@ -3,7 +3,10 @@ import 'package:Wishy/models/utils.dart';
 class Address {
   final int id;
   final String country;
+  final String countryCode;
   final String state;
+  final String name;
+  final String phoneNumber;
   final String city;
   final String streetAddress;
   final String streetNumber;
@@ -16,6 +19,9 @@ class Address {
   Address({
     required this.id,
     required this.country,
+    required this.countryCode,
+    required this.name,
+    required this.phoneNumber,
     required this.state,
     required this.streetAddress,
     required this.streetNumber,
@@ -27,24 +33,28 @@ class Address {
     this.extraDetails,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'country': country,
-      'state': state,
-      'streetAddress': streetAddress,
-      'streetNumber': streetNumber,
-      'zipCode': zipCode,
-      'apartment': apartment,
-      'city': city,
-      'extraDetails': extraDetails,
-    };
-  }
+  // Map<String, dynamic> toMap() {
+  //   return {
+  //     'id': id,
+  //     'country': country,
+  //     'countryCode': countryCode,
+  //     'state': state,
+  //     'streetAddress': streetAddress,
+  //     'streetNumber': streetNumber,
+  //     'zipCode': zipCode,
+  //     'apartment': apartment,
+  //     'city': city,
+  //     'extraDetails': extraDetails,
+  //   };
+  // }
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       id: convertValue<int>(json, 'id', true),
       country: convertValue<String>(json, 'country', true),
+      name: convertValue<String>(json, 'name', true),
+      phoneNumber: convertValue<String>(json, 'phone_number', true),
+      countryCode: convertValue<String>(json, 'country_code', true),
       state: convertValue<String>(json, 'state', true),
       streetAddress: convertValue<String>(json, 'street_address', true),
       streetNumber: convertValue<String>(json, 'street_number', true),

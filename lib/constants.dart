@@ -80,7 +80,7 @@ const marketDetails = {
   "symbol": "\$",
   "google_country": "us",
   "country": "USA",
-  "currency": "dollar",
+  "currency": "usd",
   "short": "USD"
 };
 const String privacyURL = "https://www.wishy.store/privacy";

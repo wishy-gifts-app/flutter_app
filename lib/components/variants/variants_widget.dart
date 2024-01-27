@@ -48,20 +48,19 @@ Map<String, dynamic> getVariantsById(int variantId, List<Variant> variants) {
 
 class VariantsWidget extends StatefulWidget {
   final String situation, buttonText;
-  final int? productId, variantId, recipientId;
+  final Product product;
+  final int? variantId, recipientId;
   final String? productTitle, cursor;
   final bool withBuyButton;
-  final List<Variant> productVariants;
   final Function(String type, String value)? onVariantChange;
 
   const VariantsWidget({
     Key? key,
     required this.situation,
-    this.productId,
+    required this.product,
     this.productTitle,
-    required this.productVariants,
     this.onVariantChange,
-    this.buttonText = "Checkout",
+    this.buttonText = "Buy Now",
     this.variantId,
     this.withBuyButton = true,
     this.recipientId,
@@ -86,7 +85,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     });
 
     setState(() {
-      selectedVariant = getSelectedVariant(widget.productVariants, variants);
+      selectedVariant = getSelectedVariant(widget.product.variants!, variants);
     });
   }
 
@@ -104,7 +103,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
       CheckoutScreen.routeName,
       arguments: {
         'variant': this.selectedVariant,
-        'productId': widget.productId,
+        'product': widget.product,
         'recipientId': widget.recipientId,
         'cursor': widget.cursor,
       },
@@ -113,16 +112,16 @@ class _VariantsWidgetState extends State<VariantsWidget> {
 
   @override
   void initState() {
-    selectedVariant = widget.productVariants[0];
+    selectedVariant = widget.product.variants![0];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final variantsWithChildren =
-        getVariantsDataWithChildren(widget.productVariants);
+        getVariantsDataWithChildren(widget.product.variants!);
     final Map<String, dynamic>? chosenVariant = widget.variantId != null
-        ? getVariantsById(widget.variantId!, widget.productVariants)
+        ? getVariantsById(widget.variantId!, widget.product.variants!)
         : null;
 
     return (buildVariantsSectionWithButton(
@@ -144,7 +143,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
               "${widget.buttonText} ${marketDetails["symbol"]}${this.selectedVariant.price}",
           eventName: analyticEvents["CHECKOUT_PRESSED"]!,
           eventData: {
-            "Product Id": widget.productId,
+            "Product Id": widget.product.id,
             "Product Title": widget.productTitle,
             "Situation": widget.situation,
             "Variant Picked": true,

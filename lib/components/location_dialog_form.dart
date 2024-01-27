@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:Wishy/components/search_contact.dart';
+import 'package:Wishy/models/Follower.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -19,15 +23,11 @@ AddressComponent? getSpecificComponent(PlacesDetailsResponse detail, key) {
 }
 
 class LocationDialogForm extends StatefulWidget {
-  final int? userId;
-  final String? userName;
-  final String? userPhoneNumber;
+  final Follower? defaultUser;
 
   LocationDialogForm({
     Key? key,
-    this.userId,
-    this.userName,
-    this.userPhoneNumber,
+    this.defaultUser,
   }) : super(key: key);
 
   @override
@@ -41,8 +41,11 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
   final _extraDetailsController = TextEditingController();
   final _postalCodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _allowShareAddress = true;
+  bool _allowShareAddress = false;
+  String? _name;
+  String? _phoneNumber;
   PlacesDetailsResponse? detail;
+  Completer<bool>? _phoneValidationCompleter;
 
   String? validateAddress(PlacesDetailsResponse detail) {
     final country = getSpecificComponent(detail, "country");
@@ -66,7 +69,14 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      _phoneValidationCompleter = Completer<bool>();
+      await _phoneValidationCompleter!.future;
+
+      print(_name);
+      print(_phoneNumber);
       final country = getSpecificComponent(detail!, "country")?.longName;
+      final countryCode = getSpecificComponent(detail!, "country")?.shortName;
       final state =
           getSpecificComponent(detail!, ["administrative_area_level_1"])
               ?.longName;
@@ -81,6 +91,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       try {
         final result = await graphQLQueryHandler("saveUserAddress", {
           "country": country,
+          "country_code": countryCode,
           "state": state,
           "city": city,
           "street_address": streetAddress,
@@ -88,9 +99,8 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           "zip_code": zipCode,
           "apartment": apartment,
           "extra_details": extraDetails,
-          "user_id": widget.userId,
-          "phone_number": widget.userPhoneNumber,
-          "name": widget.userName,
+          "phone_number": _phoneNumber,
+          "name": _name,
           "allow_share": _allowShareAddress,
         });
 
@@ -108,34 +118,59 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    if (widget.userId == null &&
-        (widget.userName == null || widget.userPhoneNumber == null)) {
-      throw Exception("Missing user details");
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Address'),
+        title: Text('New Address'),
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(getProportionateScreenHeight(16)),
+        padding: EdgeInsets.only(right: 16, left: 16, bottom: 16, top: 10),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
             child: Column(
               children: [
-                Icon(Icons.location_on, size: 50, color: kPrimaryColor),
-                SizedBox(height: getProportionateScreenHeight(50)),
+                Icon(Icons.location_on, size: 45, color: kPrimaryColor),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                Text(
+                  'Contact Details',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SearchContactWidget(
+                  defaultUser: widget.defaultUser,
+                  nameRequired: true,
+                  phoneHintOptions: [
+                    "Type Phone Number Here",
+                    "E.g. +1 212-555-1234"
+                  ],
+                  nameHint: "Find Contact or Type Name",
+                  onNameChanged: (v) {
+                    setState(() {
+                      _name = v;
+                    });
+                  },
+                  onPhoneChanged: (v) {
+                    setState(() {
+                      _phoneNumber = v;
+                    });
+                    if (_phoneValidationCompleter != null &&
+                        !_phoneValidationCompleter!.isCompleted)
+                      _phoneValidationCompleter!.complete(true);
+                  },
+                ),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                Text(
+                  "Enter Address Details",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: getProportionateScreenHeight(10)),
                 TextFormField(
                   controller: _addressController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -194,7 +229,7 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
                     }
                   },
                   decoration: InputDecoration(
-                    hintText: 'Enter address',
+                    hintText: 'Type to Search Address',
                     suffixIcon: Icon(
                       Icons.search,
                       color: kPrimaryColor,
@@ -262,34 +297,31 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
         ),
       ),
       bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+          padding: EdgeInsets.only(right: 16, left: 16, bottom: 30, top: 15),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            if (widget.userId == null && widget.userPhoneNumber == null) ...[
-              CheckboxListTile(
-                title: Text(
-                  "Check this to make gift-giving a breeze! It allows gift buyers to send items directly to this address.",
-                  style: TextStyle(fontSize: 12),
-                ),
-                value: _allowShareAddress,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _allowShareAddress = value!;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              SizedBox(
-                height: getProportionateScreenHeight(3),
-              ),
-            ],
+            // if (widget.userId == null && widget.userPhoneNumber == null) ...[
+            //   CheckboxListTile(
+            //     title: Text(
+            //       "Check this to make gift-giving a breeze! It allows gift buyers to send items directly to this address.",
+            //       style: TextStyle(fontSize: 12),
+            //     ),
+            //     value: _allowShareAddress,
+            //     onChanged: (bool? value) {
+            //       setState(() {
+            //         _allowShareAddress = value!;
+            //       });
+            //     },
+            //     controlAffinity: ListTileControlAffinity.leading,
+            //   ),
+            //   SizedBox(
+            //     height: getProportionateScreenHeight(3),
+            //   ),
+            // ],
             DefaultButton(
-                text: 'Add Address',
-                press: _onSubmit,
-                eventName: analyticEvents["ADDRESS_ADDED"],
-                eventData: {
-                  "Is Gift":
-                      widget.userId == null && widget.userPhoneNumber == null
-                }),
+              text: 'Add Address',
+              press: _onSubmit,
+              eventName: analyticEvents["ADDRESS_ADDED"],
+            ),
           ])),
     );
   }

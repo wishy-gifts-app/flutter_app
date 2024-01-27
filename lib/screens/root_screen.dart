@@ -5,14 +5,13 @@ import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
-// import 'package:uni_links/uni_links.dart';
 
 Future<void> initUniLinks() async {
   FlutterBranchSdk.listSession().listen((data) {
     handleBranchDeepLink(data);
   }, onError: (error) {
     print('Branch SDK Error: $error');
-  });
+  }, cancelOnError: true);
 }
 
 void handleBranchDeepLink(Map<dynamic, dynamic> data) {

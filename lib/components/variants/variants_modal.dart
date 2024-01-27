@@ -4,10 +4,10 @@ import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 
-void showVariantsModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants, int? recipientId, String situation,
+void showVariantsModal(
+    BuildContext context, Product product, int? recipientId, String situation,
     {String? cursor}) {
-  final variantsObjects = groupVariants(variants);
+  final variantsObjects = groupVariants(product.variants!);
   List<dynamic> nonNullValue =
       variantsObjects.values.where((value) => value != null).toList();
   int totalLength = 1;
@@ -53,9 +53,7 @@ void showVariantsModal(BuildContext context, int productId, String productTitle,
                       ),
                     )),
                 VariantsWidget(
-                  productId: productId,
-                  productTitle: productTitle,
-                  productVariants: variants,
+                  product: product,
                   recipientId: recipientId,
                   situation: situation,
                   cursor: cursor,

@@ -1,3 +1,4 @@
+import 'package:Wishy/models/User.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:Wishy/models/UserLocationData.dart';
 
@@ -6,7 +7,7 @@ class GlobalManager {
 
   String? token = null;
   int? userId;
-  String? username;
+  User? user;
   bool signedIn = false;
   String? notificationToken = null;
   bool? isDeliveryAvailable;
@@ -23,6 +24,8 @@ class GlobalManager {
   int? connectUserId = null;
   String? firstFeedCursor = null;
   bool navigateToRequest = false;
+  String? paymentSession;
+  String? paymentId;
 
   factory GlobalManager() {
     return _singleton;
@@ -34,7 +37,6 @@ class GlobalManager {
     final storage = FlutterSecureStorage();
     token = await storage.read(key: 'token');
     userId = int.tryParse(await storage.read(key: 'user_id') ?? "");
-    username = await storage.read(key: 'username');
     String? signedInStr = await storage.read(key: 'signed_in');
     signedIn = signedInStr == 'true';
     String? completedProfileStr = await storage.read(key: 'profile_completed');
@@ -48,7 +50,6 @@ class GlobalManager {
 
   Future<void> setParams({
     String? newToken,
-    String? newUsername,
     int? newUserId,
     bool? newSignedIn,
     bool? newProfileCompleted,
@@ -64,11 +65,6 @@ class GlobalManager {
     if (newUserId != null) {
       userId = newUserId;
       await storage.write(key: 'user_id', value: newUserId.toString());
-    }
-
-    if (newUsername != null) {
-      username = newUsername;
-      await storage.write(key: 'username', value: newUsername);
     }
 
     if (newSignedIn != null) {
@@ -103,4 +99,7 @@ class GlobalManager {
   void setFirstFeedCursor(String? value) => firstFeedCursor = value;
   void setNotificationToken(String? value) => notificationToken = value;
   void setNavigateToRequest(bool value) => navigateToRequest = value;
+  void setPaymentSession(String? value) => paymentSession = value;
+  void setPaymentId(String? value) => paymentId = value;
+  void setUser(User? value) => user = value;
 }

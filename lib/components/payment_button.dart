@@ -10,10 +10,12 @@ class PaymentButton extends StatelessWidget {
   final bool enable;
   final double price;
   final Map<String, dynamic>? eventData;
+  final Widget? element;
 
   PaymentButton(
       {required this.price,
       required this.onSubmit,
+      this.element,
       this.enable = true,
       this.eventData});
 
@@ -27,7 +29,7 @@ class PaymentButton extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall,
             children: <TextSpan>[
               TextSpan(
-                text: "By purchasing, you agree to our ",
+                text: "See our full ",
               ),
               TextSpan(
                 text: "Return Policy",
@@ -56,6 +58,7 @@ class PaymentButton extends StatelessWidget {
           enable: enable,
           eventName: analyticEvents["PAY_PRESSED"],
           eventData: eventData,
+          element: element,
         ),
       ],
     );

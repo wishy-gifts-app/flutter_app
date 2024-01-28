@@ -1,3 +1,4 @@
+import 'package:Wishy/components/support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Wishy/constants.dart';
@@ -14,6 +15,7 @@ class CustomAppBar extends StatelessWidget {
         padding:
             EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               height: getProportionateScreenWidth(40),
@@ -34,6 +36,7 @@ class CustomAppBar extends StatelessWidget {
                 ),
               ),
             ),
+            SupportWidget()
           ],
         ),
       ),

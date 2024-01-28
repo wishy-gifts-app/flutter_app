@@ -1,13 +1,14 @@
-import 'package:Wishy/models/User.dart';
+import 'package:Wishy/models/UserDetails.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:Wishy/models/UserLocationData.dart';
 
-class GlobalManager {
+class GlobalManager with ChangeNotifier {
   static final GlobalManager _singleton = GlobalManager._internal();
 
   String? token = null;
   int? userId;
-  User? user;
+  UserDetails? user;
   bool signedIn = false;
   String? notificationToken = null;
   bool? isDeliveryAvailable;
@@ -101,5 +102,8 @@ class GlobalManager {
   void setNavigateToRequest(bool value) => navigateToRequest = value;
   void setPaymentSession(String? value) => paymentSession = value;
   void setPaymentId(String? value) => paymentId = value;
-  void setUser(User? value) => user = value;
+  void setUser(UserDetails? value) {
+    user = value;
+    notifyListeners();
+  }
 }

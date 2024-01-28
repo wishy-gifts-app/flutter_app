@@ -14,6 +14,7 @@ import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:uuid/uuid.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background,
@@ -47,7 +48,12 @@ void main() async {
       useTestKey: false, enableLogging: true, disableTracking: false);
   FlutterBranchSdk.validateSDKIntegration();
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GlobalManager(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

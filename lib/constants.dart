@@ -59,6 +59,10 @@ final headingStyle = TextStyle(
   color: Colors.black,
   height: 1.5,
 );
+final defaultButtonTextStyle = TextStyle(
+  fontSize: getProportionateScreenWidth(18),
+  color: Colors.white,
+);
 
 const defaultDuration = Duration(milliseconds: 250);
 

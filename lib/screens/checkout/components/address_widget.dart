@@ -2,11 +2,14 @@ import 'package:Wishy/components/address.dart';
 import 'package:Wishy/components/addresses_list_widget.dart';
 import 'package:Wishy/components/custom_dialog.dart';
 import 'package:Wishy/components/location_dialog_form.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
+import 'package:Wishy/models/UserDetails.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/models/Address.dart';
 import 'package:Wishy/services/graphql_service.dart';
+import 'package:provider/provider.dart';
 
 class AddressesWidget extends StatefulWidget {
   final int userId;
@@ -25,42 +28,18 @@ class AddressesWidget extends StatefulWidget {
 }
 
 class _AddressesWidgetState extends State<AddressesWidget> {
-  List<Address>? _addresses;
   int _selectedAddressIndex = 0;
-  late GraphQLPaginationService _paginationServices;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-
-  Future<void> fetchData() async {
-    _paginationServices = new GraphQLPaginationService(
-      queryName: "getUserAddresses",
-      variables: {"limit": 20, "user_id": widget.userId},
-    );
-
-    final result = await _paginationServices.run();
-
-    if (mounted && result["data"] != null && result["data"].length > 0) {
-      setState(() {
-        _addresses = (result["data"] as List<dynamic>)
-            .map((item) => Address.fromJson(item))
-            .toList();
-      });
-
-      widget.onAddressSelected(_addresses![_selectedAddressIndex]);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final globalManger = Provider.of<GlobalManager>(context);
+
     return Column(children: [
-      if (_addresses == null || _addresses!.isEmpty) ...[
-        _buildAddAddressButton()
-      ],
-      if ((_addresses?.length ?? 0) > 0) _buildAddressDisplay()
+      if (globalManger.user?.addresses == null ||
+          globalManger.user!.addresses == null ||
+          globalManger.user!.addresses!.isEmpty) ...[_buildAddAddressButton()],
+      if ((globalManger.user!.addresses?.length ?? 0) > 0)
+        _buildAddressDisplay(globalManger.user!.addresses!)
     ]);
   }
 
@@ -68,7 +47,6 @@ class _AddressesWidgetState extends State<AddressesWidget> {
     return Center(
         child: OutlinedButton(
             onPressed: () => _showLocationDialog().then((v) {
-                  fetchData();
                   Navigator.of(context).pop();
                 }),
             child: Row(
@@ -83,11 +61,9 @@ class _AddressesWidgetState extends State<AddressesWidget> {
             )));
   }
 
-  Widget _buildAddressDisplay() {
-    final address = _addresses![_selectedAddressIndex];
-
+  Widget _buildAddressDisplay(List<Address> addresses) {
     return InkWell(
-      onTap: () => _showAddressDialog(),
+      onTap: () => _showAddressDialog(addresses),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -97,8 +73,8 @@ class _AddressesWidgetState extends State<AddressesWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                AddressTitle(address: address),
-                AddressSubtitle(address: address),
+                AddressTitle(address: addresses[_selectedAddressIndex]),
+                AddressSubtitle(address: addresses[_selectedAddressIndex]),
               ],
             ),
           ),
@@ -111,7 +87,7 @@ class _AddressesWidgetState extends State<AddressesWidget> {
     );
   }
 
-  void _showAddressDialog() {
+  void _showAddressDialog(List<Address> addresses) {
     CustomDialog()
         .show(
       context,
@@ -123,14 +99,14 @@ class _AddressesWidgetState extends State<AddressesWidget> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 AddressesListWidget(
-                  height: 200,
-                  addresses: _addresses!,
+                  height: 250,
+                  addresses: addresses,
                   selectedIndex: _selectedAddressIndex,
                   onTap: (idx) {
                     setState(() {
                       _selectedAddressIndex = idx;
                     });
-                    widget.onAddressSelected(_addresses![idx]);
+                    widget.onAddressSelected(addresses[idx]);
                     Navigator.of(context).pop();
                   },
                 ),
@@ -141,13 +117,9 @@ class _AddressesWidgetState extends State<AddressesWidget> {
               ])),
     )
         .then((result) {
-      if (result != null) {
-        setState(() {
-          _selectedAddressIndex = 0;
-        });
-
-        fetchData();
-      }
+      setState(() {
+        _selectedAddressIndex = 0;
+      });
     });
   }
 

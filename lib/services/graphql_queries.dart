@@ -300,7 +300,25 @@ const Map<String, String> graphqlQueries = {
       street_number: \$street_number, apartment: \$apartment, extra_details: \$extra_details,
        name: \$name, phone_number: \$phone_number, allow_share: \$allow_share ) {
         id
-        user_id
+        name
+        phone_number
+        email
+        addresses {
+          id
+          country
+          country_code
+          name
+          phone_number
+          state
+          city
+          zip_code
+          street_address
+          street_number
+          apartment
+          extra_details
+          allow_share
+          created_user_id
+        }
       }
     }
 """,
@@ -344,6 +362,34 @@ const Map<String, String> graphqlQueries = {
         name
         phone_number
         email
+    }
+  }
+""",
+  'getUserDetailsById': """
+    query getUserDetailsById(
+      \$user_id: Int!
+    ) {
+      getUserDetailsById(user_id: \$user_id) {
+        id
+        name
+        phone_number
+        email
+        addresses {
+          id
+          country
+          country_code
+          name
+          phone_number
+          state
+          city
+          zip_code
+          street_address
+          street_number
+          apartment
+          extra_details
+          allow_share
+          created_user_id
+        }
     }
   }
 """,
@@ -674,7 +720,7 @@ const Map<String, String> graphqlQueries = {
       ) {
           delivery_time
           delivery_price
-          delivery_display_price
+          additional_highlights
           sale_tax
           client_secret
           payment_id

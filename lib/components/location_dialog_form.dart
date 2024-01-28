@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:Wishy/components/search_contact.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
+import 'package:Wishy/models/UserDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -73,8 +75,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
       _phoneValidationCompleter = Completer<bool>();
       await _phoneValidationCompleter!.future;
 
-      print(_name);
-      print(_phoneNumber);
       final country = getSpecificComponent(detail!, "country")?.longName;
       final countryCode = getSpecificComponent(detail!, "country")?.shortName;
       final state =
@@ -108,7 +108,8 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           SnackBar(content: Text('Your address has been successfully added')),
         );
 
-        Navigator.of(context).pop(result["user_id"]);
+        GlobalManager().setUser(UserDetails.fromJson(result));
+        Navigator.of(context).pop(result["id"]);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address. Please try again.')),

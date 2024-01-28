@@ -1,16 +1,14 @@
 import 'package:Wishy/components/custom_dialog.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/payment_button.dart';
+import 'package:Wishy/components/stripe_powered.dart';
 import 'package:Wishy/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
-Future<CardFieldInputDetails?> showCreditCardDialog(
-    BuildContext context, Function onSubmit, bool buyNow,
+void showCreditCardDialog(BuildContext context, Function onSubmit, bool buyNow,
     {double? price}) async {
-  CardFieldInputDetails? _card;
-
-  await CustomDialog().show(
+  CustomDialog().show(
     context,
     "Add your card details",
     CreditCardDialogContent(
@@ -19,7 +17,6 @@ Future<CardFieldInputDetails?> showCreditCardDialog(
       buyNow: buyNow,
     ),
   );
-  return _card;
 }
 
 class CreditCardDialogContent extends StatefulWidget {
@@ -57,45 +54,61 @@ class _CreditCardDialogContentsState extends State<CreditCardDialogContent> {
     super.dispose();
   }
 
+  void _onSubmit() async {
+    await widget.onSubmit(_controller.details);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Padding(
-      padding: const EdgeInsets.only(right: 18, left: 18, bottom: 18, top: 18),
+      padding: const EdgeInsets.only(right: 18, left: 18, bottom: 18, top: 0),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Checkbox(
+                  value: _saveCard,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _saveCard = value!;
+                    });
+                  },
+                ),
+                Text(
+                  "Save card for other purchases",
+                  style: TextStyle(fontSize: 14),
+                ),
+                // ... add other elements if needed
+              ],
+            ),
             CardFormField(
               controller: _controller,
               autofocus: true,
               style: CardFormStyle(
-                  placeholderColor: kSecondaryColor,
-                  cursorColor: kPrimaryColor),
-            ),
-            CheckboxListTile(
-              title: Text(
-                "Save card for other purchases",
-                style: TextStyle(fontSize: 14),
+                placeholderColor: kSecondaryColor,
+                cursorColor: kPrimaryColor,
               ),
-              value: _saveCard,
-              onChanged: (bool? value) {
-                setState(() {
-                  _saveCard = value!;
-                });
-              },
-              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            StripePoweredWidget(),
+            SizedBox(
+              height: 5,
             ),
             if (widget.buyNow)
               PaymentButton(
                 price: widget.price!,
-                onSubmit: widget.onSubmit,
+                onSubmit: _onSubmit,
                 enable: _controller.details.complete == true,
               ),
             if (!widget.buyNow)
               DefaultButton(
                 text: "Add Card",
-                press: widget.onSubmit,
+                press: _onSubmit,
                 enable: _controller.details.complete == true,
               )
           ]),

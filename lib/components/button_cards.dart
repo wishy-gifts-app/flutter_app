@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ButtonCards extends StatefulWidget {
+class ButtonCards extends StatelessWidget {
   final void Function()? onTap;
   final Widget child;
 
@@ -11,21 +11,7 @@ class ButtonCards extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ButtonCardsState createState() => _ButtonCardsState();
-}
-
-class _ButtonCardsState extends State<ButtonCards> {
-  bool isHover = false;
-
-  @override
   Widget build(BuildContext context) {
-    return InkWell(
-        child: widget.child,
-        onHover: (v) {
-          setState(() {
-            isHover = v;
-          });
-        },
-        onTap: widget.onTap);
+    return InkWell(child: child, onTap: onTap);
   }
 }

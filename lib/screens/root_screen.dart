@@ -1,4 +1,6 @@
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/UserDetails.dart';
+import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/services/opt_services.dart';
 import 'package:Wishy/utils/notification.dart';
 import 'package:Wishy/utils/router_utils.dart';
@@ -62,10 +64,21 @@ class _RootScreenState extends State<RootScreen> {
     }
   }
 
+  void _fetchUserDetails() async {
+    try {
+      final result = await graphQLQueryHandler(
+          "getUserDetailsById", {"user_id": GlobalManager().userId});
+      GlobalManager().setUser(UserDetails.fromJson(result));
+    } catch (error) {
+      print(error);
+    }
+  }
+
   @override
   void initState() {
     initUniLinks();
     _handleUserLocation();
+    _fetchUserDetails();
     updateNotificationPermission();
 
     super.initState();

@@ -18,6 +18,7 @@ import 'package:Wishy/services/graphql_service.dart';
 import 'dart:async';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class PurchaseForm extends StatefulWidget {
@@ -49,64 +50,12 @@ class _PurchaseFormState extends State<PurchaseForm> {
   final double sectionMargin = 10;
   late Variant variant;
   final String _paymentSession = Uuid().v1();
-  String? _paymentMethod = null;
+  Function? _paymentMethod = null;
+  Widget? _payButtonElement = null;
 
   Future<void> onSubmit() async {
-    if (_selectedAddress != null && _checkout != null)
-      try {
-        // await StripePaymentHandle().stripeMakePayment(_clientSecret!);
-        // if (result != null && result["checkout_available"] == false) {
-        //   AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
-        //       properties: {
-        //         "Variant Id": widget.variantId,
-        //         "Is Gift": false,
-        //         "Recipient Id": _recipientId
-        //       });
-
-        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //     content: Text(
-        //         "Sorry, purchase feature is currently unavailable. We'll notify you when it's ready. Thank you!"),
-        //   ));
-
-        //   Navigator.pushNamed(
-        //     context,
-        //     HomeScreen.routeName,
-        //   );
-        //   return;
-        // }
-
-        // if (result != null && result["payment_url"] != null) {
-        //   showDialog(
-        //     context: context,
-        //     barrierDismissible: false,
-        //     builder: (BuildContext context) {
-        //       return Dialog.fullscreen(
-        //         child: CheckoutWebView(checkoutUrl: result["payment_url"]),
-        //       );
-        //     },
-        //   ).then((_) {
-        //     AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
-        //         properties: {
-        //           "Variant Id": widget.variantId,
-        //           "Is Gift": false,
-        //           "Recipient Id": _recipientId
-        //         });
-
-        //     Navigator.pushNamed(
-        //       context,
-        //       HomeScreen.routeName,
-        //     );
-        //   });
-        //   ;
-        // } else {
-        //   throw Exception('Payment URL not available');
-        // }
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              'Unable to upload payment method. Please check your information and try again.'),
-        ));
-      }
+    if (_paymentMethod != null && _selectedAddress != null && _checkout != null)
+      await _paymentMethod!();
   }
 
   Future<void> _fetchDeliveryTime() async {
@@ -134,6 +83,26 @@ class _PurchaseFormState extends State<PurchaseForm> {
     }
   }
 
+  void _onAddressSelected(Wishy.Address address) {
+    if (mounted) {
+      setState(() {
+        _selectedAddress = address;
+      });
+
+      _fetchDeliveryTime();
+    }
+  }
+
+  void _onPaymentSelected(Function? payHandler, Widget? suffixElement) {
+    if (mounted) {
+      setState(() {
+        _paymentMethod = payHandler;
+        _payButtonElement = suffixElement;
+      });
+    }
+  }
+
+  @override
   void initState() {
     variant = widget.product.variants!.firstWhere(
         (element) => element.id == widget.variantId,
@@ -144,11 +113,20 @@ class _PurchaseFormState extends State<PurchaseForm> {
         phoneNumber: GlobalManager().user?.phoneNumber ?? "",
         id: GlobalManager().userId);
 
+    if (GlobalManager().user!.addresses != null &&
+        GlobalManager().user!.addresses!.length > 0)
+      _onAddressSelected(GlobalManager().user!.addresses![0]);
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final globalManger = Provider.of<GlobalManager>(context);
+
+    if (globalManger.user == null)
+      return Center(child: CircularProgressIndicator());
+
     final variantDescription = generateVariantDescription(variant);
 
     return Center(
@@ -163,13 +141,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 AddressesWidget(
                   defaultUser: _defaultUser,
                   userId: GlobalManager().userId!,
-                  onAddressSelected: (address) {
-                    setState(() {
-                      _selectedAddress = address;
-                    });
-
-                    _fetchDeliveryTime();
-                  },
+                  onAddressSelected: _onAddressSelected,
                 ),
                 child: _buildSection(
                     Icons.local_shipping,
@@ -181,8 +153,11 @@ class _PurchaseFormState extends State<PurchaseForm> {
                               _checkout?.deliveryTime ?? "",
                               style: TextStyle(fontSize: 13),
                             ),
+                            SizedBox(
+                              height: 3,
+                            ),
                             Text(
-                              _checkout?.deliveryDisplayPrice ?? "",
+                              (_checkout?.additionalHighlights ?? ""),
                               style: TextStyle(
                                   fontSize: 12, fontWeight: FontWeight.bold),
                             )
@@ -196,6 +171,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                           buyNow: _selectedAddress != null && _checkout != null,
                           totalPrice: _checkout?.totalPrice,
                           amount: _checkout?.payAmount,
+                          onPaymentSelected: _onPaymentSelected,
                           shippingDetails: ShippingDetails(
                               name: _selectedAddress?.name,
                               address: Address(
@@ -223,8 +199,9 @@ class _PurchaseFormState extends State<PurchaseForm> {
                             ),
                             child: Padding(
                               padding:
-                                  EdgeInsets.only(top: 12, right: 20, left: 20),
+                                  EdgeInsets.only(top: 14, right: 20, left: 20),
                               child: PaymentButton(
+                                element: _payButtonElement,
                                 price: _checkout?.totalPrice ?? variant.price,
                                 onSubmit: onSubmit,
                                 enable:
@@ -242,7 +219,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
       double elementRightPadding = 30}) {
     return TopRoundedContainer(
         margin: margin,
-        padding: 10,
+        padding: 12,
         color: color,
         child: Column(children: [
           if (title != null) ...[
@@ -256,7 +233,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                    padding: EdgeInsets.all(20), child: Icon(icon, size: 30)),
+                    padding: EdgeInsets.all(15), child: Icon(icon, size: 30)),
                 Container(
                     width: 280,
                     padding:

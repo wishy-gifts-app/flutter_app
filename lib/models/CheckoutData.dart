@@ -1,13 +1,12 @@
 import 'package:Wishy/models/utils.dart';
 
 class CheckoutData {
-  final String deliveryTime, paymentId, clientSecret;
+  final String deliveryTime, paymentId, clientSecret, additionalHighlights;
   final double deliveryPrice, saleTax, totalPrice;
-  final String deliveryDisplayPrice;
   final int payAmount;
 
   CheckoutData(
-      {required this.deliveryDisplayPrice,
+      {required this.additionalHighlights,
       required this.deliveryTime,
       required this.paymentId,
       required this.clientSecret,
@@ -19,8 +18,8 @@ class CheckoutData {
   factory CheckoutData.fromJson(Map<String, dynamic> json) {
     return CheckoutData(
       deliveryTime: convertValue<String>(json, 'delivery_time', false),
-      deliveryDisplayPrice: convertValue<String>(
-          json, 'delivery_display_price', true,
+      additionalHighlights: convertValue<String>(
+          json, 'additional_highlights', true,
           defaultValue: ""),
       deliveryPrice: convertValue<double>(json, 'delivery_price', true),
       totalPrice: convertValue<double>(json, 'total_price', true),

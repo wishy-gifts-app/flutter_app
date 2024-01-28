@@ -27,12 +27,20 @@ class StripePaymentHandler {
   }
 
   Future<T?> paymentWrapper<T>(BuildContext context, Function handler) async {
-    try {
-      final T result = await handler();
+    final T? result = await stripeExceptionWrapper(context, handler);
 
+    if (result != null)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment successfully completed')),
       );
+
+    return result;
+  }
+
+  Future<T?> stripeExceptionWrapper<T>(
+      BuildContext context, Function handler) async {
+    try {
+      final T result = await handler();
 
       return result;
     } on Exception catch (e) {
@@ -57,18 +65,31 @@ class StripePaymentHandler {
         context, () => Stripe.instance.presentPaymentSheet());
   }
 
-  Future<PaymentIntent?> confirmCard(String clientSecret,
-      ShippingDetails shippingDetails, BuildContext context) async {
+  Future<PaymentIntent?> confirmCard(
+      String clientSecret,
+      PaymentMethod cardDetail,
+      ShippingDetails shippingDetails,
+      BuildContext context) async {
     return paymentWrapper(
         context,
         () => Stripe.instance.confirmPayment(
               paymentIntentClientSecret: clientSecret,
-              data: PaymentMethodParams.card(
-                paymentMethodData:
-                    PaymentMethodData(shippingDetails: shippingDetails),
+              data: PaymentMethodParams.cardFromMethodId(
+                paymentMethodData: PaymentMethodDataCardFromMethod(
+                  paymentMethodId: cardDetail.id,
+                ),
               ),
             ));
   }
+
+  Future<PaymentMethod?> createCard(BuildContext context) =>
+      stripeExceptionWrapper(
+          context,
+          () => Stripe.instance.createPaymentMethod(
+                params: PaymentMethodParams.card(
+                  paymentMethodData: PaymentMethodData(),
+                ),
+              ));
 
   Future<PlatformPayPaymentMethod?> createGooglePayment(String clientSecret,
       int amount, ShippingDetails shippingDetails, BuildContext context) async {
@@ -95,8 +116,7 @@ class StripePaymentHandler {
         () => Stripe.instance.confirmPayment(
               paymentIntentClientSecret: clientSecret,
               data: PaymentMethodParams.cashAppPay(
-                paymentMethodData:
-                    PaymentMethodData(shippingDetails: shippingDetails),
+                paymentMethodData: PaymentMethodData(),
               ),
             ));
   }

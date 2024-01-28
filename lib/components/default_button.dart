@@ -11,7 +11,9 @@ class DefaultButton extends StatefulWidget {
     this.eventData,
     this.text,
     this.press,
+    this.element,
     this.enable = true,
+    this.isPressed,
     this.pressBackgroundColor = kPrimaryLightColor,
     this.backgroundColor = kPrimaryColor,
   }) : super(key: key);
@@ -20,7 +22,9 @@ class DefaultButton extends StatefulWidget {
   final String? text;
   final Function? press;
   final bool enable;
+  final bool? isPressed;
   final Color backgroundColor, pressBackgroundColor;
+  final Widget? element;
 
   @override
   _DefaultButtonState createState() => _DefaultButtonState();
@@ -46,7 +50,7 @@ class _DefaultButtonState extends State<DefaultButton>
     _animations = _controllers
         .map((controller) => Tween(begin: 6.0, end: 9.0).animate(controller))
         .toList();
-
+    if (widget.isPressed != null) _isPressed = widget.isPressed!;
     _startAnimation();
   }
 
@@ -75,7 +79,7 @@ class _DefaultButtonState extends State<DefaultButton>
   }
 
   void onPress() async {
-    if (widget.press != null) {
+    if (widget.press != null && !_isPressed) {
       setState(() {
         _isPressed = true;
       });
@@ -93,6 +97,18 @@ class _DefaultButtonState extends State<DefaultButton>
           _isPressed = false;
         });
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant DefaultButton oldWidget) {
+    if (oldWidget.isPressed != widget.isPressed && widget.isPressed != null) {
+      setState(() {
+        _isPressed = widget.isPressed!;
+      });
+
+      if (widget.isPressed == true) _startAnimation();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -115,12 +131,23 @@ class _DefaultButtonState extends State<DefaultButton>
             child: Center(
               child: _isPressed
                   ? Container()
-                  : Text(
-                      widget.text!,
-                      style: TextStyle(
-                        fontSize: getProportionateScreenWidth(18),
-                        color: Colors.white,
-                      ),
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.text!,
+                          style: defaultButtonTextStyle,
+                        ),
+                        if (widget.element != null) ...[
+                          Text(
+                            " ",
+                            style: defaultButtonTextStyle,
+                          ),
+                          widget.element!,
+                        ],
+                      ],
                     ),
             ),
           ),

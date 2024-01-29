@@ -75,6 +75,7 @@ dynamic payByType(PaymentMethods type, BuildContext context, int index,
 
   final result = await payMethod();
   GlobalManager().setPaymentsAfterCheckout(index);
+  //TODO After payment iclude set correct selected payment
 
   return result;
 }

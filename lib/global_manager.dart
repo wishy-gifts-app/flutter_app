@@ -1,4 +1,5 @@
 import 'package:Wishy/models/UserDetails.dart';
+import 'package:Wishy/models/UserPaymentMethod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:Wishy/models/UserLocationData.dart';
@@ -101,9 +102,34 @@ class GlobalManager with ChangeNotifier {
   void setNotificationToken(String? value) => notificationToken = value;
   void setNavigateToRequest(bool value) => navigateToRequest = value;
   void setPaymentSession(String? value) => paymentSession = value;
-  void setPaymentId(String? value) => paymentId = value;
+  void setPaymentId(String? value) {
+    paymentId = value;
+    notifyListeners();
+  }
+
   void setUser(UserDetails? value) {
     user = value;
+    notifyListeners();
+  }
+
+  void insertPaymentCard(UserPaymentMethod value) {
+    if (user == null) throw Exception("User not defined");
+
+    user!.paymentMethods = [value, ...user!.paymentMethods];
+    notifyListeners();
+  }
+
+  void setPaymentsAfterCheckout(int? index) {
+    if (user == null || user!.paymentMethods.length == 0) return;
+
+    if ((index != null && index > 0 && index < user!.paymentMethods.length)) {
+      UserPaymentMethod item = user!.paymentMethods.removeAt(index);
+      user!.paymentMethods.insert(0, item);
+    }
+
+    user!.paymentMethods =
+        user!.paymentMethods.where((card) => card.saved).toList();
+
     notifyListeners();
   }
 }

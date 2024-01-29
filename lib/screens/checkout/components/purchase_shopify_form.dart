@@ -296,8 +296,9 @@ class _PurchaseFormState extends State<PurchaseForm> {
                               });
                           showDialog<int>(
                             context: context,
-                            builder: (context) =>
-                                Dialog.fullscreen(child: LocationDialogForm()),
+                            builder: (context) => Dialog.fullscreen(
+                                child: LocationDialogForm(
+                                    afterAddressAdded: () => {})),
                           ).then((result) {
                             if (result != null) {
                               setState(() {

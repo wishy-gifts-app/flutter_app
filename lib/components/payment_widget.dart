@@ -3,36 +3,35 @@ import 'package:Wishy/components/credit_card.dart';
 import 'package:Wishy/components/credit_card_dialog.dart';
 import 'package:Wishy/components/stripe_powered.dart';
 import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/UserPaymentMethod.dart';
+import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/stripe_payment.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as Stripe;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
-enum PaymentTypes {
-  card,
-  google_pay,
-  cash_app,
-}
-
-Widget getPayButtonSuffixByType(PaymentTypes type,
-    {Stripe.PaymentMethod? cardDetails}) {
+Widget getPayButtonSuffixByType(
+    PaymentMethods type, UserPaymentMethod? cardDetails) {
   Widget? customWidget;
   switch (type) {
-    case PaymentTypes.google_pay:
+    case PaymentMethods.google_pay:
       customWidget = SvgPicture.asset(
         'assets/icons/google-icon.svg',
         height: 25,
       );
       break;
-    case PaymentTypes.cash_app:
+    case PaymentMethods.cash_app:
       customWidget = SvgPicture.asset(
         'assets/icons/cash-app-badge.svg',
         height: 25,
       );
       break;
-    case PaymentTypes.card:
+    case PaymentMethods.card:
       customWidget = CreditCardWidget(
-        digits: cardDetails!.card.last4!,
+        digits: cardDetails!.lastDigits!,
         size: CreditCardSize.small,
       );
       break;
@@ -53,10 +52,38 @@ Widget getPayButtonSuffixByType(PaymentTypes type,
   ]);
 }
 
-class PaymentWidget extends StatefulWidget {
+dynamic payByType(PaymentMethods type, BuildContext context, int index,
+    UserPaymentMethod cardDetails, String? clientSecret, int? amount) async {
+  final stripePaymentHandler = StripePaymentHandler();
+  Function payMethod;
+  switch (type) {
+    case PaymentMethods.google_pay:
+      payMethod = () => stripePaymentHandler.createGooglePayment(
+          clientSecret!, amount!, context);
+      break;
+    case PaymentMethods.cash_app:
+      payMethod = () =>
+          stripePaymentHandler.createCashAppPayment(clientSecret!, context);
+      break;
+    case PaymentMethods.card:
+      payMethod = () => StripePaymentHandler()
+          .confirmCard(clientSecret!, cardDetails, context);
+      break;
+    default:
+      payMethod = () => print("Method for type: $type doesn't exists");
+  }
+
+  final result = await payMethod();
+  GlobalManager().setPaymentsAfterCheckout(index);
+
+  return result;
+}
+
+class PaymentWidget extends StatelessWidget {
   final String? clientSecret;
   final double? totalPrice;
   final int? amount;
+  final int selectedIndex;
   final bool buyNow;
   final Stripe.ShippingDetails? shippingDetails;
   final Function onPaymentSelected;
@@ -66,59 +93,69 @@ class PaymentWidget extends StatefulWidget {
       this.totalPrice,
       this.amount,
       this.shippingDetails,
+      required this.selectedIndex,
       required this.onPaymentSelected,
       this.buyNow = false});
 
-  @override
-  _PaymentWidgetState createState() => _PaymentWidgetState();
-}
-
-class _PaymentWidgetState extends State<PaymentWidget> {
-  int? _selectedPayment = null;
   final stripePaymentHandler = StripePaymentHandler();
-  List<List<dynamic>> _paymentMethod = [
-    [PaymentTypes.google_pay],
-    [PaymentTypes.cash_app]
-  ];
 
-  Future<dynamic> _onSubmitCard(
-      BuildContext context, Stripe.CardFieldInputDetails card) async {
+  Future<dynamic> _onSubmitCard(BuildContext context,
+      Stripe.CardFieldInputDetails card, bool? saveCard) async {
     final result = await stripePaymentHandler.createCard(context);
     if (result != null) {
-      setState(() {
-        _paymentMethod.insert(0, [PaymentTypes.card, result]);
-        _selectedPayment = 0;
-      });
-      widget.onPaymentSelected(
-          () => stripePaymentHandler.confirmCard(widget.clientSecret!,
-              _paymentMethod[0][1], widget.shippingDetails!, context),
-          getPayButtonSuffixByType(PaymentTypes.card,
-              cardDetails: _paymentMethod[0][1]));
-    }
-    if (widget.buyNow) {
-      // final result = await StripePaymentHandler()
-      //     .confirmCard(widget.clientSecret!, widget.shippingDetails!, context);
+      UserPaymentMethod paymentCard;
+      if (saveCard == true) {
+        try {
+          final temp = await graphQLQueryHandler(
+              "saveUserPaymentCard", {"payment_id": result.id});
 
-      // return result;
+          paymentCard = new UserPaymentMethod.fromJson(temp);
+          GlobalManager().insertPaymentCard(paymentCard);
+        } catch (error) {
+          print(error);
+          FirebaseCrashlytics.instance.recordError(
+              Exception("Save Card error: " + (error.toString())),
+              StackTrace.current);
+
+          paymentCard = new UserPaymentMethod(
+              id: null,
+              paymentId: result.id,
+              lastDigits: result.card.last4!,
+              lastUpdatedAt: new DateTime.now(),
+              userId: GlobalManager().userId!,
+              method: PaymentMethods.card,
+              saved: false);
+          GlobalManager().insertPaymentCard(paymentCard);
+        }
+      } else {
+        paymentCard = new UserPaymentMethod(
+            id: null,
+            paymentId: result.id,
+            lastDigits: result.card.last4!,
+            lastUpdatedAt: new DateTime.now(),
+            userId: GlobalManager().userId!,
+            method: PaymentMethods.card,
+            saved: false);
+        GlobalManager().insertPaymentCard(paymentCard);
+      }
+
+      if (buyNow) {
+        final handler = payByType(
+            PaymentMethods.card, context, 0, paymentCard, clientSecret, amount);
+        if (handler != null) await handler!();
+      } else {
+        final handler = () => payByType(
+            PaymentMethods.card, context, 0, paymentCard, clientSecret, amount);
+        onPaymentSelected(handler,
+            getPayButtonSuffixByType(PaymentMethods.card, paymentCard), 0);
+      }
     }
   }
 
-  void Function() _walletWrapper(
-          Function payMethod, int index, PaymentTypes type) =>
-      () {
-        setState(() {
-          _selectedPayment = index;
-        });
-
-        widget.onPaymentSelected(payMethod, getPayButtonSuffixByType(type));
-
-        if (widget.buyNow) {
-          payMethod();
-        }
-      };
-
   @override
   Widget build(BuildContext context) {
+    final globalManger = Provider.of<GlobalManager>(context);
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Choose your preferred payment method",
@@ -126,7 +163,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         style: TextStyle(fontSize: 12),
       ),
       Container(
-          height: 90,
+          height: 85,
           padding: EdgeInsets.only(top: 5),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -136,12 +173,12 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 _buildAddCard(context),
                 // _buildPaypalCard(),
                 // if (Platform.isIOS) _buildApplePayCard(),
-                ..._paymentMethod.asMap().entries.map((entry) {
+                ...(globalManger.user?.paymentMethods ?? [])
+                    .asMap()
+                    .entries
+                    .map((entry) {
                   return getPayCardByType(
-                      entry.value[0] as PaymentTypes, context, entry.key,
-                      cardDetails: entry.value.length > 1
-                          ? (entry.value[1] as Stripe.PaymentMethod)
-                          : null);
+                      entry.value.method, context, entry.key, entry.value);
                 }).toList()
               ],
             ),
@@ -159,7 +196,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         child: Container(
             padding: EdgeInsets.zero,
             margin: EdgeInsets.only(top: 4, right: 8, bottom: 4),
-            decoration: _selectedPayment != null && index == _selectedPayment
+            decoration: index == selectedIndex
                 ? BoxDecoration(
                     border: Border.all(color: Colors.black),
                     borderRadius: BorderRadius.circular(13))
@@ -175,76 +212,72 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 ))));
   }
 
-  Widget _buildGooglePayCard(BuildContext context, int index) {
+  Widget _buildGooglePayCard(
+      BuildContext context, int index, UserPaymentMethod details) {
     return _buildCard(
         SvgPicture.asset(
           'assets/icons/google-pay-logo.svg',
           height: 20,
         ),
-        _walletWrapper(
-            () => stripePaymentHandler.createGooglePayment(widget.clientSecret!,
-                widget.amount!, widget.shippingDetails!, context),
-            index,
-            PaymentTypes.google_pay),
+        () => onPaymentSelected(
+            () => payByType(PaymentMethods.google_pay, context, index, details,
+                this.clientSecret, this.amount),
+            getPayButtonSuffixByType(PaymentMethods.google_pay, details),
+            index),
         index);
   }
 
   Widget _buildCreditCard(
-      BuildContext context, int index, Stripe.PaymentMethod cardDetails) {
+      BuildContext context, int index, UserPaymentMethod details) {
     return _buildCard(
         CreditCardWidget(
-          digits: cardDetails.card.last4!,
+          digits: details.lastDigits!,
           isBlack: true,
           size: CreditCardSize.small,
-        ), () {
-      setState(() {
-        _selectedPayment = index;
-      });
-      widget.onPaymentSelected(() {
-        stripePaymentHandler.confirmCard(widget.clientSecret!, cardDetails,
-            widget.shippingDetails!, context);
-      }, getPayButtonSuffixByType(PaymentTypes.card, cardDetails: cardDetails));
-    }, index);
+        ),
+        () => onPaymentSelected(
+            () => payByType(PaymentMethods.card, context, index, details,
+                this.clientSecret, this.amount),
+            getPayButtonSuffixByType(PaymentMethods.card, details),
+            index),
+        index);
   }
 
-  Widget _buildCashAppCard(BuildContext context, int index) {
+  Widget _buildCashAppCard(
+      BuildContext context, int index, UserPaymentMethod details) {
     return _buildCard(
         SvgPicture.asset(
           'assets/icons/cash-app-pay.svg',
           height: 45,
         ),
-        _walletWrapper(
-            () => stripePaymentHandler.createCashAppPayment(
-                widget.clientSecret!, widget.shippingDetails!, context),
-            index,
-            PaymentTypes.cash_app),
+        () => onPaymentSelected(
+            () => payByType(PaymentMethods.cash_app, context, index, details,
+                this.clientSecret, this.amount),
+            getPayButtonSuffixByType(PaymentMethods.cash_app, details),
+            index),
         index);
   }
 
   Widget _buildAddCard(BuildContext context) {
     return _buildCard(Icon(Icons.add_card, size: 40), () async {
-      setState(() {
-        _selectedPayment = null;
-      });
-      widget.onPaymentSelected(null, null);
       showCreditCardDialog(
         context,
-        (card) => _onSubmitCard(context, card),
-        widget.buyNow,
-        price: widget.totalPrice,
+        (card, saveCard) => _onSubmitCard(context, card, saveCard),
+        buyNow,
+        price: totalPrice,
       );
     }, null);
   }
 
-  Widget getPayCardByType(PaymentTypes type, BuildContext context, int index,
-      {Stripe.PaymentMethod? cardDetails}) {
+  Widget getPayCardByType(PaymentMethods type, BuildContext context, int index,
+      UserPaymentMethod details) {
     switch (type) {
-      case PaymentTypes.google_pay:
-        return _buildGooglePayCard(context, index);
-      case PaymentTypes.cash_app:
-        return _buildCashAppCard(context, index);
-      case PaymentTypes.card:
-        return _buildCreditCard(context, index, cardDetails!);
+      case PaymentMethods.google_pay:
+        return _buildGooglePayCard(context, index, details);
+      case PaymentMethods.cash_app:
+        return _buildCashAppCard(context, index, details);
+      case PaymentMethods.card:
+        return _buildCreditCard(context, index, details);
 
       default:
         return SizedBox.shrink();

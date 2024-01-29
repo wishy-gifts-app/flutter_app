@@ -4,11 +4,9 @@ import 'package:Wishy/components/custom_dialog.dart';
 import 'package:Wishy/components/location_dialog_form.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
-import 'package:Wishy/models/UserDetails.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/models/Address.dart';
-import 'package:Wishy/services/graphql_service.dart';
 import 'package:provider/provider.dart';
 
 class AddressesWidget extends StatefulWidget {
@@ -46,9 +44,7 @@ class _AddressesWidgetState extends State<AddressesWidget> {
   Widget _buildAddAddressButton() {
     return Center(
         child: OutlinedButton(
-            onPressed: () => _showLocationDialog().then((v) {
-                  Navigator.of(context).pop();
-                }),
+            onPressed: () => _showLocationDialog(),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -88,8 +84,7 @@ class _AddressesWidgetState extends State<AddressesWidget> {
   }
 
   void _showAddressDialog(List<Address> addresses) {
-    CustomDialog()
-        .show(
+    CustomDialog().show(
       context,
       "Choose your address or add a new one",
       Container(
@@ -101,11 +96,12 @@ class _AddressesWidgetState extends State<AddressesWidget> {
                 AddressesListWidget(
                   height: 250,
                   addresses: addresses,
-                  selectedIndex: _selectedAddressIndex,
+                  selectedIndex: this._selectedAddressIndex,
                   onTap: (idx) {
                     setState(() {
                       _selectedAddressIndex = idx;
                     });
+
                     widget.onAddressSelected(addresses[idx]);
                     Navigator.of(context).pop();
                   },
@@ -115,12 +111,7 @@ class _AddressesWidgetState extends State<AddressesWidget> {
                 ),
                 _buildAddAddressButton()
               ])),
-    )
-        .then((result) {
-      setState(() {
-        _selectedAddressIndex = 0;
-      });
-    });
+    );
   }
 
   Future<dynamic> _showLocationDialog() {
@@ -128,6 +119,12 @@ class _AddressesWidgetState extends State<AddressesWidget> {
         context: context,
         builder: (context) => Dialog.fullscreen(
                 child: LocationDialogForm(
+              afterAddressAdded: (address) {
+                setState(() {
+                  _selectedAddressIndex = 0;
+                });
+                widget.onAddressSelected(address);
+              },
               defaultUser: widget.defaultUser,
             )));
   }

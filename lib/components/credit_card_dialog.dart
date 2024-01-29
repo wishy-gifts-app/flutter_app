@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
 void showCreditCardDialog(BuildContext context, Function onSubmit, bool buyNow,
-    {double? price}) async {
+    {double? price, bool disable = false}) async {
   CustomDialog().show(
     context,
     "Add your card details",
     CreditCardDialogContent(
+      disable: disable,
       onSubmit: onSubmit,
       price: price,
       buyNow: buyNow,
@@ -23,11 +24,13 @@ class CreditCardDialogContent extends StatefulWidget {
   final Function onSubmit;
   final bool buyNow;
   final double? price;
+  final bool disable;
 
   CreditCardDialogContent({
     this.buyNow = false,
     this.price,
     required this.onSubmit,
+    this.disable = false,
   });
 
   @override
@@ -55,7 +58,7 @@ class _CreditCardDialogContentsState extends State<CreditCardDialogContent> {
   }
 
   void _onSubmit() async {
-    await widget.onSubmit(_controller.details);
+    await widget.onSubmit(_controller.details, _saveCard);
     Navigator.of(context).pop();
   }
 
@@ -109,7 +112,7 @@ class _CreditCardDialogContentsState extends State<CreditCardDialogContent> {
               DefaultButton(
                 text: "Add Card",
                 press: _onSubmit,
-                enable: _controller.details.complete == true,
+                enable: _controller.details.complete == true && !widget.disable,
               )
           ]),
     ));

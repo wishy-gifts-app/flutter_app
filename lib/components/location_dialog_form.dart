@@ -26,10 +26,12 @@ AddressComponent? getSpecificComponent(PlacesDetailsResponse detail, key) {
 
 class LocationDialogForm extends StatefulWidget {
   final Follower? defaultUser;
+  final Function afterAddressAdded;
 
   LocationDialogForm({
     Key? key,
     this.defaultUser,
+    required this.afterAddressAdded,
   }) : super(key: key);
 
   @override
@@ -103,12 +105,13 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           "name": _name,
           "allow_share": _allowShareAddress,
         });
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Your address has been successfully added')),
         );
 
         GlobalManager().setUser(UserDetails.fromJson(result));
+        widget.afterAddressAdded(GlobalManager().user!.addresses![0]);
+
         Navigator.of(context).pop(result["id"]);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(

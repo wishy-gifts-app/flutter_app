@@ -374,6 +374,14 @@ const Map<String, String> graphqlQueries = {
         name
         phone_number
         email
+        payment_methods {
+          id
+          user_id
+          method
+          last_digits
+          payment_id
+          last_updated_at
+        }
         addresses {
           id
           country
@@ -439,7 +447,11 @@ const Map<String, String> graphqlQueries = {
       saveUserCard(user_id: \$user_id, card_id: \$card_id, type: \$type,
       displayed_at: \$displayed_at, session: \$session, 
       trigger_by_server: \$trigger_by_server, custom_trigger_id:\$custom_trigger_id) {
-        id
+          id
+          user_id
+          last_digits
+          payment_id
+          last_updated_at
       }
     }
 """,
@@ -710,7 +722,7 @@ const Map<String, String> graphqlQueries = {
     }
   """,
   'setCheckout': """
-    query setCheckout(
+    mutation setCheckout(
       \$product_id: Int!, \$address_id: Int!, \$price: Float!, \$variant_id: Int!, 
       \$quantity: Int!, \$payment_session: String!, \$cursor: String, \$payment_id: String  
     ) {
@@ -726,6 +738,13 @@ const Map<String, String> graphqlQueries = {
           payment_id
           total_price
           pay_amount
+        }
+    }
+  """,
+  'saveUserPaymentCard': """
+    mutation saveUserPaymentCard(\$payment_id: String!) {
+      saveUserPaymentCard(payment_id: \$payment_id) {
+          id
         }
     }
   """,

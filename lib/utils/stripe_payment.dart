@@ -1,4 +1,6 @@
 import 'package:Wishy/constants.dart';
+import 'package:Wishy/models/UserPaymentMethod.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
@@ -45,13 +47,23 @@ class StripePaymentHandler {
       return result;
     } on Exception catch (e) {
       if (e is StripeException) {
+        FirebaseCrashlytics.instance.recordError(
+            Exception("Stripe error: " + (e.error.localizedMessage ?? "")),
+            StackTrace.current);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+              duration: Duration(milliseconds: 1000),
               content: Text('Error to proceed: ${e.error.localizedMessage}')),
         );
       } else {
+        FirebaseCrashlytics.instance.recordError(
+            Exception("Stripe error: " + (e.toString())), StackTrace.current);
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unforeseen error: ${e}')),
+          SnackBar(
+              duration: Duration(milliseconds: 1000),
+              content: Text('Unforeseen error: ${e}')),
         );
       }
     }
@@ -65,18 +77,15 @@ class StripePaymentHandler {
         context, () => Stripe.instance.presentPaymentSheet());
   }
 
-  Future<PaymentIntent?> confirmCard(
-      String clientSecret,
-      PaymentMethod cardDetail,
-      ShippingDetails shippingDetails,
-      BuildContext context) async {
+  Future<PaymentIntent?> confirmCard(String clientSecret,
+      UserPaymentMethod cardDetail, BuildContext context) async {
     return paymentWrapper(
         context,
         () => Stripe.instance.confirmPayment(
               paymentIntentClientSecret: clientSecret,
               data: PaymentMethodParams.cardFromMethodId(
                 paymentMethodData: PaymentMethodDataCardFromMethod(
-                  paymentMethodId: cardDetail.id,
+                  paymentMethodId: cardDetail.paymentId!,
                 ),
               ),
             ));
@@ -86,13 +95,14 @@ class StripePaymentHandler {
       stripeExceptionWrapper(
           context,
           () => Stripe.instance.createPaymentMethod(
-                params: PaymentMethodParams.card(
-                  paymentMethodData: PaymentMethodData(),
-                ),
-              ));
+              params: PaymentMethodParams.card(
+                paymentMethodData: PaymentMethodData(),
+              ),
+              options: PaymentMethodOptions(
+                  setupFutureUsage: PaymentIntentsFutureUsage.OnSession)));
 
-  Future<PlatformPayPaymentMethod?> createGooglePayment(String clientSecret,
-      int amount, ShippingDetails shippingDetails, BuildContext context) async {
+  Future<PlatformPayPaymentMethod?> createGooglePayment(
+      String clientSecret, int amount, BuildContext context) async {
     return paymentWrapper(
         context,
         () => Stripe.instance.createPlatformPayPaymentMethod(
@@ -102,15 +112,14 @@ class StripePaymentHandler {
                 ),
                 googlePayParams: GooglePayParams(
                     currencyCode: marketDetails["currency"]!,
-                    merchantCountryCode:
-                        shippingDetails.address.country ?? "US",
+                    merchantCountryCode: "US",
                     allowCreditCards: true,
                     testEnv: true,
                     merchantName: "Wishy"))));
   }
 
-  Future<PaymentIntent?> createCashAppPayment(String clientSecret,
-      ShippingDetails shippingDetails, BuildContext context) async {
+  Future<PaymentIntent?> createCashAppPayment(
+      String clientSecret, BuildContext context) async {
     return paymentWrapper(
         context,
         () => Stripe.instance.confirmPayment(

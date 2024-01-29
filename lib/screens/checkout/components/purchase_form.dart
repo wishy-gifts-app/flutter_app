@@ -7,16 +7,13 @@ import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/components/address_widget.dart';
 import 'package:Wishy/screens/checkout/components/total_price.dart';
-import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/utils/generate_variant_description.dart';
-import 'package:Wishy/utils/stripe_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Address.dart' as Wishy;
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'dart:async';
-import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -52,13 +49,14 @@ class _PurchaseFormState extends State<PurchaseForm> {
   final String _paymentSession = Uuid().v1();
   Function? _paymentMethod = null;
   Widget? _payButtonElement = null;
+  int _selectedPaymentIndex = 0;
 
   Future<void> onSubmit() async {
     if (_paymentMethod != null && _selectedAddress != null && _checkout != null)
       await _paymentMethod!();
   }
 
-  Future<void> _fetchDeliveryTime() async {
+  Future<void> _setCheckout() async {
     if (_selectedAddress == null) return;
 
     final addressId = _selectedAddress!.id;
@@ -87,15 +85,18 @@ class _PurchaseFormState extends State<PurchaseForm> {
     if (mounted) {
       setState(() {
         _selectedAddress = address;
+        _checkout = null;
       });
 
-      _fetchDeliveryTime();
+      _setCheckout();
     }
   }
 
-  void _onPaymentSelected(Function? payHandler, Widget? suffixElement) {
+  void _onPaymentSelected(
+      Function? payHandler, Widget? suffixElement, int index) {
     if (mounted) {
       setState(() {
+        _selectedPaymentIndex = index;
         _paymentMethod = payHandler;
         _payButtonElement = suffixElement;
       });
@@ -113,7 +114,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
         phoneNumber: GlobalManager().user?.phoneNumber ?? "",
         id: GlobalManager().userId);
 
-    if (GlobalManager().user!.addresses != null &&
+    if (GlobalManager().user?.addresses != null &&
         GlobalManager().user!.addresses!.length > 0)
       _onAddressSelected(GlobalManager().user!.addresses![0]);
 
@@ -123,9 +124,24 @@ class _PurchaseFormState extends State<PurchaseForm> {
   @override
   Widget build(BuildContext context) {
     final globalManger = Provider.of<GlobalManager>(context);
-
     if (globalManger.user == null)
       return Center(child: CircularProgressIndicator());
+
+    if (_paymentMethod == null && _checkout != null)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _onPaymentSelected(
+            () => payByType(
+                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
+                context,
+                _selectedPaymentIndex,
+                globalManger.user!.paymentMethods[_selectedPaymentIndex],
+                _checkout?.clientSecret,
+                _checkout?.payAmount),
+            getPayButtonSuffixByType(
+                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
+                globalManger.user!.paymentMethods[_selectedPaymentIndex]),
+            _selectedPaymentIndex);
+      });
 
     final variantDescription = generateVariantDescription(variant);
 
@@ -172,6 +188,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                           totalPrice: _checkout?.totalPrice,
                           amount: _checkout?.payAmount,
                           onPaymentSelected: _onPaymentSelected,
+                          selectedIndex: _selectedPaymentIndex,
                           shippingDetails: ShippingDetails(
                               name: _selectedAddress?.name,
                               address: Address(

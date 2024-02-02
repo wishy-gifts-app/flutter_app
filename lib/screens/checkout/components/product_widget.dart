@@ -10,7 +10,9 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String image = product.images
-        .firstWhere((element) => element.variantId == variant.id,
+        .firstWhere(
+            (element) =>
+                variant.imageId != null && element.id == variant.imageId,
             orElse: () => product.images[0])
         .url;
 
@@ -22,26 +24,6 @@ class ProductWidget extends StatelessWidget {
             height: 120,
             fit: BoxFit.cover,
           ),
-          // SizedBox(
-          //   height: getProportionateScreenHeight(5),
-          // ),
-          // Text(
-          //   product.title,
-          //   style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-          //   textAlign: TextAlign.center,
-          //   maxLines: 4,
-          // ),
-          // if (variantDescription != "") ...[
-          //   SizedBox(
-          //     height: getProportionateScreenHeight(2),
-          //   ),
-          //   Text(
-          //     variantDescription,
-          //     style: TextStyle(fontSize: 12),
-          //     textAlign: TextAlign.center,
-          //     maxLines: 4,
-          //   )
-          // ]
         ]));
   }
 }

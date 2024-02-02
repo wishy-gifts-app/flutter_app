@@ -9,41 +9,93 @@ import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/size_config.dart';
 import '../../../components/top_rounded_container.dart';
 
-Variant getSelectedVariant(
-    List<Variant> productVariants, Map<String, dynamic> variantsObject) {
+Variant? getSelectedVariant(
+    List<Variant> productVariants, List<Attribute> selectedAttributes) {
   for (Variant variant in productVariants) {
-    bool matches = true;
-    for (String key in variantsObject.keys) {
-      if (variant.get(key) != variantsObject[key]) {
-        matches = false;
-        break;
-      }
-    }
-    if (matches) {
+    if (isAllAttributesExists(selectedAttributes, variant.attributes)) {
       return variant;
     }
   }
-  return productVariants[0];
+
+  return null;
 }
 
-Map<String, dynamic> getVariantsById(int variantId, List<Variant> variants) {
+Map<String, dynamic>? getAttributesMapById(
+    int variantId, List<Variant> variants) {
   final variant = variants.firstWhere((item) => item.id == variantId);
+
+  if (variant.attributes == null) return null;
+
   final Map<String, dynamic> variantMap = {};
 
-  if (variant.size != null) {
-    variantMap["size"] = variant.size;
-  }
-  if (variant.color != null) {
-    variantMap["color"] = variant.color;
-  }
-  if (variant.material != null) {
-    variantMap["material"] = variant.material;
-  }
-  if (variant.style != null) {
-    variantMap["style"] = variant.style;
-  }
+  variant.attributes!.forEach((item) => variantMap[item.name] = item.value);
 
   return variantMap;
+}
+
+bool isAllAttributesExists(
+    List<Attribute> newAttributes, List<Attribute>? variantAttributes) {
+  if (variantAttributes == null) return false;
+
+  return newAttributes.every((newAttribute) {
+    return newAttribute.isExistIn(variantAttributes);
+  });
+}
+
+// Map<String, List<Attribute>> getAvailableAttributesByName(
+//     List<Attribute> attributes, List<Variant> variants) {
+//   List<Map<String, Attribute>> variantAttributesMaps = variants.map((variant) {
+//     return Map.fromIterable(variant.attributes ?? [],
+//         key: (attr) => attr.name as String, value: (attr) => attr as Attribute);
+//   }).toList();
+
+//   Map<String, Set<Attribute>> availableAttributesByName = {};
+
+//   for (var attribute in attributes) {
+//     Set<Attribute> availableAttributes = {};
+
+//     for (var variantAttributesMap in variantAttributesMaps) {
+//       if (variantAttributesMap.containsKey(attribute.name)) {
+//         availableAttributes.add(variantAttributesMap[attribute.name]!);
+//       }
+//     }
+
+//     availableAttributesByName[attribute.name] = availableAttributes;
+//   }
+
+//   return availableAttributesByName
+//       .map((key, value) => MapEntry(key, value.toList()));
+// }
+
+Map<String, List<Attribute>> getAvailableAttributesByName(
+    List<Attribute> selectedAttributes, List<Variant> variants) {
+  Map<String, List<Attribute>> availableAttributesByName = {};
+
+  selectedAttributes.forEach((attribute) {
+    availableAttributesByName[attribute.name] = [];
+  });
+
+  for (String attributeName in availableAttributesByName.keys) {
+    Map<String, Attribute> uniqueAttributes = {};
+    List<Attribute> otherSelectedAttributes = [];
+
+    selectedAttributes.forEach((v) {
+      if (v.name != attributeName) otherSelectedAttributes.add(v);
+    });
+
+    for (Variant variant in variants) {
+      if (isAllAttributesExists(otherSelectedAttributes, variant.attributes)) {
+        final attribute = variant.attributes!
+            .firstWhere((element) => element.name == attributeName);
+        uniqueAttributes[attribute.value] = attribute;
+      }
+    }
+
+    availableAttributesByName[attributeName] =
+        uniqueAttributes.values.map((v) => v).toList();
+  }
+
+  return availableAttributesByName;
 }
 
 class VariantsWidget extends StatefulWidget {
@@ -52,7 +104,7 @@ class VariantsWidget extends StatefulWidget {
   final int? variantId, recipientId;
   final String? productTitle, cursor;
   final bool withBuyButton;
-  final Function(String type, String value)? onVariantChange;
+  final Function(Variant? type)? onVariantChange;
 
   const VariantsWidget({
     Key? key,
@@ -72,20 +124,39 @@ class VariantsWidget extends StatefulWidget {
 }
 
 class _VariantsWidgetState extends State<VariantsWidget> {
-  Map<String, dynamic> variants = {};
+  List<Attribute> currentAttributes = [];
   final firstColor = Colors.white;
   final secondColor = Color(0xFFF6F7F9);
-  late Variant selectedVariant;
+  Variant? selectedVariant;
+  Map<String, List<Attribute>> availableVariantsByName = {};
+  Map<String, dynamic>? chosenVariant;
 
-  void _onVariantChange(String type, String value) {
-    if (widget.onVariantChange != null) widget.onVariantChange!(type, value);
-
+  void _onVariantChange(Attribute newAttribute) {
+    final oldVariant = selectedVariant;
     setState(() {
-      variants[type] = value;
+      currentAttributes.removeWhere((attr) => attr.name == newAttribute.name);
+      currentAttributes.add(newAttribute);
     });
 
     setState(() {
-      selectedVariant = getSelectedVariant(widget.product.variants!, variants);
+      selectedVariant =
+          getSelectedVariant(widget.product.variants!, currentAttributes);
+    });
+
+    if (widget.onVariantChange != null)
+      widget.onVariantChange!(selectedVariant);
+
+    _handleVariantSelection(currentAttributes, oldVariant);
+  }
+
+  void _handleVariantSelection(List<Attribute> values, Variant? v) {
+    if (v != null &&
+        availableVariantsByName.isNotEmpty &&
+        isAllAttributesExists(values, v.attributes!)) return;
+
+    setState(() {
+      availableVariantsByName =
+          getAvailableAttributesByName(values, widget.product.variants!);
     });
   }
 
@@ -112,7 +183,17 @@ class _VariantsWidgetState extends State<VariantsWidget> {
 
   @override
   void initState() {
-    selectedVariant = widget.product.variants![0];
+    chosenVariant = widget.variantId != null
+        ? getAttributesMapById(widget.variantId!, widget.product.variants!)
+        : null;
+
+    selectedVariant = widget.variantId != null
+        ? widget.product.variants!
+            .firstWhere((element) => element.id == widget.variantId!)
+        : widget.product.variants![0];
+    currentAttributes =
+        selectedVariant!.attributes!.map((attribute) => attribute).toList();
+    _handleVariantSelection(currentAttributes, null);
     super.initState();
   }
 
@@ -120,9 +201,6 @@ class _VariantsWidgetState extends State<VariantsWidget> {
   Widget build(BuildContext context) {
     final variantsWithChildren =
         getVariantsDataWithChildren(widget.product.variants!);
-    final Map<String, dynamic>? chosenVariant = widget.variantId != null
-        ? getVariantsById(widget.variantId!, widget.product.variants!)
-        : null;
 
     return (buildVariantsSectionWithButton(
         variantsWithChildren!, secondColor, context, chosenVariant));
@@ -140,7 +218,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
         ),
         child: DefaultButton(
           text:
-              "${widget.buttonText} ${marketDetails["symbol"]}${this.selectedVariant.price}",
+              "${widget.buttonText} ${marketDetails["symbol"]}${(this.selectedVariant ?? widget.product.variants![0]).price}",
           eventName: analyticEvents["CHECKOUT_PRESSED"]!,
           eventData: {
             "Product Id": widget.product.id,
@@ -150,6 +228,7 @@ class _VariantsWidgetState extends State<VariantsWidget> {
             "Variants Exist": true,
             "Delivery Availability": GlobalManager().isDeliveryAvailable
           },
+          enable: selectedVariant != null,
           press: () => _onBuyPressed(context),
         ),
       ),
@@ -172,7 +251,8 @@ class _VariantsWidgetState extends State<VariantsWidget> {
             _onVariantChange,
             chosenVariantMap != null
                 ? chosenVariantMap[variantsWithChildren["type"]]
-                : null),
+                : null,
+            availableVariantsByName[variantsWithChildren["type"]]),
         if (variantsWithChildren["child"] != null)
           buildVariantsSectionWithButton(variantsWithChildren["child"],
               nextColor, context, chosenVariantMap)

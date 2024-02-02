@@ -7,7 +7,6 @@ import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/components/address_widget.dart';
 import 'package:Wishy/screens/checkout/components/total_price.dart';
-import 'package:Wishy/utils/generate_variant_description.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Address.dart' as Wishy;
@@ -127,7 +126,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
     if (globalManger.user == null)
       return Center(child: CircularProgressIndicator());
 
-    if (_paymentMethod == null && _checkout != null)
+    if (_paymentMethod == null)
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _onPaymentSelected(
             () => payByType(
@@ -142,8 +141,6 @@ class _PurchaseFormState extends State<PurchaseForm> {
                 globalManger.user!.paymentMethods[_selectedPaymentIndex]),
             _selectedPaymentIndex);
       });
-
-    final variantDescription = generateVariantDescription(variant);
 
     return Center(
         child: Form(
@@ -210,7 +207,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                                   _selectedAddress != null && _checkout != null,
                               variant: variant,
                               productTitle: widget.product.title,
-                              variantDescription: variantDescription,
+                              variantDescription: variant.title,
                               deliveryPrice: _checkout?.deliveryPrice,
                               saleTax: _checkout?.saleTax,
                             ),

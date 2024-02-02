@@ -46,7 +46,6 @@ void main() async {
   await AnalyticsService.init({"User Id": GlobalManager().userId});
   await FlutterBranchSdk.init(
       useTestKey: false, enableLogging: true, disableTracking: false);
-  FlutterBranchSdk.validateSDKIntegration();
 
   runApp(
     ChangeNotifierProvider(

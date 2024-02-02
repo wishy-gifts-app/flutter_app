@@ -1,4 +1,3 @@
-import 'package:Wishy/components/variants/variants_form.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/models/Product.dart';
@@ -7,26 +6,6 @@ import 'package:Wishy/size_config.dart';
 void showVariantsModal(
     BuildContext context, Product product, int? recipientId, String situation,
     {String? cursor}) {
-  final variantsObjects = groupVariants(product.variants!);
-  List<dynamic> nonNullValue =
-      variantsObjects.values.where((value) => value != null).toList();
-  int totalLength = 1;
-  variantsObjects.forEach((key, value) {
-    if (value != null) {
-      int lengthSum = value.fold<int>(
-          0, (int sum, dynamic item) => sum + item.length as int);
-
-      if (key == 'color') {
-        totalLength += lengthSum;
-      } else {
-        totalLength += key.length + lengthSum;
-      }
-    }
-  });
-  final modalHeight = (totalLength * 0.005 + nonNullValue.length * 0.2 > 0.5)
-      ? totalLength * 0.006 + nonNullValue.length * 0.176
-      : 0.5;
-
   showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -37,28 +16,26 @@ void showVariantsModal(
         ),
       ),
       builder: (BuildContext context) {
-        return FractionallySizedBox(
-            heightFactor: modalHeight,
+        return SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Container(
-                    padding:
-                        EdgeInsets.only(top: getProportionateScreenWidth(20)),
-                    child: Text(
-                      'Select Your Preferred Variant',
-                      style: TextStyle(
-                        fontSize: getProportionateScreenWidth(18),
-                      ),
-                    )),
-                VariantsWidget(
-                  product: product,
-                  recipientId: recipientId,
-                  situation: situation,
-                  cursor: cursor,
-                )
-              ],
-            ));
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+                padding: EdgeInsets.only(top: getProportionateScreenWidth(20)),
+                child: Text(
+                  'Select Your Preferred Variant',
+                  style: TextStyle(
+                    fontSize: getProportionateScreenWidth(18),
+                  ),
+                )),
+            VariantsWidget(
+              product: product,
+              recipientId: recipientId,
+              situation: situation,
+              cursor: cursor,
+            )
+          ],
+        ));
       });
 }

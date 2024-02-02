@@ -104,7 +104,7 @@ class GraphQLPaginationService {
         : await runGraphQLQueryWithPagination(startId);
 
     if (infiniteScroll && this.cursor == null && result.length == 0) {
-      result = await runGraphQLQueryWithPagination(startId);
+      result = await runGraphQLQueryWithPagination(0);
     }
 
     if (!infiniteScroll && this.cursor == null) {

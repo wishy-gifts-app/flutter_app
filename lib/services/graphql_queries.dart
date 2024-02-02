@@ -57,15 +57,11 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
-            size
-            color
-            color_name
-            material
-            style
+            attributes
+            image_id
           }
           images {
             id
-            variant_id
             url
             alt
           }
@@ -108,15 +104,11 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
-            size
-            color
-            color_name
-            material
-            style
+            attributes
+            image_id
           }
           images {
             id
-            variant_id
             url
             alt
           }
@@ -159,15 +151,11 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
-            size
-            color
-            color_name
-            material
-            style
+            attributes
+            image_id
           }
           images {
             id
-            variant_id
             url
             alt
           }
@@ -220,15 +208,11 @@ const Map<String, String> graphqlQueries = {
               weight
               price
               inventory_quantity
-              size
-              color
-              color_name
-              material
-              style
+              attributes
+              image_id
             }
             images {
               id
-              variant_id
               url
               alt
             }
@@ -448,10 +432,6 @@ const Map<String, String> graphqlQueries = {
       displayed_at: \$displayed_at, session: \$session, 
       trigger_by_server: \$trigger_by_server, custom_trigger_id:\$custom_trigger_id) {
           id
-          user_id
-          last_digits
-          payment_id
-          last_updated_at
       }
     }
 """,
@@ -506,15 +486,11 @@ const Map<String, String> graphqlQueries = {
               weight
               price
               inventory_quantity
-              size
-              color
-              color_name
-              material
-              style
+              attributes
+              image_id
             }
             images {
               id
-              variant_id
               url
               alt
             }

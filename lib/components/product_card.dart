@@ -196,38 +196,41 @@ class _ProductCardState extends State<ProductCard> {
                       right: 0,
                       child: Align(
                         alignment: Alignment.topCenter,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: widget.product.images.map((image) {
-                            final index = widget.product.images.indexOf(image);
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _currentImageIndex = index;
-                                });
-                              },
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _currentImageIndex == index
-                                        ? kPrimaryColor
-                                        : Colors.grey,
-                                    width: 2,
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: widget.product.images.map((image) {
+                                final index =
+                                    widget.product.images.indexOf(image);
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _currentImageIndex = index;
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: _currentImageIndex == index
+                                            ? kPrimaryColor
+                                            : Colors.grey,
+                                        width: 2,
+                                      ),
+                                      color: _currentImageIndex == index
+                                          ? kPrimaryColor
+                                          : Colors.transparent,
+                                    ),
                                   ),
-                                  color: _currentImageIndex == index
-                                      ? kPrimaryColor
-                                      : Colors.transparent,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                                );
+                              }).toList(),
+                            )),
                       )),
                 Align(
                     alignment: widget.isFullScreen

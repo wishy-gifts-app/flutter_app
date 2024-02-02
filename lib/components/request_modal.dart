@@ -19,7 +19,6 @@ class RequestData {
   String? name;
   String? phone;
   String? reason;
-  Variant? selectedVariant;
 }
 
 class VariantsAndRequestModal extends StatefulWidget {
@@ -41,10 +40,10 @@ class VariantsAndRequestModal extends StatefulWidget {
 class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
-  Map<String, dynamic> variants = {};
   RequestData requestData = RequestData();
   Completer<bool>? _phoneValidationCompleter;
   final TextEditingController _controller = TextEditingController();
+  Variant? _selectedVariant;
 
   void _onUserSelected(int? userId, bool? isActiveUser) {
     requestData.userId = userId;
@@ -61,14 +60,9 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
       _phoneValidationCompleter!.complete(true);
   }
 
-  void _onVariantChosen() {
-    requestData.selectedVariant =
-        getSelectedVariant(widget.product.variants!, variants);
-  }
-
-  void _onVariantChange(String type, String value) {
+  void _onVariantChange(Variant? variant) {
     setState(() {
-      variants[type] = value;
+      _selectedVariant = variant;
     });
   }
 
@@ -80,15 +74,14 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
         _phoneValidationCompleter = Completer<bool>();
         await _phoneValidationCompleter!.future;
       }
-      _onVariantChosen();
 
-      if (requestData.selectedVariant != null && requestData.phone != null) {
+      if (_selectedVariant != null && requestData.phone != null) {
         requestData.reason = _controller.text;
 
         try {
           await graphQLQueryHandler("requestProduct", {
             "product_id": widget.product.id,
-            "variant_id": requestData.selectedVariant!.id,
+            "variant_id": _selectedVariant!.id,
             "phone_number": requestData.phone,
             "reason": requestData.reason,
             "name": requestData.name,
@@ -101,7 +94,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                 analyticEvents["REQUEST_VARIANT_PICKED"]!,
                 properties: {
                   "Product Id": widget.product.id,
-                  "Variant Id": requestData.selectedVariant!.id,
+                  "Variant Id": _selectedVariant!.id,
                   "Reason": requestData.reason,
                   "Name": requestData.name,
                   "Recipient Id": requestData.userId,
@@ -110,7 +103,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
           AnalyticsService.trackEvent(analyticEvents["PRODUCT_REQUESTED"]!,
               properties: {
                 "Product Id": widget.product.id,
-                "Variant Id": requestData.selectedVariant!.id,
+                "Variant Id": _selectedVariant!.id,
                 "Reason": requestData.reason,
                 "Name": requestData.name,
                 "Recipient Id": requestData.userId,

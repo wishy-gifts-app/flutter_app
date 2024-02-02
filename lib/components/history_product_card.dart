@@ -1,4 +1,3 @@
-import 'package:Wishy/utils/generate_variant_description.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
@@ -24,7 +23,6 @@ class HistoryProductCard extends StatelessWidget {
     final variant = product.variants?.firstWhere(
       (element) => element.id == variantId,
     );
-    final variantString = generateVariantDescription(variant);
 
     return Container(
         decoration: BoxDecoration(
@@ -60,7 +58,10 @@ class HistoryProductCard extends StatelessWidget {
               if (product.images.isNotEmpty)
                 Image.network(
                   product.images
-                      .firstWhere((element) => element.variantId == variantId,
+                      .firstWhere(
+                          (element) =>
+                              variant?.imageId != null &&
+                              element.id == variant?.imageId,
                           orElse: () => product.images[0])
                       .url,
                   fit: BoxFit.contain,
@@ -87,7 +88,7 @@ class HistoryProductCard extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 2),
                   child: RoundedBackgroundText(
-                    variantString,
+                    variant?.title ?? "",
                     backgroundColor: Colors.white.withOpacity(0.8),
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 11),

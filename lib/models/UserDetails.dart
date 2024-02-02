@@ -21,9 +21,9 @@ class UserDetails {
   factory UserDetails.fromJson(Map<String, dynamic> json) {
     return UserDetails(
       id: convertValue<int>(json, 'id', true),
-      name: convertValue<String>(json, 'name', true),
-      phoneNumber: convertValue<String>(json, 'phone_number', true),
-      email: convertValue<String>(json, 'email', true),
+      name: convertValue<String?>(json, 'name', false),
+      phoneNumber: convertValue<String?>(json, 'phone_number', false),
+      email: convertValue<String?>(json, 'email', false),
       addresses: json["addresses"] != null
           ? (json["addresses"] as List<dynamic>)
               .map((item) => Address.fromJson(item))

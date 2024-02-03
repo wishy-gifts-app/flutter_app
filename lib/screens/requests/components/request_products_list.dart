@@ -96,8 +96,7 @@ class _RequestProductsState extends State<RequestProductsList> {
     }
 
     if (isVariantsExists(request.product.variants)) {
-      showVariantsModal(context, request.product.id, request.product.title,
-          request.product.variants!, null, situation);
+      showVariantsModal(context, request.product, null, situation);
     } else {
       AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
           properties: {

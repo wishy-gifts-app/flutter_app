@@ -66,13 +66,51 @@ class Product extends Identifiable {
   }
 }
 
+class Attribute {
+  final String name, value;
+  final String? additionalData;
+
+  Attribute({
+    required this.name,
+    required this.value,
+    this.additionalData,
+  });
+
+  factory Attribute.fromJson(Map<String, dynamic> json) {
+    return Attribute(
+      name: convertValue<String>(json, 'name', true),
+      value: convertValue<String>(json, 'value', true),
+      additionalData: convertValue<String?>(json, 'additional_data', false),
+    );
+  }
+
+  Attribute clone() {
+    return Attribute(
+      name: this.name,
+      value: this.value,
+      additionalData: this.additionalData,
+    );
+  }
+
+  bool isEqual(Attribute v) {
+    return this.name == v.name && this.value == v.value;
+  }
+
+  bool isExistIn(List<Attribute> list) {
+    return list.any((v) {
+      return isEqual(v);
+    });
+  }
+}
+
 class Variant {
   final int id;
   final String title;
-  final String? size, color, material, style, colorName;
+  final List<Attribute>? attributes;
   final double price;
   final double? weight;
   final int inventoryQuantity;
+  final int? imageId;
 
   Variant({
     required this.id,
@@ -80,11 +118,8 @@ class Variant {
     required this.weight,
     required this.price,
     required this.inventoryQuantity,
-    this.size,
-    this.style,
-    this.color,
-    this.material,
-    this.colorName,
+    required this.attributes,
+    this.imageId,
   });
 
   factory Variant.fromJson(Map<String, dynamic> json) {
@@ -93,11 +128,12 @@ class Variant {
       title: convertValue<String>(json, 'title', true),
       weight: convertValue<double?>(json, 'weight', false),
       price: convertValue<double>(json, 'price', true),
-      color: convertValue<String?>(json, 'color', false),
-      colorName: convertValue<String?>(json, 'color_name', false),
-      size: convertValue<String?>(json, 'size', false),
-      material: convertValue<String?>(json, 'material', false),
-      style: convertValue<String?>(json, 'style', false),
+      attributes: json["attributes"] != null
+          ? (json["attributes"] as List<dynamic>)
+              .map((item) => Attribute.fromJson(item))
+              .toList()
+          : null,
+      imageId: convertValue<int?>(json, 'image_id', false),
       inventoryQuantity: convertValue<int>(json, 'inventory_quantity', true),
     );
   }
@@ -108,11 +144,10 @@ class Variant {
       'title': title,
       'weight': weight,
       'price': price,
-      'color': color,
-      'size': size,
-      'material': material,
-      'style': style,
-      'inventoryQuantity': inventoryQuantity
+      'image_id': imageId,
+      'color': attributes,
+      'inventoryQuantity': inventoryQuantity,
+      'attributes': attributes
     };
   }
 
@@ -127,12 +162,10 @@ class Variant {
 
 class ProductImage {
   final int id;
-  final int? variantId;
   final String url, alt;
 
   ProductImage({
     required this.id,
-    this.variantId,
     required this.url,
     required this.alt,
   });
@@ -140,7 +173,6 @@ class ProductImage {
   factory ProductImage.fromJson(Map<String, dynamic> json) {
     return ProductImage(
       id: convertValue<int>(json, 'id', true),
-      variantId: convertValue<int?>(json, 'variantId', false),
       url: convertValue<String>(json, 'url', true),
       alt: convertValue<String>(json, 'alt', true),
     );

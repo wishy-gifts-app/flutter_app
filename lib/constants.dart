@@ -59,6 +59,10 @@ final headingStyle = TextStyle(
   color: Colors.black,
   height: 1.5,
 );
+final defaultButtonTextStyle = TextStyle(
+  fontSize: getProportionateScreenWidth(18),
+  color: Colors.white,
+);
 
 const defaultDuration = Duration(milliseconds: 250);
 
@@ -80,7 +84,7 @@ const marketDetails = {
   "symbol": "\$",
   "google_country": "us",
   "country": "USA",
-  "currency": "dollar",
+  "currency": "usd",
   "short": "USD"
 };
 const String privacyURL = "https://www.wishy.store/privacy";

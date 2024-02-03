@@ -28,13 +28,13 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     final Color inActiveIconColor = Color(0xFFB6B6B6);
 
     return IconButton(
-        icon: SvgPicture.asset(
-          iconPath,
-          height: height,
-          color: menuState == widget.selectedMenu
-              ? kPrimaryColor
-              : inActiveIconColor,
-        ),
+        icon: SvgPicture.asset(iconPath,
+            height: height,
+            colorFilter: ColorFilter.mode(
+                menuState == widget.selectedMenu
+                    ? kPrimaryColor
+                    : inActiveIconColor,
+                BlendMode.srcIn)),
         onPressed: () {
           AnalyticsService.trackEvent(
             analyticEvents["PAGE_OPENED"]!,

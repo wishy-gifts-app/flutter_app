@@ -1,4 +1,5 @@
 import 'package:Wishy/utils/notification.dart';
+import 'package:Wishy/utils/user_details.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -49,7 +50,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         GlobalManager().setShowUpAnimation(true);
         await GlobalManager().setParams(
             newProfileCompleted: true,
-            newUsername: fullName,
             newNotificationAvailable:
                 notificationParams["notification_available"]);
         AnalyticsService.trackEvent(
@@ -60,6 +60,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           "Name": fullName,
           "Notification Permission": _giveNotificationPermission
         });
+        setUserDetails();
+
         Navigator.pushNamed(context, LoginSuccessScreen.routeName);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(

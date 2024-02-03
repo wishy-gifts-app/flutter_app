@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:Wishy/utils/analytics.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -10,9 +9,17 @@ class ProductImages extends StatefulWidget {
   const ProductImages({
     Key? key,
     required this.product,
+    required this.onImageChange,
+    required this.selectedImage,
+    required this.scrollController,
+    required this.carouselController,
   }) : super(key: key);
 
   final Product product;
+  final int selectedImage;
+  final Function(int) onImageChange;
+  final ScrollController scrollController;
+  final CarouselController carouselController;
 
   @override
   _ProductImagesState createState() => _ProductImagesState();
@@ -20,28 +27,6 @@ class ProductImages extends StatefulWidget {
 
 class _ProductImagesState extends State<ProductImages> {
   final situation = "product_details";
-  CarouselController _carouselController = CarouselController();
-  ScrollController _scrollController = ScrollController();
-  int selectedImage = 0;
-
-  void _sendImageViewedEvent() {
-    AnalyticsService.trackEvent(analyticEvents["PRODUCT_IMAGE_VIEWED"]!,
-        properties: {
-          'Product Id': widget.product.id,
-          'Product Title': widget.product.title,
-          'Image Url': widget.product.images.isNotEmpty
-              ? widget.product.images[selectedImage].url
-              : null,
-          "Situation": situation
-        });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _sendImageViewedEvent();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,24 +39,14 @@ class _ProductImagesState extends State<ProductImages> {
             child: Hero(
               tag: widget.product.id.toString(),
               child: CarouselSlider(
-                carouselController: _carouselController,
+                carouselController: widget.carouselController,
                 options: CarouselOptions(
                   height: double.infinity,
                   viewportFraction: 1.0,
                   enableInfiniteScroll: true,
                   autoPlay: false,
                   onPageChanged: (index, reason) {
-                    setState(() {
-                      selectedImage = index;
-                    });
-                    double position =
-                        index * (getProportionateScreenWidth(48) + 15);
-                    _scrollController.animateTo(
-                      position,
-                      duration: defaultDuration,
-                      curve: Curves.easeInOut,
-                    );
-                    _sendImageViewedEvent();
+                    widget.onImageChange(index);
                   },
                 ),
                 items: widget.product.images.map((image) {
@@ -90,7 +65,7 @@ class _ProductImagesState extends State<ProductImages> {
         ),
         SizedBox(height: getProportionateScreenWidth(20)),
         SingleChildScrollView(
-            controller: _scrollController,
+            controller: widget.scrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -106,13 +81,10 @@ class _ProductImagesState extends State<ProductImages> {
   GestureDetector buildSmallProductPreview(int index) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedImage = index;
-        });
-        _carouselController.jumpToPage(
+        widget.onImageChange(index);
+        widget.carouselController.jumpToPage(
           index,
         );
-        _sendImageViewedEvent();
       },
       child: AnimatedContainer(
         duration: defaultDuration,
@@ -124,7 +96,8 @@ class _ProductImagesState extends State<ProductImages> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-              color: kPrimaryColor.withOpacity(selectedImage == index ? 1 : 0)),
+              color: kPrimaryColor
+                  .withOpacity(widget.selectedImage == index ? 1 : 0)),
         ),
         child: Image.network(widget.product.images[index].url),
       ),

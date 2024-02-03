@@ -73,7 +73,6 @@ class _OtpFormState extends State<OtpForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: result.username,
         newProfileCompleted: result.profileCompleted,
         newNotificationAvailable: result.notificationAvailable,
         newSignedIn: true,

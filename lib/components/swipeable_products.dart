@@ -72,9 +72,9 @@ class SwipeableProducts extends StatefulWidget {
 class _SwipeableProductsState extends State<SwipeableProducts> {
   List<SwipeItem> _currentSwipeItems = <SwipeItem>[];
   MatchEngine? _currentMatchEngine;
+  UniqueKey _cardKey = UniqueKey();
   bool isStateEmpty = false;
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
-  bool _isFirstCard = true;
 
   @override
   void dispose() {
@@ -111,7 +111,6 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
 
   Future<void> _fetchItems() async {
     final results = await widget.nextPage();
-
     if (mounted) {
       if (results != null && results.length > 0) {
         setState(() {
@@ -119,6 +118,7 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
               results, onSwipeRight, onSwipeLeft, onSwipeUp, context);
           _currentMatchEngine = MatchEngine(swipeItems: _currentSwipeItems);
           isStateEmpty = false;
+          _cardKey = UniqueKey();
         });
       } else {
         setState(() {
@@ -155,23 +155,17 @@ class _SwipeableProductsState extends State<SwipeableProducts> {
           padding:
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: Container(
-              child: Stack(children: [
-            _buildSwipeCards(
+            child: _buildSwipeCards(
                 _currentMatchEngine!, _currentSwipeItems, _fetchItems),
-          ]))),
+          )),
     ]);
   }
 
   SwipeCards _buildSwipeCards(
       MatchEngine matchEngine, List<SwipeItem> swipeItems, Function refetch) {
     return SwipeCards(
-      onStackFinished: () {
-        setState(() {
-          _isFirstCard = !this._isFirstCard;
-        });
-
-        refetch();
-      },
+      key: _cardKey,
+      onStackFinished: refetch,
       matchEngine: matchEngine,
       itemBuilder: (BuildContext context, int index) {
         return widget.cardBuilder(context, swipeItems[index].content as Product,

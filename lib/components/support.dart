@@ -127,7 +127,7 @@ class _SupportWidgetState extends State<SupportWidget> {
           Animation<double> secondaryAnimation, Widget child) {
         return SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(-1, -1),
+            begin: const Offset(1, -1),
             end: Offset.zero,
           ).animate(animation),
           child: child,

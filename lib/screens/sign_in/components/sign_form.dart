@@ -4,6 +4,7 @@ import 'package:Wishy/components/privacy.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/utils/user_details.dart';
 import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
@@ -59,10 +60,10 @@ class _SignFormState extends State<SignForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: "",
         newSignedIn: false,
       );
       AnalyticsService.registerSuperProperties({"User Id": result.userId});
+      setUserDetails();
 
       if (mounted) {
         RouterUtils.routeToHomePage();
@@ -127,11 +128,11 @@ class _SignFormState extends State<SignForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: "",
         newSignedIn: true,
       );
 
       AnalyticsService.registerSuperProperties({"User Id": result.userId});
+      setUserDetails();
 
       if (mounted) {
         RouterUtils.routeToHomePage(skipProfileCompleted: true);

@@ -1,8 +1,9 @@
+import 'package:Wishy/components/address.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Address.dart';
 import 'package:flutter/material.dart';
 
-class AddressesWidget extends StatelessWidget {
+class AddressesListWidget extends StatelessWidget {
   final List<Address> addresses;
   final int? selectedIndex;
   final double? height;
@@ -10,7 +11,7 @@ class AddressesWidget extends StatelessWidget {
   final String emptyMessage;
   final bool isGift;
 
-  AddressesWidget({
+  AddressesListWidget({
     this.addresses = const [],
     this.selectedIndex,
     this.onTap,
@@ -33,23 +34,9 @@ class AddressesWidget extends StatelessWidget {
                   int idx = entry.key;
                   Address address = entry.value;
                   return ListTile(
-                      title: Text(
-                        address.streetAddress + " " + address.streetNumber,
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        (address.apartment != "" && address.apartment != null
-                                ? address.apartment! + ", "
-                                : "") +
-                            address.city +
-                            ", " +
-                            address.state +
-                            ", " +
-                            address.country,
-                        style: TextStyle(fontSize: 13),
-                      ),
-                      trailing: selectedIndex != null && idx == selectedIndex
+                      title: AddressTitle(address: address),
+                      subtitle: AddressSubtitle(address: address),
+                      trailing: idx == selectedIndex
                           ? Icon(Icons.check_circle, color: kPrimaryColor)
                           : null,
                       onTap: onTap != null ? () => onTap!(idx) : null);

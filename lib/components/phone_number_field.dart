@@ -57,50 +57,53 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
 
   @override
   Widget build(BuildContext context) {
-    return FadeHintTextField(
-        hintOptions: widget.hintOptions,
-        textField: TextFormField(
-          controller: widget.controller,
-          keyboardType: TextInputType.phone,
-          onSaved: (newValue) async {
-            final result = await isValidPhoneNumber(newValue);
-            if (mounted)
-              setState(() {
-                errorMessage = result;
-              });
+    final phoneInput = TextFormField(
+        controller: widget.controller,
+        keyboardType: TextInputType.phone,
+        onSaved: (newValue) async {
+          final result = await isValidPhoneNumber(newValue);
+          if (mounted)
+            setState(() {
+              errorMessage = result;
+            });
 
-            if (result == null) {
-              widget.onSaved(newValue!);
-            } else {
-              widget.onError(errorMessage ?? "");
-            }
-          },
-          onChanged: (value) {
-            phoneNumber = value;
-            if (value.isNotEmpty) {
-              setState(() {
-                this.errorMessage = null;
-              });
+          if (result == null) {
+            widget.onSaved(newValue!);
+          } else {
+            widget.onError(errorMessage ?? "");
+          }
+        },
+        onChanged: (value) {
+          phoneNumber = value;
+          if (value.isNotEmpty) {
+            setState(() {
+              this.errorMessage = null;
+            });
 
-              updateIfValid(value);
-            }
-          },
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            labelText: "Phone Number",
-            labelStyle:
-                TextStyle(backgroundColor: Colors.white, color: Colors.black),
-            helperStyle: TextStyle(backgroundColor: Colors.white, fontSize: 14),
-            // helperText: "Add manually instead",
-            // hintText: "e.g. +1123456789",
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            suffixIcon: widget.withIcon
-                ? CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg")
-                : null,
-            errorText: errorMessage,
-            errorStyle: TextStyle(backgroundColor: Colors.white, fontSize: 11),
-          ),
+            updateIfValid(value);
+          }
+        },
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          labelText: "Phone Number",
+          labelStyle:
+              TextStyle(backgroundColor: Colors.white, color: Colors.black),
+          helperStyle: TextStyle(backgroundColor: Colors.white, fontSize: 14),
+          // helperText: "Add manually instead",
+          hintText:
+              widget.hintOptions.length == 1 ? widget.hintOptions[0] : null,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          suffixIcon: widget.withIcon
+              ? CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg")
+              : null,
+          errorText: errorMessage,
+          errorStyle: TextStyle(backgroundColor: Colors.white, fontSize: 11),
         ));
+
+    return widget.hintOptions.length > 1
+        ? FadeHintTextField(
+            hintOptions: widget.hintOptions, textField: phoneInput)
+        : phoneInput;
   }
 }

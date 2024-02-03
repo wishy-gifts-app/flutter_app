@@ -2,17 +2,23 @@ import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/services/opt_services.dart';
 import 'package:Wishy/utils/notification.dart';
 import 'package:Wishy/utils/router_utils.dart';
+import 'package:Wishy/utils/user_details.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
-// import 'package:uni_links/uni_links.dart';
 
 Future<void> initUniLinks() async {
+  await FlutterBranchSdk.init(
+      useTestKey: false, enableLogging: true, disableTracking: false);
+
   FlutterBranchSdk.listSession().listen((data) {
     handleBranchDeepLink(data);
   }, onError: (error) {
     print('Branch SDK Error: $error');
-  });
+  }, cancelOnError: true);
+
+  GlobalManager().setShowAnimation(GlobalManager().token == null);
+  RouterUtils.routeToHomePage();
 }
 
 void handleBranchDeepLink(Map<dynamic, dynamic> data) {
@@ -33,10 +39,9 @@ void handleBranchDeepLink(Map<dynamic, dynamic> data) {
     }
 
     GlobalManager().setNotificationToken(navigationToken);
+    GlobalManager().setShowAnimation(GlobalManager().token == null);
+    RouterUtils.routeToHomePage();
   }
-
-  GlobalManager().setShowAnimation(GlobalManager().token == null);
-  RouterUtils.routeToHomePage();
 }
 
 class RootScreen extends StatefulWidget {
@@ -69,6 +74,7 @@ class _RootScreenState extends State<RootScreen> {
     _handleUserLocation();
     updateNotificationPermission();
 
+    if (GlobalManager().userId != null) setUserDetails();
     super.initState();
   }
 

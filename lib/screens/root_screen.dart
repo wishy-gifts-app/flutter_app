@@ -8,11 +8,17 @@ import 'package:Wishy/size_config.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 
 Future<void> initUniLinks() async {
+  await FlutterBranchSdk.init(
+      useTestKey: false, enableLogging: true, disableTracking: false);
+
   FlutterBranchSdk.listSession().listen((data) {
     handleBranchDeepLink(data);
   }, onError: (error) {
     print('Branch SDK Error: $error');
   }, cancelOnError: true);
+
+  GlobalManager().setShowAnimation(GlobalManager().token == null);
+  RouterUtils.routeToHomePage();
 }
 
 void handleBranchDeepLink(Map<dynamic, dynamic> data) {
@@ -33,10 +39,9 @@ void handleBranchDeepLink(Map<dynamic, dynamic> data) {
     }
 
     GlobalManager().setNotificationToken(navigationToken);
+    GlobalManager().setShowAnimation(GlobalManager().token == null);
+    RouterUtils.routeToHomePage();
   }
-
-  GlobalManager().setShowAnimation(GlobalManager().token == null);
-  RouterUtils.routeToHomePage();
 }
 
 class RootScreen extends StatefulWidget {

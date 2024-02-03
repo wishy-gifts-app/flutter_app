@@ -4,7 +4,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:Wishy/routes.dart';
 import 'package:Wishy/screens/root_screen.dart';
@@ -44,8 +43,6 @@ void main() async {
   Stripe.publishableKey = dotenv.get("STRIPE_KEY");
 
   await AnalyticsService.init({"User Id": GlobalManager().userId});
-  await FlutterBranchSdk.init(
-      useTestKey: false, enableLogging: true, disableTracking: false);
 
   runApp(
     ChangeNotifierProvider(

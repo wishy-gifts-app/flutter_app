@@ -1,6 +1,5 @@
 import 'package:Wishy/global_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class DeliveryAvailabilityIcon extends StatelessWidget {
   final double size;
@@ -13,7 +12,6 @@ class DeliveryAvailabilityIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isAvailable = GlobalManager().isDeliveryAvailable ?? true;
-    final String deliveryTime = "5-20d";
 
     if (!isAvailable) {
       return Container(

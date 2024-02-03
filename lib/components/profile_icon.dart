@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:Wishy/global_manager.dart';
 
 class ProfileIcon extends StatelessWidget {
   const ProfileIcon({

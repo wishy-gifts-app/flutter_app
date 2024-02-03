@@ -1,4 +1,5 @@
 import 'package:Wishy/components/phone_number_field.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
@@ -7,18 +8,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SearchContactWidget extends StatefulWidget {
-  final Function(int? userId, bool? isActiveUser) onUserSelected;
+  final Function(int? userId, bool? isActiveUser)? onUserSelected;
   final Function(String?) onNameChanged;
   final Function(String?) onPhoneChanged;
   final Follower? defaultUser;
   final bool withIcon;
+  final bool nameRequired;
+  final String nameHint;
+  final List<String> phoneHintOptions;
 
   SearchContactWidget({
-    required this.onUserSelected,
+    this.onUserSelected = null,
     required this.onNameChanged,
     required this.onPhoneChanged,
     this.defaultUser,
     this.withIcon = true,
+    this.nameRequired = false,
+    this.nameHint = "Search in contacts...",
+    this.phoneHintOptions = const [
+      "Add manually instead",
+      "E.g. +1 212-555-1234"
+    ],
   });
 
   @override
@@ -36,40 +46,46 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
     if (number != null)
       _afterPhoneAdded();
     else if (_selectedUserId != null) {
-      widget.onUserSelected(null, null);
       widget.onNameChanged(null);
       widget.onPhoneChanged(null);
 
       if (_nameUpdatedByUser) _nameController.text = "";
-      if (mounted)
-        setState(() {
-          _selectedUserId = null;
-        });
+
+      if (widget.onUserSelected != null) {
+        widget.onUserSelected!(null, null);
+
+        if (mounted)
+          setState(() {
+            _selectedUserId = null;
+          });
+      }
     } else {
       widget.onPhoneChanged(null);
     }
   }
 
   void _afterPhoneAdded() async {
-    final result = await graphQLQueryHandler(
-        "isPhoneExists", {"phone_number": _phoneController.text});
+    if (widget.onUserSelected != null) {
+      final result = await graphQLQueryHandler(
+          "isPhoneExists", {"phone_number": _phoneController.text});
 
-    if (mounted) {
-      setState(() {
-        _isActiveUser = result?["is_active_user"] == true;
-        _selectedUserId = result?["id"];
-      });
-    }
-
-    widget.onUserSelected(_selectedUserId, _isActiveUser);
-
-    if (result?["name"] != null && result?["name"] != "") {
-      _nameController.text = result["name"];
-
-      if (mounted)
+      if (mounted) {
         setState(() {
-          _nameUpdatedByUser = true;
+          _isActiveUser = result?["is_active_user"] == true;
+          _selectedUserId = result?["id"];
         });
+      }
+
+      widget.onUserSelected!(_selectedUserId, _isActiveUser);
+
+      if (result?["name"] != null && result?["name"] != "") {
+        _nameController.text = result["name"];
+
+        if (mounted)
+          setState(() {
+            _nameUpdatedByUser = true;
+          });
+      }
     }
 
     widget.onNameChanged(_nameController.text);
@@ -117,6 +133,12 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
 
   Widget _buildNameInput() {
     return TypeAheadFormField(
+      validator: (v) {
+        if (widget.nameRequired && (v == null || v == "")) {
+          return kUserNameNullError;
+        }
+        return null;
+      },
       hideOnEmpty: true,
       hideSuggestionsOnKeyboardHide: true,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -125,7 +147,7 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
       textFieldConfiguration: TextFieldConfiguration(
         controller: _nameController,
         decoration: InputDecoration(
-          hintText: "Search in contacts...",
+          hintText: widget.nameHint,
           labelStyle:
               TextStyle(backgroundColor: Colors.white, color: Colors.black),
           labelText: 'Name',
@@ -169,6 +191,7 @@ class _SearchContactWidgetState extends State<SearchContactWidget> {
   Widget _buildPhoneInput() {
     return PhoneNumberField(
       controller: _phoneController,
+      hintOptions: widget.phoneHintOptions,
       onSaved: _onPhoneChange,
       onError: (String error) => _onPhoneChange(null),
       withIcon: widget.withIcon,

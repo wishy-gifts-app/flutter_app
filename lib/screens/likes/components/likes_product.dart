@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/swipe_left_card.dart';
-import 'package:Wishy/components/swipeable_products.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/services/graphql_service.dart';

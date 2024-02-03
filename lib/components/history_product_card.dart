@@ -4,30 +4,6 @@ import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
-String generateVariantText(Variant? variant) {
-  List<String> parts = [];
-
-  if (variant != null) {
-    if (variant.color != null && variant.color != "") {
-      parts.add(variant.colorName ?? variant.color!);
-    }
-    if (variant.size != null && variant.size != "") {
-      parts.add(variant.size!);
-    }
-    if (variant.material != null && variant.material != "") {
-      parts.add(variant.material!);
-    }
-    if (variant.style != null && variant.style != "") {
-      parts.add(variant.style!);
-    }
-  }
-
-  String variantText =
-      parts.isNotEmpty ? "Specific type: ${parts.join(', ')}" : "";
-
-  return variantText;
-}
-
 class HistoryProductCard extends StatelessWidget {
   final Product product;
   final int variantId;
@@ -47,7 +23,6 @@ class HistoryProductCard extends StatelessWidget {
     final variant = product.variants?.firstWhere(
       (element) => element.id == variantId,
     );
-    final variantString = generateVariantText(variant);
 
     return Container(
         decoration: BoxDecoration(
@@ -83,7 +58,10 @@ class HistoryProductCard extends StatelessWidget {
               if (product.images.isNotEmpty)
                 Image.network(
                   product.images
-                      .firstWhere((element) => element.variantId == variantId,
+                      .firstWhere(
+                          (element) =>
+                              variant?.imageId != null &&
+                              element.id == variant?.imageId,
                           orElse: () => product.images[0])
                       .url,
                   fit: BoxFit.contain,
@@ -110,7 +88,7 @@ class HistoryProductCard extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 2),
                   child: RoundedBackgroundText(
-                    variantString,
+                    variant?.title ?? "",
                     backgroundColor: Colors.white.withOpacity(0.8),
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 11),

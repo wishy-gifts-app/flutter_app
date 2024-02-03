@@ -10,11 +10,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // This will close the app when back button is pressed instead of navigating to a previous screen.
+    return PopScope(
+      onPopInvoked: (v) async {
         await SystemNavigator.pop();
-        return true;
       },
       child: SafeArea(
         child: Scaffold(

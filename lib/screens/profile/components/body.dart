@@ -1,4 +1,3 @@
-import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/empty_state_widget.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';

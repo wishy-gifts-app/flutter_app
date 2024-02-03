@@ -1,12 +1,15 @@
+import 'package:Wishy/models/UserDetails.dart';
+import 'package:Wishy/models/UserPaymentMethod.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:Wishy/models/UserLocationData.dart';
 
-class GlobalManager {
+class GlobalManager with ChangeNotifier {
   static final GlobalManager _singleton = GlobalManager._internal();
 
   String? token = null;
   int? userId;
-  String? username;
+  UserDetails? user;
   bool signedIn = false;
   String? notificationToken = null;
   bool? isDeliveryAvailable;
@@ -23,6 +26,8 @@ class GlobalManager {
   int? connectUserId = null;
   String? firstFeedCursor = null;
   bool navigateToRequest = false;
+  String? paymentSession;
+  String? paymentId;
 
   factory GlobalManager() {
     return _singleton;
@@ -34,7 +39,6 @@ class GlobalManager {
     final storage = FlutterSecureStorage();
     token = await storage.read(key: 'token');
     userId = int.tryParse(await storage.read(key: 'user_id') ?? "");
-    username = await storage.read(key: 'username');
     String? signedInStr = await storage.read(key: 'signed_in');
     signedIn = signedInStr == 'true';
     String? completedProfileStr = await storage.read(key: 'profile_completed');
@@ -48,7 +52,6 @@ class GlobalManager {
 
   Future<void> setParams({
     String? newToken,
-    String? newUsername,
     int? newUserId,
     bool? newSignedIn,
     bool? newProfileCompleted,
@@ -64,11 +67,6 @@ class GlobalManager {
     if (newUserId != null) {
       userId = newUserId;
       await storage.write(key: 'user_id', value: newUserId.toString());
-    }
-
-    if (newUsername != null) {
-      username = newUsername;
-      await storage.write(key: 'username', value: newUsername);
     }
 
     if (newSignedIn != null) {
@@ -103,4 +101,35 @@ class GlobalManager {
   void setFirstFeedCursor(String? value) => firstFeedCursor = value;
   void setNotificationToken(String? value) => notificationToken = value;
   void setNavigateToRequest(bool value) => navigateToRequest = value;
+  void setPaymentSession(String? value) => paymentSession = value;
+  void setPaymentId(String? value) {
+    paymentId = value;
+    notifyListeners();
+  }
+
+  void setUser(UserDetails? value) {
+    user = value;
+    notifyListeners();
+  }
+
+  void insertPaymentCard(UserPaymentMethod value) {
+    if (user == null) throw Exception("User not defined");
+
+    user!.paymentMethods = [value, ...user!.paymentMethods];
+    notifyListeners();
+  }
+
+  void setPaymentsAfterCheckout(int? index) {
+    if (user == null || user!.paymentMethods.length == 0) return;
+
+    if ((index != null && index > 0 && index < user!.paymentMethods.length)) {
+      UserPaymentMethod item = user!.paymentMethods.removeAt(index);
+      user!.paymentMethods.insert(0, item);
+    }
+
+    user!.paymentMethods =
+        user!.paymentMethods.where((card) => card.saved).toList();
+
+    notifyListeners();
+  }
 }

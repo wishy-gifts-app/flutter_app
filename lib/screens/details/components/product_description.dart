@@ -43,7 +43,8 @@ class ProductDescription extends StatelessWidget {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   SvgPicture.asset(
                     "assets/icons/Heart Icon_2.svg",
-                    color: Colors.white,
+                    colorFilter:
+                        ColorFilter.mode(Colors.white, BlendMode.srcIn),
                     height: getProportionateScreenWidth(16),
                   ),
                   SizedBox(
@@ -91,7 +92,9 @@ class ProductDescription extends StatelessWidget {
               ),
               SvgPicture.asset(
                 "assets/icons/Heart Icon_2.svg",
-                color: product.isLike == true ? Colors.red : Color(0xFFDBDEE4),
+                colorFilter: ColorFilter.mode(
+                    product.isLike == true ? Colors.red : Color(0xFFDBDEE4),
+                    BlendMode.srcIn),
                 height: getProportionateScreenWidth(16),
               ),
             ]),

@@ -57,15 +57,11 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
-            size
-            color
-            color_name
-            material
-            style
+            attributes
+            image_id
           }
           images {
             id
-            variant_id
             url
             alt
           }
@@ -108,15 +104,11 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
-            size
-            color
-            color_name
-            material
-            style
+            attributes
+            image_id
           }
           images {
             id
-            variant_id
             url
             alt
           }
@@ -159,15 +151,11 @@ const Map<String, String> graphqlQueries = {
             weight
             price
             inventory_quantity
-            size
-            color
-            color_name
-            material
-            style
+            attributes
+            image_id
           }
           images {
             id
-            variant_id
             url
             alt
           }
@@ -220,15 +208,11 @@ const Map<String, String> graphqlQueries = {
               weight
               price
               inventory_quantity
-              size
-              color
-              color_name
-              material
-              style
+              attributes
+              image_id
             }
             images {
               id
-              variant_id
               url
               alt
             }
@@ -285,6 +269,7 @@ const Map<String, String> graphqlQueries = {
       \$name: String,
       \$phone_number: String,
       \$country: String!,
+      \$country_code: String!,
       \$state: String!,
       \$city: String!,
       \$street_address: String!,
@@ -294,25 +279,47 @@ const Map<String, String> graphqlQueries = {
       \$extra_details: String,
       \$allow_share: Boolean,
     ) {
-      saveUserAddress(user_id: \$user_id, country: \$country, state: \$state, city: \$city, zip_code: \$zip_code,
-      street_address: \$street_address, street_number: \$street_number, apartment: \$apartment, 
-      extra_details: \$extra_details, name: \$name, phone_number: \$phone_number, allow_share: \$allow_share ) {
+      saveUserAddress(user_id: \$user_id, country: \$country, country_code: \$country_code, 
+      state: \$state, city: \$city, zip_code: \$zip_code, street_address: \$street_address, 
+      street_number: \$street_number, apartment: \$apartment, extra_details: \$extra_details,
+       name: \$name, phone_number: \$phone_number, allow_share: \$allow_share ) {
         id
-        user_id
+        name
+        phone_number
+        email
+        addresses {
+          id
+          country
+          country_code
+          name
+          phone_number
+          state
+          city
+          zip_code
+          street_address
+          street_number
+          apartment
+          extra_details
+          allow_share
+          created_user_id
+        }
       }
     }
 """,
   'getUserAddresses': """
     query getUserAddresses(
       \$limit: Int!,
-      \$skip: Int
+      \$skip: Int,
       \$cursor: String,
-      \$user_id: Int!,
+      \$user_id: Int!
     ) {
       getUserAddresses(limit: \$limit,skip:\$skip, cursor: \$cursor, user_id: \$user_id) {
         results {
           id
           country
+          country_code
+          name
+          phone_number
           state
           city
           zip_code
@@ -339,6 +346,42 @@ const Map<String, String> graphqlQueries = {
         name
         phone_number
         email
+    }
+  }
+""",
+  'getUserDetailsById': """
+    query getUserDetailsById(
+      \$user_id: Int!
+    ) {
+      getUserDetailsById(user_id: \$user_id) {
+        id
+        name
+        phone_number
+        email
+        payment_methods {
+          id
+          user_id
+          method
+          last_digits
+          payment_id
+          last_updated_at
+        }
+        addresses {
+          id
+          country
+          country_code
+          name
+          phone_number
+          state
+          city
+          zip_code
+          street_address
+          street_number
+          apartment
+          extra_details
+          allow_share
+          created_user_id
+        }
     }
   }
 """,
@@ -375,21 +418,6 @@ const Map<String, String> graphqlQueries = {
     }
   }
 """,
-  'checkoutHandler': """
-    mutation checkoutHandler(
-      \$variant_id: Int!,
-      \$quantity: Int!,
-      \$address_id: Int!,
-      \$recipient_id: Int,
-      \$cursor: String,
-    ) {
-      checkoutHandler(variant_id: \$variant_id, quantity: \$quantity, address_id: \$address_id, 
-      recipient_id: \$recipient_id, cursor: \$cursor) {
-        payment_url
-        checkout_available
-      }
-    }
-""",
   'saveUserCard': """
     mutation saveUserCard(
       \$type: String!,
@@ -403,7 +431,7 @@ const Map<String, String> graphqlQueries = {
       saveUserCard(user_id: \$user_id, card_id: \$card_id, type: \$type,
       displayed_at: \$displayed_at, session: \$session, 
       trigger_by_server: \$trigger_by_server, custom_trigger_id:\$custom_trigger_id) {
-        id
+          id
       }
     }
 """,
@@ -458,15 +486,11 @@ const Map<String, String> graphqlQueries = {
               weight
               price
               inventory_quantity
-              size
-              color
-              color_name
-              material
-              style
+              attributes
+              image_id
             }
             images {
               id
-              variant_id
               url
               alt
             }
@@ -673,14 +697,30 @@ const Map<String, String> graphqlQueries = {
         }
     }
   """,
-  'getDeliveryTime': """
-    query getDeliveryTime(
-      \$product_id: Int!, \$address_id: Int!
+  'setCheckout': """
+    mutation setCheckout(
+      \$product_id: Int!, \$address_id: Int!, \$price: Float!, \$variant_id: Int!, 
+      \$quantity: Int!, \$payment_session: String!, \$cursor: String, \$payment_id: String  
     ) {
-      getDeliveryTime(
-        product_id: \$product_id, address_id: \$address_id
+      setCheckout(
+        product_id: \$product_id, address_id: \$address_id, price: \$price, variant_id: \$variant_id
+        quantity: \$quantity, cursor: \$cursor, payment_id: \$payment_id, payment_session: \$payment_session
       ) {
-          result
+          delivery_time
+          delivery_price
+          additional_highlights
+          sale_tax
+          client_secret
+          payment_id
+          total_price
+          pay_amount
+        }
+    }
+  """,
+  'saveUserPaymentCard': """
+    mutation saveUserPaymentCard(\$payment_id: String!) {
+      saveUserPaymentCard(payment_id: \$payment_id) {
+          id
         }
     }
   """,

@@ -64,7 +64,7 @@ TextTheme textTheme() {
     bodyLarge:
         TextStyle(color: kTextColor, fontSize: 15, fontWeight: FontWeight.w500),
     bodyMedium:
-        TextStyle(color: kTextColor, fontSize: 15, fontWeight: FontWeight.w500),
+        TextStyle(color: kTextColor, fontSize: 14, fontWeight: FontWeight.w500),
   );
 }
 
@@ -77,7 +77,7 @@ AppBarTheme appBarTheme() {
       statusBarIconBrightness: Brightness.light,
     ),
     iconTheme: IconThemeData(color: Colors.black),
-    titleTextStyle: TextStyle(color: Color(0xFF8B8B8B), fontSize: 18),
+    titleTextStyle: TextStyle(color: Colors.black, fontSize: 18),
     toolbarTextStyle: TextStyle(color: Colors.black),
   );
 }

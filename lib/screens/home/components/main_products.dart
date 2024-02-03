@@ -66,8 +66,9 @@ class _MainProductsState extends State<MainProducts> {
     super.initState();
     _initializePaginationService(GlobalManager().firstFeedCursor);
 
-    Future.delayed(
-        Duration(seconds: 6), () => _showAvailabilityDialogIfNeeded());
+    Future.delayed(Duration(seconds: 6), () {
+      if (mounted) _showAvailabilityDialogIfNeeded();
+    });
   }
 
   void _showAvailabilityDialogIfNeeded() {
@@ -81,8 +82,7 @@ class _MainProductsState extends State<MainProducts> {
   void _onSwipeUp(Product product) {
     _nextProduct();
 
-    showRequestModal(
-        context, product.id, product.title, product.variants ?? [], situation,
+    showRequestModal(context, product, situation,
         cursor: _paginationService.firstCursor);
   }
 

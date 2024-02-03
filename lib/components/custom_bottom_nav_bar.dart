@@ -1,7 +1,4 @@
-import 'package:Wishy/components/support.dart';
-import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/screens/requests/requests_screen.dart';
-import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,7 +6,6 @@ import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/screens/likes/likes_screen.dart';
 import 'package:Wishy/screens/matches/matches_screen.dart';
 import 'package:Wishy/screens/profile/profile_screen.dart';
-import 'dart:async';
 import '../constants.dart';
 import '../enums.dart';
 
@@ -32,13 +28,13 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     final Color inActiveIconColor = Color(0xFFB6B6B6);
 
     return IconButton(
-        icon: SvgPicture.asset(
-          iconPath,
-          height: height,
-          color: menuState == widget.selectedMenu
-              ? kPrimaryColor
-              : inActiveIconColor,
-        ),
+        icon: SvgPicture.asset(iconPath,
+            height: height,
+            colorFilter: ColorFilter.mode(
+                menuState == widget.selectedMenu
+                    ? kPrimaryColor
+                    : inActiveIconColor,
+                BlendMode.srcIn)),
         onPressed: () {
           AnalyticsService.trackEvent(
             analyticEvents["PAGE_OPENED"]!,

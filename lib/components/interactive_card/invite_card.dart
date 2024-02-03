@@ -50,11 +50,6 @@ class _InviteCardState extends State<InviteCard> {
         !_phoneValidationCompleter!.isCompleted) {
       _phoneValidationCompleter!.complete(true);
     }
-
-    if (phone != null && !_press) {
-      _send();
-    }
-    ;
   }
 
   void _handleUserSelected(int? userId, bool? isActiveUser) {
@@ -190,12 +185,11 @@ class _InviteCardState extends State<InviteCard> {
                 onUserSelected: _handleUserSelected,
                 defaultUser: widget.suggestUser,
                 withIcon: false),
-            SizedBox(height: getProportionateScreenHeight(20)),
-            if (GlobalManager().notificationAvailable == null)
+            if (GlobalManager().notificationAvailable == null) ...[
               CheckboxListTile(
                 title: RoundedBackgroundText(
                   "Invitation Watch: Get quick updates on friend’s gift choices",
-                  backgroundColor: Colors.white.withOpacity(0.6),
+                  backgroundColor: Colors.white.withOpacity(0.9),
                   style: TextStyle(fontSize: 12),
                 ),
                 value: _giveNotificationPermission,
@@ -206,6 +200,14 @@ class _InviteCardState extends State<InviteCard> {
                 },
                 controlAffinity: ListTileControlAffinity.leading,
               ),
+            ],
+            SizedBox(height: getProportionateScreenHeight(20)),
+            RoundedBackgroundText(
+              "Tap to send secret SMS invites to explore Wishy's wishlist!",
+              backgroundColor: Colors.white.withOpacity(0.9),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14),
+            ),
             SizedBox(height: getProportionateScreenHeight(5)),
             DefaultButton(
               press: _handleSendInvitation,

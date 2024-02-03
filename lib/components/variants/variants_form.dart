@@ -1,43 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:Wishy/components/variants/variant_picker.dart';
-import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/components/variants/color_dots.dart';
 
 Map<String, dynamic> groupVariants(List<Variant> variants) {
-  List<Map<String, dynamic>> colors = [];
-  List<String> styles = [];
-  List<String> materials = [];
-  List<String> sizes = [];
+  Map<String, List<Attribute>> groupedAttributes = {};
 
-  variants.forEach((element) {
-    if (element.color != null && element.color != "") {
-      if (!colors.contains(element.color))
-        colors.add({"color": element.color!, "color_name": element.colorName});
-    }
-    if (element.style != null &&
-        element.style != "" &&
-        !styles.contains(element.style!)) {
-      styles.add(element.style!);
-    }
-    if (element.material != null &&
-        element.material != "" &&
-        !materials.contains(element.material!)) {
-      materials.add(element.material!);
-    }
-    if (element.size != null &&
-        element.size != "" &&
-        !sizes.contains(element.size!)) {
-      sizes.add(element.size!);
-    }
+  variants.forEach((variant) {
+    if (variant.attributes == null) return;
+
+    variant.attributes?.forEach((attribute) {
+      if (groupedAttributes[attribute.name] == null) {
+        groupedAttributes[attribute.name] = [attribute];
+      } else if (!groupedAttributes[attribute.name]!
+          .any((attr) => attr.value == attribute.value))
+        groupedAttributes[attribute.name]!.add(attribute);
+    });
   });
 
-  return {
-    'color': colors.length == 0 ? null : colors,
-    'style': styles.length == 0 ? null : styles,
-    'material': materials.length == 0 ? null : materials,
-    'size': sizes.length == 0 ? null : sizes,
-  };
+  return groupedAttributes;
 }
 
 Map<String, dynamic> buildVariantWithChildren(
@@ -60,45 +40,34 @@ Map<String, dynamic>? getVariantsDataWithChildren(List<Variant> variants) {
   final groupedVariants = groupVariants(variants);
   Map<String, dynamic>? groupVariantsWithChildren;
 
-  variantOptions.forEach((element) {
-    if (groupedVariants[element] != null) {
-      final newVariant = {"type": element, "values": groupedVariants[element]};
+  groupedVariants.forEach((key, value) {
+    final newVariant = {"type": key, "values": value};
 
-      groupVariantsWithChildren =
-          buildVariantWithChildren(newVariant, groupVariantsWithChildren);
-    }
+    groupVariantsWithChildren =
+        buildVariantWithChildren(newVariant, groupVariantsWithChildren);
   });
 
   return groupVariantsWithChildren;
 }
 
-dynamic getVariantWidget = (String type, dynamic values,
-    Function(String, String) onVariantChange, String? chosenVariant) {
+dynamic getVariantWidget = (String type,
+    List<Attribute> attributes,
+    Function(Attribute) onVariantChange,
+    String? chosenVariant,
+    List<Attribute> availableValues) {
   switch (type) {
-    case "color":
+    case "Color":
       return ColorDots(
-          values: values,
-          onVariantChange: onVariantChange,
-          chosenVariant: chosenVariant);
-    case "size":
-      return VariantPicker(
-          type: type,
-          values: values,
-          onVariantChange: onVariantChange,
-          chosenVariant: chosenVariant);
-    case "style":
-      return VariantPicker(
-          type: type,
-          values: values,
-          onVariantChange: onVariantChange,
-          chosenVariant: chosenVariant);
-    case "material":
-      return VariantPicker(
-          type: type,
-          values: values,
+          availableValues: availableValues,
+          attributes: attributes,
           onVariantChange: onVariantChange,
           chosenVariant: chosenVariant);
     default:
-      return Container();
+      return VariantPicker(
+          type: type,
+          availableValues: availableValues,
+          attributes: attributes,
+          onVariantChange: onVariantChange,
+          chosenVariant: chosenVariant);
   }
 };

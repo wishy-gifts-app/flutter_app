@@ -96,8 +96,7 @@ class _RequestProductsState extends State<RequestProductsList> {
     }
 
     if (isVariantsExists(request.product.variants)) {
-      showVariantsModal(context, request.product.id, request.product.title,
-          request.product.variants!, null, situation);
+      showVariantsModal(context, request.product, null, situation);
     } else {
       AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
           properties: {
@@ -172,9 +171,9 @@ class _RequestProductsState extends State<RequestProductsList> {
                       horizontal: getProportionateScreenWidth(30)),
                   child: CircularProgressIndicator()))
           : EmptyStateWidget(
-              title: "Whisper Your Wishes",
+              title: "Begin Your Gifting Adventure!",
               body:
-                  "Eager for that special something? Swipe up to hint, and let us send a whisper.",
+                  "Add your desired items and choose a friend to receive a hint. Let's turn your gift dreams into reality!",
               CTA: "Browse More Wishes",
               routeName: HomeScreen.routeName);
     }

@@ -1,16 +1,17 @@
 import 'dart:async';
-
 import 'package:Wishy/components/phone_number_field.dart';
 import 'package:Wishy/components/privacy.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
-import 'package:Wishy/utils/analytics.dart';
+import 'package:Wishy/utils/user_details.dart';
 import 'package:Wishy/utils/router_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:Wishy/services/opt_services.dart';
 import 'package:flutter/gestures.dart';
+import 'package:Wishy/utils/analytics.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -59,9 +60,10 @@ class _SignFormState extends State<SignForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: "",
         newSignedIn: false,
       );
+      AnalyticsService.registerSuperProperties({"User Id": result.userId});
+      setUserDetails();
 
       if (mounted) {
         RouterUtils.routeToHomePage();
@@ -126,9 +128,11 @@ class _SignFormState extends State<SignForm> {
       await GlobalManager().setParams(
         newToken: result.token,
         newUserId: result.userId,
-        newUsername: "",
         newSignedIn: true,
       );
+
+      AnalyticsService.registerSuperProperties({"User Id": result.userId});
+      setUserDetails();
 
       if (mounted) {
         RouterUtils.routeToHomePage(skipProfileCompleted: true);
@@ -141,6 +145,20 @@ class _SignFormState extends State<SignForm> {
                 "Sorry, we're unable to access the products page. Please retry shortly.")),
       );
     }
+  }
+
+  @override
+  void initState() {
+    if (GlobalManager().signedIn) {
+      Navigator.pushNamed(
+        context,
+        GlobalManager().profileCompleted == true
+            ? HomeScreen.routeName
+            : CompleteProfileScreen.routeName,
+      );
+    }
+
+    super.initState();
   }
 
   @override
@@ -261,7 +279,15 @@ class _SignFormState extends State<SignForm> {
                 onSaved: _onPhoneChanged,
                 onError: (String error) => _onPhoneChanged(null),
               ),
-              SizedBox(height: getProportionateScreenHeight(90)),
+              SizedBox(height: getProportionateScreenHeight(5)),
+              Text(
+                "An OTP code will be sent via SMS to verify your phone number.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12),
+              ),
+              SizedBox(
+                  height: getProportionateScreenHeight(
+                      GlobalManager().token == null ? 55 : 70)),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -284,9 +310,9 @@ class _SignFormState extends State<SignForm> {
                           );
                         },
                       style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.blue),
                     ),
                   ],
                 ),

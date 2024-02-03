@@ -1,5 +1,5 @@
+import 'package:Wishy/models/Product.dart';
 import 'package:flutter/material.dart';
-import 'package:string_to_color/string_to_color.dart';
 
 import '../../constants.dart';
 import '../../size_config.dart';
@@ -14,14 +14,16 @@ Color getColorFromHex(String hexString) {
 class ColorDots extends StatefulWidget {
   const ColorDots({
     Key? key,
-    required this.values,
+    required this.attributes,
     required this.onVariantChange,
+    required this.availableValues,
     this.chosenVariant,
   }) : super(key: key);
 
-  final List<Map<String, dynamic>> values;
+  final List<Attribute> attributes;
   final String? chosenVariant;
-  final Function(String, String) onVariantChange;
+  final List<Attribute> availableValues;
+  final Function(Attribute) onVariantChange;
 
   @override
   _ColorDotsState createState() => _ColorDotsState();
@@ -41,14 +43,14 @@ class _ColorDotsState extends State<ColorDots> {
       selectedColor = index;
     });
 
-    widget.onVariantChange("color", widget.values[index]["color"]);
+    widget.onVariantChange(widget.attributes[index]);
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.chosenVariant != null)
-      selectedColor =
-          widget.values.indexWhere((item) => item == widget.chosenVariant);
+      selectedColor = widget.attributes
+          .indexWhere((item) => item.value == widget.chosenVariant);
 
     return Padding(
       padding:
@@ -59,7 +61,7 @@ class _ColorDotsState extends State<ColorDots> {
           Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Colors:",
+                "Color:",
               )),
           SizedBox(height: getProportionateScreenWidth(10)),
           Align(
@@ -67,16 +69,19 @@ class _ColorDotsState extends State<ColorDots> {
               child: Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: List.generate(widget.values.length, (index) {
+                  children: List.generate(widget.attributes.length, (index) {
                     return Tooltip(
-                      message: widget.values[index]["color_name"] ?? "",
+                      message: widget.attributes[index].value,
                       onTriggered: widget.chosenVariant == null
                           ? () => handleChange(index)
                           : null,
                       triggerMode: TooltipTriggerMode.tap,
                       showDuration: const Duration(seconds: 1),
                       child: ColorDot(
-                        color: getColorFromHex(widget.values[index]["color"]),
+                        enable: widget.attributes[index]
+                            .isExistIn(widget.availableValues),
+                        color: getColorFromHex(
+                            widget.attributes[index].additionalData!),
                         isSelected: index == selectedColor,
                       ),
                     );
@@ -92,30 +97,74 @@ class ColorDot extends StatelessWidget {
     Key? key,
     required this.color,
     this.isSelected = false,
+    required this.enable,
   }) : super(key: key);
 
   final Color color;
   final bool isSelected;
+  final bool enable;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 2),
-      padding: EdgeInsets.all(getProportionateScreenWidth(8)),
-      height: getProportionateScreenWidth(40),
-      width: getProportionateScreenWidth(40),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        border:
-            Border.all(color: isSelected ? kPrimaryColor : Colors.transparent),
-        shape: BoxShape.circle,
-      ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
-      ),
-    );
+    return Padding(
+        padding: EdgeInsets.only(right: 2),
+        child: Stack(
+            alignment: Alignment.center,
+            fit: StackFit.passthrough,
+            children: [
+              Container(
+                padding: EdgeInsets.all(getProportionateScreenWidth(5)),
+                height: getProportionateScreenWidth(40),
+                width: getProportionateScreenWidth(40),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                      color: isSelected ? kPrimaryColor : Colors.transparent),
+                  shape: BoxShape.circle,
+                ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 6,
+                        spreadRadius: 3,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                    color: !enable ? color.withOpacity(0.4) : color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              if (!enable)
+                Icon(
+                  Icons.close_rounded,
+                  size: 38,
+                  color: kSecondaryColor,
+                ),
+            ]));
   }
+}
+
+class SlashPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final slashPaint = Paint()
+      ..color = kSecondaryColor
+      ..strokeWidth = 4;
+
+    final borderPaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 5;
+
+    final startPoint = Offset(0, 0);
+    final endPoint = Offset(size.width, size.height);
+
+    canvas.drawLine(startPoint, endPoint, borderPaint);
+    canvas.drawLine(startPoint, endPoint, slashPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

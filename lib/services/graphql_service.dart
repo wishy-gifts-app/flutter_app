@@ -104,14 +104,12 @@ class GraphQLPaginationService {
         : await runGraphQLQueryWithPagination(startId);
 
     if (infiniteScroll && this.cursor == null && result.length == 0) {
-      this.variables["skip"] = 0;
-      result = await runGraphQLQueryWithPagination(startId);
+      result = await runGraphQLQueryWithPagination(0);
     }
 
     if (!infiniteScroll && this.cursor == null) {
       this._hasNextPage = false;
     } else if (this.cashNextPage) {
-      this.variables["skip"] = cursor == null ? 0 : result.length;
       this._nextPagePromise = runGraphQLQueryWithPagination(null);
     }
 

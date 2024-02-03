@@ -1,7 +1,7 @@
+import 'package:Wishy/components/animated_hint_text_field.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/components/search_contact.dart';
-import 'package:Wishy/components/search_user.dart';
 import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
@@ -19,19 +19,15 @@ class RequestData {
   String? name;
   String? phone;
   String? reason;
-  Variant? selectedVariant;
 }
 
 class VariantsAndRequestModal extends StatefulWidget {
-  final int productId;
-  final String situation, productTitle;
+  final Product product;
+  final String situation;
   final String? cursor;
-  final List<Variant> variants;
 
   VariantsAndRequestModal({
-    required this.productId,
-    required this.productTitle,
-    required this.variants,
+    required this.product,
     required this.situation,
     this.cursor,
   });
@@ -44,9 +40,10 @@ class VariantsAndRequestModal extends StatefulWidget {
 class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
-  Map<String, dynamic> variants = {};
   RequestData requestData = RequestData();
   Completer<bool>? _phoneValidationCompleter;
+  final TextEditingController _controller = TextEditingController();
+  Variant? _selectedVariant;
 
   void _onUserSelected(int? userId, bool? isActiveUser) {
     requestData.userId = userId;
@@ -63,17 +60,9 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
       _phoneValidationCompleter!.complete(true);
   }
 
-  void _onReasonChanged(String? reason) {
-    requestData.reason = reason;
-  }
-
-  void _onVariantChosen() {
-    requestData.selectedVariant = getSelectedVariant(widget.variants, variants);
-  }
-
-  void _onVariantChange(String type, String value) {
+  void _onVariantChange(Variant? variant) {
     setState(() {
-      variants[type] = value;
+      _selectedVariant = variant;
     });
   }
 
@@ -85,13 +74,14 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
         _phoneValidationCompleter = Completer<bool>();
         await _phoneValidationCompleter!.future;
       }
-      _onVariantChosen();
 
-      if (requestData.selectedVariant != null && requestData.phone != null) {
+      if (_selectedVariant != null && requestData.phone != null) {
+        requestData.reason = _controller.text;
+
         try {
           await graphQLQueryHandler("requestProduct", {
-            "product_id": widget.productId,
-            "variant_id": requestData.selectedVariant!.id,
+            "product_id": widget.product.id,
+            "variant_id": _selectedVariant!.id,
             "phone_number": requestData.phone,
             "reason": requestData.reason,
             "name": requestData.name,
@@ -99,23 +89,25 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             "cursor": widget.cursor
           });
 
-          AnalyticsService.trackEvent(analyticEvents["REQUEST_VARIANT_PICKED"]!,
-              properties: {
-                "Product Id": widget.productId,
-                "Variant Id": requestData.selectedVariant!.id,
-                "Reason": requestData.reason,
-                "Name": requestData.name,
-                "Recipient Id": requestData.userId,
-              });
+          if (isVariantsExists(widget.product.variants))
+            AnalyticsService.trackEvent(
+                analyticEvents["REQUEST_VARIANT_PICKED"]!,
+                properties: {
+                  "Product Id": widget.product.id,
+                  "Variant Id": _selectedVariant!.id,
+                  "Reason": requestData.reason,
+                  "Name": requestData.name,
+                  "Recipient Id": requestData.userId,
+                });
 
           AnalyticsService.trackEvent(analyticEvents["PRODUCT_REQUESTED"]!,
               properties: {
-                "Product Id": widget.productId,
-                "Variant Id": requestData.selectedVariant!.id,
+                "Product Id": widget.product.id,
+                "Variant Id": _selectedVariant!.id,
                 "Reason": requestData.reason,
                 "Name": requestData.name,
                 "Recipient Id": requestData.userId,
-                "Variants Exist": isVariantsExists(widget.variants)
+                "Variants Exist": isVariantsExists(widget.product.variants)
               });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -134,8 +126,9 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.variants.length > 1) {
-      return Column(mainAxisSize: MainAxisSize.min, children: [
+    if (isVariantsExists(widget.product.variants)) {
+      return SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
         SizedBox(
           height: getProportionateScreenHeight(10),
         ),
@@ -145,135 +138,164 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
         ),
         Stepper(
           currentStep: _currentStep,
-          onStepContinue: () {
-            if (_currentStep < 1) {
-              setState(() {
-                _currentStep += 1;
-              });
+          controlsBuilder: (BuildContext context, ControlsDetails details) {
+            void Function()? onStepCancel;
+            void Function()? onStepContinue;
+            String continueMessage = "Continue";
+
+            if (_currentStep == 0) {
+              onStepContinue = () => setState(() {
+                    _currentStep += 1;
+                  });
+              onStepCancel = () => Navigator.pop(context);
             } else {
-              _onSubmit();
+              continueMessage = "Send a Hint";
+              onStepContinue = _onSubmit;
+              onStepCancel = () => setState(() {
+                    _currentStep -= 1;
+                  });
             }
-          },
-          onStepCancel: () {
-            if (_currentStep > 0) {
-              setState(() {
-                _currentStep -= 1;
-              });
-            } else {
-              Navigator.pop(context);
-            }
+
+            return Padding(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                        width: 130,
+                        height: 43,
+                        child: DefaultButton(
+                          press: onStepContinue,
+                          text: continueMessage,
+                        )),
+                    TextButton(
+                      onPressed: onStepCancel,
+                      child: const Text('Back'),
+                    ),
+                  ],
+                ));
           },
           steps: [
             Step(
               title: Text(
-                  'Select Your Wish: Choose preferences that define your ideal item.'),
-              content: Column(
-                children: [
-                  VariantsWidget(
-                      productVariants: widget.variants,
-                      withBuyButton: false,
-                      situation: widget.situation,
-                      onVariantChange: _onVariantChange),
-                ],
+                'Select Your Wish: Choose preferences that define your ideal item.',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  wordSpacing: 0.7,
+                  height: 1.2,
+                ),
               ),
+              content: VariantsWidget(
+                  product: widget.product,
+                  withBuyButton: false,
+                  situation: widget.situation,
+                  onVariantChange: _onVariantChange),
             ),
             Step(
               title: Text(
-                  "Send a Hint: Let friends know your desired item with a subtle suggestion."),
-              content: Form(
-                  key: _formKey,
-                  child: Column(children: [
-                    SearchContactWidget(
-                      onUserSelected: _onUserSelected,
-                      onNameChanged: _onNameChanged,
-                      onPhoneChanged: _onPhoneChanged,
-                    ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(20),
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onSaved: _onReasonChanged,
-                      validator: (value) {
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                          labelText: 'Request Reason',
-                          labelStyle: TextStyle(color: Colors.black),
-                          hintText:
-                              "I found the perfect thing to make our movie nights even better!"),
-                      maxLines: 3,
-                    ),
-                  ])),
+                "Send a Hint: Subtly suggest your desired item to friends.",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  wordSpacing: 0.7,
+                  height: 1.2,
+                ),
+              ),
+              content: _buildContactForm(),
             ),
           ],
         )
-      ]);
+      ]));
     } else {
       return Container(
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.69,
           child: Padding(
               padding: EdgeInsets.all(16),
-              child: Form(
-                  key: _formKey,
-                  child: Column(children: [
-                    Text(
-                      "Make a Wish Known",
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(10),
-                    ),
-                    Text(
-                        "Send a Hint: Let friends know your desired item with a subtle suggestion."),
-                    SizedBox(
-                      height: getProportionateScreenHeight(20),
-                    ),
-                    SearchContactWidget(
-                      onUserSelected: _onUserSelected,
-                      onNameChanged: _onNameChanged,
-                      onPhoneChanged: _onPhoneChanged,
-                    ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(20),
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onSaved: _onReasonChanged,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return kReasonNullError;
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(labelText: 'Request Reason'),
-                      maxLines: 3,
-                    ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(20),
-                    ),
-                    DefaultButton(
-                      text: "Submit",
-                      // eventName: analyticEvents["REQUEST_SUBMITTED"]!,
-                      // eventData: {
-                      //   "Product Id": widget.productId,
-                      //   "Product Title": widget.productTitle,
-                      //   "Situation": "Request",
-                      //   "Variants Exist": false
-                      // },
-                      press: _onSubmit,
-                    )
-                  ]))));
+              child: Column(children: [
+                Text(
+                  "Make a Wish Known",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: getProportionateScreenHeight(5),
+                ),
+                Text(
+                  "Send a Hint: Subtly suggest your desired item to friends.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    wordSpacing: 0.7,
+                    height: 1.2,
+                  ),
+                ),
+                SizedBox(
+                  height: getProportionateScreenHeight(15),
+                ),
+                _buildContactForm(),
+                SizedBox(
+                  height: getProportionateScreenHeight(5),
+                ),
+                DefaultButton(
+                  text: "Send a Hint",
+                  press: _onSubmit,
+                )
+              ])));
     }
+  }
+
+  Form _buildContactForm() {
+    return Form(
+        key: _formKey,
+        child: Column(children: [
+          SearchContactWidget(
+            onUserSelected: _onUserSelected,
+            onNameChanged: _onNameChanged,
+            onPhoneChanged: _onPhoneChanged,
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(20),
+          ),
+          AnimatedHintTextField(
+              hintOptions: [
+                "Coffee maker's timer feature - perfect for easy mornings!",
+                "Telescope for our star-gazing adventures - a skyward journey awaits!",
+                "Chose this mystery book, instantly reminded me of you!"
+              ],
+              widthPadding: 30,
+              textField: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: 'Gift Clue Context',
+                  labelStyle: TextStyle(color: Colors.black),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                maxLines: 4,
+              )),
+          SizedBox(
+            height: getProportionateScreenHeight(20),
+          ),
+          Text(
+            "Tap to SMS a friend, nudging them toward your ideal gift!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.2,
+            ),
+          ),
+        ]));
   }
 }
 
-void showRequestModal(BuildContext context, int productId, String productTitle,
-    List<Variant> variants, String situation,
+void showRequestModal(BuildContext context, Product product, String situation,
     {String? cursor = null}) async {
   if (GlobalManager().signedIn != true) {
-    GlobalManager().setSignInRelatedProductId(productId);
+    GlobalManager().setSignInRelatedProductId(product.id);
     Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     return;
   }
@@ -298,10 +320,8 @@ void showRequestModal(BuildContext context, int productId, String productTitle,
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: VariantsAndRequestModal(
-              productId: productId,
+              product: product,
               situation: situation,
-              productTitle: productTitle,
-              variants: variants,
               cursor: cursor,
             ));
       });

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:Wishy/components/default_button.dart';
-import 'package:Wishy/components/search_contact.dart';
-import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';

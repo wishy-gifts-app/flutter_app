@@ -88,8 +88,7 @@ class _ProductCardState extends State<ProductCard> {
       "Delivery Availability": GlobalManager().isDeliveryAvailable
     });
 
-    showRequestModal(context, widget.product.id, widget.product.title,
-        widget.product.variants ?? [], widget.situation);
+    showRequestModal(context, widget.product, widget.situation);
   }
 
   void _onCheckoutPressed() async {
@@ -113,9 +112,7 @@ class _ProductCardState extends State<ProductCard> {
     if (isVariantsExists(widget.product.variants)) {
       showVariantsModal(
           context,
-          widget.product.id,
-          widget.product.title,
-          widget.product.variants!,
+          widget.product,
           widget.isFullScreen ? GlobalManager().connectUserId : null,
           widget.situation,
           cursor: widget.cursor);
@@ -127,7 +124,7 @@ class _ProductCardState extends State<ProductCard> {
           "recipientId":
               widget.isFullScreen ? GlobalManager().connectUserId : null,
           'variant': widget.product.variants![0],
-          'productId': widget.product.id,
+          'product': widget.product,
           "cursor": widget.cursor
         },
       );
@@ -199,38 +196,41 @@ class _ProductCardState extends State<ProductCard> {
                       right: 0,
                       child: Align(
                         alignment: Alignment.topCenter,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: widget.product.images.map((image) {
-                            final index = widget.product.images.indexOf(image);
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _currentImageIndex = index;
-                                });
-                              },
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _currentImageIndex == index
-                                        ? kPrimaryColor
-                                        : Colors.grey,
-                                    width: 2,
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: widget.product.images.map((image) {
+                                final index =
+                                    widget.product.images.indexOf(image);
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _currentImageIndex = index;
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: _currentImageIndex == index
+                                            ? kPrimaryColor
+                                            : Colors.grey,
+                                        width: 2,
+                                      ),
+                                      color: _currentImageIndex == index
+                                          ? kPrimaryColor
+                                          : Colors.transparent,
+                                    ),
                                   ),
-                                  color: _currentImageIndex == index
-                                      ? kPrimaryColor
-                                      : Colors.transparent,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                                );
+                              }).toList(),
+                            )),
                       )),
                 Align(
                     alignment: widget.isFullScreen
@@ -344,7 +344,8 @@ class _ProductCardState extends State<ProductCard> {
                                 Row(mainAxisSize: MainAxisSize.min, children: [
                               SvgPicture.asset(
                                 "assets/icons/Heart Icon_2.svg",
-                                color: Colors.white,
+                                colorFilter: ColorFilter.mode(
+                                    Colors.white, BlendMode.srcIn),
                                 height: getProportionateScreenWidth(16),
                               ),
                               SizedBox(
@@ -384,7 +385,8 @@ class _ProductCardState extends State<ProductCard> {
                           padding: const EdgeInsets.all(8.0),
                           child: SvgPicture.asset(
                             "assets/icons/buy_now.svg",
-                            color: Colors.black,
+                            colorFilter:
+                                ColorFilter.mode(Colors.black, BlendMode.srcIn),
                             height: widget.isFullScreen ? 50 : 25,
                           ),
 // Icon(
@@ -411,7 +413,8 @@ class _ProductCardState extends State<ProductCard> {
                             padding: const EdgeInsets.all(1.0),
                             child: SvgPicture.asset(
                               "assets/icons/request.svg",
-                              color: Colors.black,
+                              colorFilter: ColorFilter.mode(
+                                  Colors.black, BlendMode.srcIn),
                               height: 39,
                             ),
                           ),

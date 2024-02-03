@@ -1,9 +1,7 @@
 import 'package:Wishy/components/interactive_card/interactive_card.dart';
-import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/InteractiveCardData.dart';
 import 'package:Wishy/models/Tag.dart';
 import 'package:Wishy/services/graphql_service.dart';
-import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
@@ -30,7 +28,6 @@ class _HomeHeaderState extends State<HomeHeader> {
   late InteractiveCardData _inviteCard;
   late InteractiveCardData _questionCard;
   bool _loading = true;
-  late IconData _connectIcon;
 
   void _fetchInteractiveCardsData() async {
     try {
@@ -54,20 +51,19 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   void initState() {
-    _connectIcon = widget.connectUser == null ? Icons.person_add : Icons.group;
     _fetchInteractiveCardsData();
     super.initState();
   }
 
-  void didUpdateWidget(covariant HomeHeader oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.connectUser != oldWidget.connectUser) {
-      setState(() {
-        _connectIcon =
-            widget.connectUser == null ? Icons.person_add : Icons.group;
-      });
-    }
-  }
+  // void didUpdateWidget(covariant HomeHeader oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   if (widget.connectUser != oldWidget.connectUser) {
+  //     setState(() {
+  //       _connectIcon =
+  //           widget.connectUser == null ? Icons.person_add : Icons.group;
+  //     });
+  //   }
+  // }
 
   void _setInteractiveDialog(CardTypes type) {
     switch (type) {

@@ -9,7 +9,8 @@ class Body extends StatelessWidget {
     return Center(
         child: SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(getProportionateScreenWidth(20)),
+        padding:
+            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
         child: Column(
           children: [
             CircleAvatar(

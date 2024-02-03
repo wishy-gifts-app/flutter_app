@@ -1,27 +1,31 @@
-import 'package:Wishy/components/addresses_widget.dart';
-import 'package:Wishy/components/search_contact.dart';
+import 'package:Wishy/components/payment_button.dart';
+import 'package:Wishy/components/payment_widget.dart';
+import 'package:Wishy/components/top_rounded_container.dart';
 import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/models/CheckoutData.dart';
 import 'package:Wishy/models/Follower.dart';
-import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/models/Product.dart';
+import 'package:Wishy/screens/checkout/components/address_widget.dart';
+import 'package:Wishy/screens/checkout/components/total_price.dart';
 import 'package:flutter/material.dart';
-import 'package:Wishy/components/shopify_payment_widget.dart';
-import 'package:Wishy/components/location_dialog_form.dart';
 import 'package:Wishy/constants.dart';
-import 'package:Wishy/models/Address.dart';
-import 'package:Wishy/screens/checkout/components/payment_button.dart';
+import 'package:Wishy/models/Address.dart' as Wishy;
 import 'package:Wishy/size_config.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'dart:async';
-import 'package:Wishy/utils/analytics.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class PurchaseForm extends StatefulWidget {
-  final int variantId, productId;
+  final int variantId;
+  final Product product;
   final int? recipientId;
   final double price;
 
   PurchaseForm({
     required this.variantId,
-    required this.productId,
+    required this.product,
     required this.price,
     this.recipientId,
   });
@@ -31,320 +35,226 @@ class PurchaseForm extends StatefulWidget {
 }
 
 class _PurchaseFormState extends State<PurchaseForm> {
-  late GraphQLPaginationService _paginationServices;
-  List<Address>? _addresses;
-  int _selectedAddressIndex = 0;
+  Wishy.Address? _selectedAddress;
   int? userId;
   String? name, phoneNumber;
-  late bool _isGift;
-  int? _recipientId;
-  bool _loading = false;
   final _formKey = GlobalKey<FormState>();
-  Completer<bool>? _phoneValidationCompleter;
   Follower? _defaultUser;
-  String? _deliveryTime;
-
-  void _onUserSelected(int? userId, bool? isActiveUser) {
-    setState(() {
-      this.userId = userId;
-    });
-
-    setState(() {
-      this._recipientId = this.userId;
-    });
-
-    if (_recipientId != null)
-      fetchData(_recipientId!);
-    else
-      setState(() {
-        _addresses = [];
-        _deliveryTime = null;
-      });
-  }
-
-  void _onNameChanged(String? name) {
-    setState(() {
-      this.name = name;
-    });
-  }
-
-  void _onPhoneChanged(String? phone) {
-    setState(() {
-      this.phoneNumber = phone;
-    });
-
-    if (_phoneValidationCompleter != null &&
-        !_phoneValidationCompleter!.isCompleted)
-      _phoneValidationCompleter!.complete(true);
-  }
+  CheckoutData? _checkout = null;
+  final firstColor = Colors.white;
+  final secondColor = Color(0xFFF6F7F9);
+  final double sectionMargin = 10;
+  late Variant variant;
+  final String _paymentSession = Uuid().v1();
+  Function? _paymentMethod = null;
+  Widget? _payButtonElement = null;
+  int _selectedPaymentIndex = 0;
 
   Future<void> onSubmit() async {
-    if (_addresses!.length > _selectedAddressIndex)
-      try {
-        setState(() {
-          _loading = true;
-        });
-        final result = await graphQLQueryHandler("checkoutHandler", {
-          "variant_id": widget.variantId,
-          "quantity": 1,
-          "address_id": _addresses![_selectedAddressIndex].id,
-          "recipient_id": _isGift ? _recipientId : null
-        });
-
-        if (result != null && result["checkout_available"] == false) {
-          AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
-              properties: {
-                "Variant Id": widget.variantId,
-                "Is Gift": _isGift,
-                "Recipient Id": _recipientId
-              });
-
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                "Sorry, purchase feature is currently unavailable. We'll notify you when it's ready. Thank you!"),
-          ));
-
-          Navigator.pushNamed(
-            context,
-            HomeScreen.routeName,
-          );
-          return;
-        }
-
-        if (result != null && result["payment_url"] != null) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return Dialog.fullscreen(
-                child: CheckoutWebView(checkoutUrl: result["payment_url"]),
-              );
-            },
-          ).then((_) {
-            AnalyticsService.trackEvent(analyticEvents["NEW_PURCHASE"]!,
-                properties: {
-                  "Variant Id": widget.variantId,
-                  "Is Gift": _isGift,
-                  "Recipient Id": _recipientId
-                });
-
-            Navigator.pushNamed(
-              context,
-              HomeScreen.routeName,
-            );
-          });
-          ;
-        } else {
-          throw Exception('Payment URL not available');
-        }
-      } catch (error) {
-        setState(() {
-          _loading = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              'Unable to upload payment method. Please check your information and try again.'),
-        ));
-      }
+    if (_paymentMethod != null && _selectedAddress != null && _checkout != null)
+      await _paymentMethod!();
   }
 
-  Future<void> _fetchDeliveryTime() async {
-    if (_addresses == null || _addresses!.isEmpty) return;
+  Future<void> _setCheckout() async {
+    if (_selectedAddress == null) return;
 
-    final addressId = _addresses![_selectedAddressIndex].id;
+    final addressId = _selectedAddress!.id;
 
-    final temp = await graphQLQueryHandler("getDeliveryTime",
-        {"product_id": widget.productId, "address_id": addressId});
+    final temp = await graphQLQueryHandler("setCheckout", {
+      "product_id": widget.product.id,
+      "address_id": addressId,
+      "variant_id": variant.id,
+      "payment_id": GlobalManager().paymentId,
+      "payment_session": _paymentSession + addressId.toString(),
+      "price": variant.price,
+      "quantity": 1,
+      "cursor": GlobalManager().firstFeedCursor,
+    });
 
-    if (mounted &&
-        _addresses!.length > _selectedAddressIndex &&
-        _addresses![_selectedAddressIndex].id == addressId)
+    if (mounted && _selectedAddress?.id == addressId) {
       setState(() {
-        _deliveryTime = temp["result"];
+        _checkout = CheckoutData.fromJson(temp);
       });
-  }
 
-  Future<void> fetchData(int userId) async {
-    _paginationServices = new GraphQLPaginationService(
-      queryName: "getUserAddresses",
-      variables: {"limit": 20, "user_id": userId},
-    );
-
-    final result = await _paginationServices.run();
-
-    if (mounted && result["data"] != null && _recipientId != null) {
-      setState(() {
-        _addresses = (result["data"] as List<dynamic>)
-            .map((item) => Address.fromJson(item))
-            .toList();
-      });
+      GlobalManager().setPaymentId(_checkout!.paymentId);
     }
-
-    _fetchDeliveryTime();
   }
 
-  void _fetchRecipient(int? userId) {
-    if (_isGift && _defaultUser == null && userId != null) {
-      graphQLQueryHandler("userById", {"id": userId}).then((result) {
-        if (mounted)
-          setState(() {
-            _defaultUser = Follower(
-                name: result["name"],
-                phoneNumber: result["phone_number"],
-                id: result["id"]);
-          });
+  void _onAddressSelected(Wishy.Address address) {
+    if (mounted) {
+      setState(() {
+        _selectedAddress = address;
+        _checkout = null;
+      });
+
+      _setCheckout();
+    }
+  }
+
+  void _onPaymentSelected(
+      Function? payHandler, Widget? suffixElement, int index) {
+    if (mounted) {
+      setState(() {
+        _selectedPaymentIndex = index;
+        _paymentMethod = payHandler;
+        _payButtonElement = suffixElement;
       });
     }
   }
 
+  @override
   void initState() {
-    _isGift = widget.recipientId != null;
-    _recipientId = _isGift && widget.recipientId != null
-        ? widget.recipientId!
-        : GlobalManager().userId!;
-    ;
+    variant = widget.product.variants!.firstWhere(
+        (element) => element.id == widget.variantId,
+        orElse: () => widget.product.variants![0]);
 
-    fetchData(_recipientId!);
-    _fetchRecipient(widget.recipientId);
+    _defaultUser = Follower(
+        name: GlobalManager().user?.name ?? "",
+        phoneNumber: GlobalManager().user?.phoneNumber ?? "",
+        id: GlobalManager().userId);
+
+    if (GlobalManager().user?.addresses != null &&
+        GlobalManager().user!.addresses!.length > 0)
+      _onAddressSelected(GlobalManager().user!.addresses![0]);
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final globalManger = Provider.of<GlobalManager>(context);
+    if (globalManger.user == null)
+      return Center(child: CircularProgressIndicator());
+
+    if (_paymentMethod == null)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _onPaymentSelected(
+            () => payByType(
+                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
+                context,
+                _selectedPaymentIndex,
+                globalManger.user!.paymentMethods[_selectedPaymentIndex],
+                _checkout?.clientSecret,
+                _checkout?.payAmount),
+            getPayButtonSuffixByType(
+                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
+                globalManger.user!.paymentMethods[_selectedPaymentIndex]),
+            _selectedPaymentIndex);
+      });
+
     return Center(
         child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: getProportionateScreenHeight(10),
-                ),
-                CheckboxListTile(
-                  title: Text("Gift Purchase?"),
-                  value: _isGift,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      _addresses = [];
-                      _deliveryTime = null;
-                      name = null;
-                      phoneNumber = null;
-                      _recipientId = (newValue ?? false)
-                          ? _defaultUser?.id
-                          : GlobalManager().userId!;
-                      _isGift = newValue ?? false;
-                    });
-
-                    if (!_isGift || _defaultUser?.id != null) {
-                      fetchData(_isGift
-                          ? _defaultUser!.id!
-                          : GlobalManager().userId!);
-                    }
-                  },
-                  secondary: const Icon(Icons.card_giftcard),
-                ),
-                SizedBox(
-                  height: getProportionateScreenHeight(_isGift ? 8 : 30),
-                ),
-                if (_isGift) ...[
-                  Text(
-                    "Please add the recipient's details",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: getProportionateScreenHeight(4),
-                  ),
-                  SearchContactWidget(
-                    onUserSelected: _onUserSelected,
-                    onNameChanged: _onNameChanged,
-                    onPhoneChanged: _onPhoneChanged,
-                    defaultUser: _defaultUser,
-                  ),
-                ],
-                SizedBox(
-                  height: getProportionateScreenHeight(10),
-                ),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              _buildSection(
+                Icons.person,
+                firstColor,
+                margin: 1,
+                title: "Complete Purchase",
                 AddressesWidget(
-                    addresses: _addresses ?? [],
-                    emptyMessage:
-                        "To deliver your order, please tap the plus icon to add a shipping address.",
-                    selectedIndex: _selectedAddressIndex,
-                    onTap: (idx) {
-                      setState(() {
-                        _selectedAddressIndex = idx;
-                        _deliveryTime = null;
-                      });
-
-                      _fetchDeliveryTime();
-                    }),
-                IconButton(
-                    icon: Icon(
-                      Icons.add_location,
-                      size: 50,
-                    ),
-                    tooltip: "Add address",
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        if (_isGift) {
-                          _formKey.currentState!.save();
-
-                          if (userId == null) {
-                            _phoneValidationCompleter = Completer<bool>();
-                            await _phoneValidationCompleter!.future;
-                          }
-                        }
-
-                        if (_recipientId != null || phoneNumber != null) {
-                          AnalyticsService.trackEvent(
-                              analyticEvents["ADD_ADDRESS_PRESSED"]!,
-                              properties: {
-                                "Variant Id": widget.variantId,
-                                "Is Gift": _isGift
-                              });
-                          showDialog<int>(
-                            context: context,
-                            builder: (context) => Dialog.fullscreen(
-                                child: LocationDialogForm(
-                              userId: _recipientId,
-                              userName: name,
-                              userPhoneNumber: phoneNumber,
-                            )),
-                          ).then((result) {
-                            if (result != null) {
-                              setState(() {
-                                _recipientId = result;
-                                _selectedAddressIndex = 0;
-                              });
-
-                              fetchData(_recipientId!);
-                            }
-                          });
-                        }
-                      }
-                    }),
-                if (_deliveryTime != null) ...[
-                  SizedBox(height: getProportionateScreenHeight(20)),
-                  Text(
-                    _deliveryTime!,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  )
-                ],
-                SizedBox(height: getProportionateScreenHeight(5)),
-                PaymentButton(
-                  loading: _loading,
-                  price: widget.price,
-                  onSubmit: onSubmit,
-                  enable: _addresses != null &&
-                      _addresses!.length > 0 &&
-                      _deliveryTime != null,
-                  eventData: {
-                    "Is Gift": _isGift,
-                    "Recipient Id": _recipientId,
-                    "Variant Id": widget.variantId,
-                  },
+                  defaultUser: _defaultUser,
+                  userId: GlobalManager().userId!,
+                  onAddressSelected: _onAddressSelected,
                 ),
-              ],
-            )));
+                child: _buildSection(
+                    Icons.local_shipping,
+                    secondColor,
+                    _checkout == null
+                        ? Text("Please provide shipping address")
+                        : Column(children: [
+                            Text(
+                              _checkout?.deliveryTime ?? "",
+                              style: TextStyle(fontSize: 13),
+                            ),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            Text(
+                              (_checkout?.additionalHighlights ?? ""),
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            )
+                          ]),
+                    child: _buildSection(
+                        elementRightPadding: 0,
+                        Icons.credit_card,
+                        firstColor,
+                        PaymentWidget(
+                          clientSecret: _checkout?.clientSecret,
+                          buyNow: _selectedAddress != null && _checkout != null,
+                          totalPrice: _checkout?.totalPrice,
+                          amount: _checkout?.payAmount,
+                          onPaymentSelected: _onPaymentSelected,
+                          selectedIndex: _selectedPaymentIndex,
+                          shippingDetails: ShippingDetails(
+                              name: _selectedAddress?.name,
+                              address: Address(
+                                  city: _selectedAddress?.city,
+                                  state: _selectedAddress?.state,
+                                  country: _selectedAddress?.countryCode,
+                                  postalCode: _selectedAddress?.zipCode,
+                                  line1: _selectedAddress != null
+                                      ? _selectedAddress!.streetAddress +
+                                          _selectedAddress!.streetNumber
+                                      : null,
+                                  line2: _selectedAddress?.apartment)),
+                        ),
+                        child: _buildSection(
+                            Icons.receipt,
+                            secondColor,
+                            TotalPriceWidget(
+                              enable:
+                                  _selectedAddress != null && _checkout != null,
+                              variant: variant,
+                              productTitle: widget.product.title,
+                              variantDescription: variant.title,
+                              deliveryPrice: _checkout?.deliveryPrice,
+                              saleTax: _checkout?.saleTax,
+                            ),
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.only(top: 14, right: 20, left: 20),
+                              child: PaymentButton(
+                                element: _payButtonElement,
+                                price: _checkout?.totalPrice ?? variant.price,
+                                onSubmit: onSubmit,
+                                enable:
+                                    _checkout != null && _paymentMethod != null,
+                              ),
+                            )))),
+              )
+            ])));
+  }
+
+  _buildSection(IconData icon, Color color, Widget element,
+      {double margin = 10,
+      String? title,
+      Widget? child,
+      double elementRightPadding = 30}) {
+    return TopRoundedContainer(
+        margin: margin,
+        padding: 12,
+        color: color,
+        child: Column(children: [
+          if (title != null) ...[
+            Text(title, style: headingStyle),
+            SizedBox(
+              height: getProportionateScreenHeight(20),
+            ),
+          ],
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                    padding: EdgeInsets.all(15), child: Icon(icon, size: 30)),
+                Container(
+                    width: 280,
+                    padding:
+                        EdgeInsets.only(right: elementRightPadding, left: 5),
+                    child: element),
+              ]),
+          if (child != null) child
+        ]));
   }
 }

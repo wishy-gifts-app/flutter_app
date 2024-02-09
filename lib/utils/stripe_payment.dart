@@ -5,29 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
 class StripePaymentHandler {
-  Future<void> stripeMakePayment(
-      String client_secret, BuildContext context) async {
-    try {
-      await Stripe.instance.initPaymentSheet(
-          paymentSheetParameters: SetupPaymentSheetParameters(
-              googlePay: const PaymentSheetGooglePay(
-                merchantCountryCode: 'US',
-                testEnv: true,
-              ),
-              paymentIntentClientSecret: client_secret,
-              customFlow: true,
-              style: ThemeMode.dark,
-              merchantDisplayName: 'Wishy'));
-
-      displayPaymentSheet(context);
-    } catch (e) {
-      print(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
-  }
-
   Future<T?> paymentWrapper<T>(BuildContext context, Function handler) async {
     final T? result = await stripeExceptionWrapper(context, handler);
 
@@ -71,11 +48,15 @@ class StripePaymentHandler {
     return null;
   }
 
-  Future<PaymentSheetPaymentOption?> displayPaymentSheet(
-      BuildContext context) async {
-    return paymentWrapper<PaymentSheetPaymentOption>(
-        context, () => Stripe.instance.presentPaymentSheet());
-  }
+  Future<PaymentMethod?> createCard(BuildContext context) =>
+      stripeExceptionWrapper(
+          context,
+          () => Stripe.instance.createPaymentMethod(
+              params: PaymentMethodParams.card(
+                paymentMethodData: PaymentMethodData(),
+              ),
+              options: PaymentMethodOptions(
+                  setupFutureUsage: PaymentIntentsFutureUsage.OnSession)));
 
   Future<PaymentIntent?> confirmCard(String clientSecret,
       UserPaymentMethod cardDetail, BuildContext context) async {
@@ -90,16 +71,6 @@ class StripePaymentHandler {
               ),
             ));
   }
-
-  Future<PaymentMethod?> createCard(BuildContext context) =>
-      stripeExceptionWrapper(
-          context,
-          () => Stripe.instance.createPaymentMethod(
-              params: PaymentMethodParams.card(
-                paymentMethodData: PaymentMethodData(),
-              ),
-              options: PaymentMethodOptions(
-                  setupFutureUsage: PaymentIntentsFutureUsage.OnSession)));
 
   Future<PlatformPayPaymentMethod?> createGooglePayment(
       String clientSecret, int amount, BuildContext context) async {

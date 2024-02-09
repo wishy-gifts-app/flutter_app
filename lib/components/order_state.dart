@@ -1,22 +1,19 @@
+import 'package:Wishy/models/Order.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:Wishy/constants.dart';
 
 class OrderStatusStepper extends StatelessWidget {
-  final bool isOrderCompleted;
-  final bool isInDelivery;
-  final bool isOrderApproved;
+  final Order order;
 
   OrderStatusStepper({
-    required this.isOrderCompleted,
-    required this.isInDelivery,
-    required this.isOrderApproved,
+    required this.order,
   });
 
   int get activeStep {
-    if (isOrderCompleted) return 2;
-    if (isInDelivery) return 1;
-    if (isOrderApproved) return 0;
+    if (order.arrivedAt != null) return 2;
+    if (order.approvedAt != null) return 1;
+    if (order.paidAt != null) return 0;
     return -1; // No step is active
   }
 

@@ -107,12 +107,14 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
         });
         GlobalManager().setUser(UserDetails.fromJson(result));
         widget.afterAddressAdded(GlobalManager().user!.addresses![0]);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Your address has been successfully added')),
         );
 
         Navigator.of(context).pop(result["id"]);
       } catch (error) {
+        print(error);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address. Please try again.')),
         );

@@ -31,7 +31,6 @@ Future<dynamic> graphQLQueryHandler(
 
   try {
     final token = GlobalManager().token;
-    print(GlobalManager().shippingCountry);
     final http.Response response = await _client.post(
       Uri.parse(dotenv.get("GRAPHQL_API_URL")),
       headers: {

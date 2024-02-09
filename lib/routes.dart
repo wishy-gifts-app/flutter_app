@@ -1,4 +1,5 @@
 import 'package:Wishy/screens/requests/requests_screen.dart';
+import 'package:Wishy/screens/success/components/body.dart';
 import 'package:flutter/widgets.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/checkout_screen.dart';
@@ -17,7 +18,10 @@ import 'package:Wishy/screens/likes/likes_screen.dart';
 // All our routes will be available here
 final Map<String, WidgetBuilder> routes = {
   SignInScreen.routeName: (context) => SignInScreen(),
-  SuccessScreen.routeName: (context) => SuccessScreen(),
+  SuccessScreen.routeName: (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    return SuccessScreen(type: args['type'] as SuccessTypes);
+  },
   CompleteProfileScreen.routeName: (context) => CompleteProfileScreen(),
   OtpScreen.routeName: (context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;

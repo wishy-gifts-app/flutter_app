@@ -15,13 +15,14 @@ class OrdersTab extends StatefulWidget {
 
 class _OrdersTabState extends State<OrdersTab> {
   int selectedOrderIndex = 0;
+  bool _isEmpty = false;
   GraphQLPaginationService _paginationActiveServices = GraphQLPaginationService(
       queryName: "getUserOrders",
-      variables: {"limit": 5, "is_order_completed": false});
+      variables: {"limit": 5, "active_orders": true});
   GraphQLPaginationService _paginationHistoryServices =
       GraphQLPaginationService(
           queryName: "getUserOrders",
-          variables: {"limit": 5, "is_order_completed": true});
+          variables: {"limit": 5, "active_orders": false});
   List<Order> activeOrders = [];
   List<Order> historyOrders = [];
   ScrollController _activeOrdersController = ScrollController();
@@ -45,8 +46,7 @@ class _OrdersTabState extends State<OrdersTab> {
       }
     });
 
-    fetchActiveData();
-    fetchHistoryData();
+    _initOrders();
   }
 
   Future<void> fetchActiveData() async {
@@ -83,8 +83,24 @@ class _OrdersTabState extends State<OrdersTab> {
     }
   }
 
+  void _initOrders() async {
+    await Future.wait([
+      fetchActiveData(),
+      fetchHistoryData(),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _isEmpty = activeOrders.isEmpty && historyOrders.isEmpty;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_isEmpty && activeOrders.isEmpty && historyOrders.isEmpty)
+      return Center(child: CircularProgressIndicator());
+
     return CustomScrollView(slivers: [
       SliverList(
           delegate: SliverChildListDelegate(
@@ -97,7 +113,7 @@ class _OrdersTabState extends State<OrdersTab> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             Container(
-              height: 260,
+              height: 250,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 controller: _activeOrdersController,
@@ -131,10 +147,7 @@ class _OrdersTabState extends State<OrdersTab> {
               ),
             ),
             OrderStatusStepper(
-              isOrderCompleted:
-                  activeOrders[selectedOrderIndex].isOrderCompleted,
-              isInDelivery: activeOrders[selectedOrderIndex].isInDelivery,
-              isOrderApproved: activeOrders[selectedOrderIndex].isOrderApproved,
+              order: activeOrders[selectedOrderIndex],
             ),
           ],
           if (historyOrders.isNotEmpty) ...[

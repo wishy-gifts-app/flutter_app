@@ -1,3 +1,4 @@
+import 'package:Wishy/screens/success/components/body.dart';
 import 'package:Wishy/utils/notification.dart';
 import 'package:Wishy/utils/user_details.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +63,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         });
         setUserDetails();
 
-        Navigator.pushNamed(context, SuccessScreen.routeName);
+        Navigator.pushNamed(context, SuccessScreen.routeName,
+            arguments: {"type": SuccessTypes.login});
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

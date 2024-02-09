@@ -7,6 +7,8 @@ import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/components/address_widget.dart';
 import 'package:Wishy/screens/checkout/components/total_price.dart';
+import 'package:Wishy/screens/success/components/body.dart';
+import 'package:Wishy/screens/success/success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Address.dart' as Wishy;
@@ -45,14 +47,23 @@ class _PurchaseFormState extends State<PurchaseForm> {
   final secondColor = Color(0xFFF6F7F9);
   final double sectionMargin = 10;
   late Variant variant;
-  final String _paymentSession = Uuid().v1();
+  String _paymentSession = Uuid().v1();
   Function? _paymentMethod = null;
   Widget? _payButtonElement = null;
   int _selectedPaymentIndex = 0;
 
   Future<void> onSubmit() async {
-    if (_paymentMethod != null && _selectedAddress != null && _checkout != null)
-      await _paymentMethod!();
+    if (_paymentMethod != null &&
+        _selectedAddress != null &&
+        _checkout != null) {
+      final result = await _paymentMethod!();
+
+      if (result != null) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, SuccessScreen.routeName, (_) => false,
+            arguments: {"type": SuccessTypes.purchase});
+      }
+    }
   }
 
   Future<void> _setCheckout() async {

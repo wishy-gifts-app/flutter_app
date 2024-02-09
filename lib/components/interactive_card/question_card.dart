@@ -49,6 +49,8 @@ class _QuestionCardState extends State<QuestionCard> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        WishyAIWithBackground(),
+        SizedBox(height: getProportionateScreenHeight(5)),
         RoundedBackgroundText(
           widget.question,
           backgroundColor: Colors.black.withOpacity(0.5),

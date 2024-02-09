@@ -26,7 +26,6 @@ class GlobalManager with ChangeNotifier {
   int? connectUserId = null;
   String? firstFeedCursor = null;
   bool navigateToRequest = false;
-  String? paymentSession;
   String? paymentId;
   String? shippingCountry;
 
@@ -107,7 +106,6 @@ class GlobalManager with ChangeNotifier {
   void setFirstFeedCursor(String? value) => firstFeedCursor = value;
   void setNotificationToken(String? value) => notificationToken = value;
   void setNavigateToRequest(bool value) => navigateToRequest = value;
-  void setPaymentSession(String? value) => paymentSession = value;
   void setPaymentId(String? value) {
     paymentId = value;
     notifyListeners();

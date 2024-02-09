@@ -203,13 +203,13 @@ const Map<String, String> graphqlQueries = {
       \$limit: Int!,
       \$skip: Int
       \$cursor: String,
-      \$is_order_completed: Boolean!,
+      \$active_orders: Boolean!,
     ) {
       getUserOrders(
         limit: \$limit,
         skip: \$skip,
         cursor: \$cursor,
-        is_order_completed: \$is_order_completed
+        active_orders: \$active_orders
       ) {
         results {
           id,
@@ -220,9 +220,10 @@ const Map<String, String> graphqlQueries = {
           recipient_user_name,
           for_date,
           price,
-          is_order_completed,
-          is_order_approved,
-          is_in_delivery,
+          closed_at,
+          approved_at,
+          paid_at,
+          arrived_at,
           product {          
             id
             title
@@ -327,6 +328,14 @@ const Map<String, String> graphqlQueries = {
         name
         phone_number
         email
+        payment_methods {
+          id
+          user_id
+          method
+          last_digits
+          payment_id
+          last_updated_at
+        }
         addresses {
           id
           country

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
-import 'package:Wishy/size_config.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
 class HistoryProductCard extends StatelessWidget {
@@ -39,6 +38,7 @@ class HistoryProductCard extends StatelessWidget {
         ),
         child: Stack(children: [
           Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (recipientUserName != null && recipientUserName!.isNotEmpty)
                 Padding(
@@ -51,15 +51,22 @@ class HistoryProductCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (recipientUserName == null || recipientUserName!.isEmpty)
-                SizedBox(
-                  height: getProportionateScreenHeight(30),
+              if (variant?.title != null) ...[
+                RoundedBackgroundText(
+                  variant!.title,
+                  backgroundColor: Colors.white.withOpacity(0.8),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11, fontFamily: 'Muli'),
                 ),
+                SizedBox(
+                  height: 4,
+                )
+              ],
               if (product.images.isNotEmpty)
                 Image.network(
                   variant?.image?.url ?? product.images[0].url,
                   fit: BoxFit.contain,
-                  height: 80,
+                  height: 90,
                 )
               else
                 Text("Image not available"),
@@ -75,20 +82,6 @@ class HistoryProductCard extends StatelessWidget {
               Text("${marketDetails["symbol"]}${price}"),
             ],
           ),
-          Positioned.fill(
-              top: 3,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 2),
-                  child: RoundedBackgroundText(
-                    variant?.title ?? "",
-                    backgroundColor: Colors.white.withOpacity(0.8),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11),
-                  ),
-                ),
-              )),
         ]));
   }
 }

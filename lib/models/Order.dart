@@ -9,9 +9,7 @@ class Order {
   final int? recipientUserId;
   final String? recipientUserName;
   final double price;
-  final bool isOrderCompleted;
-  final bool isOrderApproved;
-  final bool isInDelivery;
+  final DateTime? closedAt, arrivedAt, paidAt, approvedAt;
   final DateTime? forDate;
   final Product product;
 
@@ -21,11 +19,12 @@ class Order {
       required this.productId,
       required this.variantId,
       required this.price,
-      required this.isOrderCompleted,
-      required this.isOrderApproved,
-      required this.isInDelivery,
       required this.product,
       this.recipientUserId,
+      this.approvedAt,
+      this.arrivedAt,
+      this.closedAt,
+      this.paidAt,
       this.recipientUserName,
       this.forDate});
 
@@ -37,9 +36,10 @@ class Order {
       productId: convertValue<int>(json, 'product_id', true),
       variantId: convertValue<int>(json, 'variant_id', true),
       price: convertValue<double>(json, 'price', true),
-      isOrderCompleted: convertValue<bool>(json, 'is_order_completed', true),
-      isInDelivery: convertValue<bool>(json, 'is_in_delivery', true),
-      isOrderApproved: convertValue<bool>(json, 'is_order_approved', true),
+      paidAt: convertValue<DateTime?>(json, 'paid_at', false),
+      closedAt: convertValue<DateTime?>(json, 'closed_at', false),
+      arrivedAt: convertValue<DateTime?>(json, 'arrived_at', false),
+      approvedAt: convertValue<DateTime?>(json, 'approved_at', false),
       recipientUserId: convertValue<int?>(
         json,
         'recipient_user_id',

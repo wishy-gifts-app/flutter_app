@@ -57,13 +57,7 @@ class HistoryProductCard extends StatelessWidget {
                 ),
               if (product.images.isNotEmpty)
                 Image.network(
-                  product.images
-                      .firstWhere(
-                          (element) =>
-                              variant?.imageId != null &&
-                              element.id == variant?.imageId,
-                          orElse: () => product.images[0])
-                      .url,
+                  variant?.image?.url ?? product.images[0].url,
                   fit: BoxFit.contain,
                   height: 80,
                 )

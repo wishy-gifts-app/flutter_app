@@ -230,7 +230,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
       {double margin = 10,
       String? title,
       Widget? child,
-      double elementRightPadding = 30}) {
+      double elementRightPadding = 20}) {
     return TopRoundedContainer(
         margin: margin,
         padding: 12,
@@ -247,11 +247,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                    padding: EdgeInsets.all(15), child: Icon(icon, size: 30)),
+                    padding: EdgeInsets.only(
+                        top: 15, bottom: 15, left: 15, right: 0),
+                    child: Icon(icon, size: 30)),
                 Container(
                     width: 280,
                     padding:
-                        EdgeInsets.only(right: elementRightPadding, left: 5),
+                        EdgeInsets.only(right: elementRightPadding, left: 0),
                     child: element),
               ]),
           if (child != null) child

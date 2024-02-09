@@ -1,14 +1,12 @@
-import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/custom_tag.dart';
 import 'package:Wishy/components/delivery_availability_icon.dart';
+import 'package:Wishy/components/product_price.dart';
 import 'package:Wishy/components/request_modal.dart';
+import 'package:Wishy/components/variants/buy_now_widget.dart';
 import 'package:Wishy/global_manager.dart';
-import 'package:Wishy/size_config.dart';
-import 'package:Wishy/utils/is_variants_exists.dart';
 import 'package:flutter/material.dart';
-import 'package:Wishy/components/variants/variants_modal.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
-import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -91,46 +89,6 @@ class _ProductCardState extends State<ProductCard> {
     showRequestModal(context, widget.product, widget.situation);
   }
 
-  void _onCheckoutPressed() async {
-    if (GlobalManager().isDeliveryAvailable != true) {
-      await DeliveryAvailabilityDialog.show(context);
-
-      if (GlobalManager().isDeliveryAvailable != true) {
-        return;
-      }
-    }
-
-    AnalyticsService.trackEvent(analyticEvents["CHECKOUT_PRESSED"]!,
-        properties: {
-          "Product Id": widget.product.id,
-          "Situation": widget.situation,
-          "Variants Exist": isVariantsExists(widget.product.variants),
-          "Variant Picked": false,
-          "Delivery Availability": GlobalManager().isDeliveryAvailable
-        });
-
-    if (isVariantsExists(widget.product.variants)) {
-      showVariantsModal(
-          context,
-          widget.product,
-          widget.isFullScreen ? GlobalManager().connectUserId : null,
-          widget.situation,
-          cursor: widget.cursor);
-    } else {
-      Navigator.pushNamed(
-        context,
-        CheckoutScreen.routeName,
-        arguments: {
-          "recipientId":
-              widget.isFullScreen ? GlobalManager().connectUserId : null,
-          'variant': widget.product.variants![0],
-          'product': widget.product,
-          "cursor": widget.cursor
-        },
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
@@ -189,7 +147,21 @@ class _ProductCardState extends State<ProductCard> {
             ),
             child: Stack(
               children: [
-                if (widget.isFullScreen)
+                Align(
+                    alignment: widget.isFullScreen
+                        ? Alignment.center
+                        : Alignment(0, -0.7),
+                    child: widget.product.images.isNotEmpty &&
+                            _currentImageIndex < widget.product.images.length
+                        ? Image.network(
+                            widget.product.images[_currentImageIndex].url,
+                            fit: BoxFit.contain,
+                            height: widget.isFullScreen ? null : 160,
+                          )
+                        : Text(
+                            "Image not available",
+                          )),
+                if (widget.isFullScreen) ...[
                   Positioned(
                       top: 13,
                       left: 0,
@@ -232,20 +204,18 @@ class _ProductCardState extends State<ProductCard> {
                               }).toList(),
                             )),
                       )),
-                Align(
-                    alignment: widget.isFullScreen
-                        ? Alignment.center
-                        : Alignment(0, -0.7),
-                    child: widget.product.images.isNotEmpty &&
-                            _currentImageIndex < widget.product.images.length
-                        ? Image.network(
-                            widget.product.images[_currentImageIndex].url,
-                            fit: BoxFit.contain,
-                            height: widget.isFullScreen ? null : 160,
-                          )
-                        : Text(
-                            "Image not available",
-                          )),
+                  Positioned(
+                      top: 30,
+                      left: 2,
+                      right: 2,
+                      child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: buildProductTags(widget.product),
+                          )))
+                ],
                 if (widget.product.images.isNotEmpty) ...[
                   generateArrow(
                       _showPreviousImage,
@@ -278,38 +248,23 @@ class _ProductCardState extends State<ProductCard> {
                         size: widget.isFullScreen ? 20 : 15,
                       ),
                       SizedBox(height: 2),
+                      ProductPrice(
+                        product: widget.product,
+                        fontSize: widget.isFullScreen ? 16 : 13,
+                      ),
                       Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-                          child: RoundedBackgroundText(
-                            "${marketDetails["symbol"]}${widget.product.variants?[0].price}",
-                            backgroundColor: Colors.black.withOpacity(0.5),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: widget.isFullScreen ? 16 : 13,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  offset: Offset(1, 1),
-                                  blurRadius: 2,
-                                ),
-                              ],
-                            ),
-                          )),
-                      SizedBox(height: 5),
-                      Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                          padding: EdgeInsets.only(left: 6),
                           child: RoundedBackgroundText(
                             widget.product.title,
                             maxLines: 2,
-                            backgroundColor: Colors.black.withOpacity(0.5),
+                            backgroundColor: Colors.white.withOpacity(0.6),
                             style: TextStyle(
-                              color: Colors.white,
+                              fontFamily: "Muli",
+                              color: Colors.black,
                               fontSize: widget.isFullScreen ? 16 : 10,
                               shadows: [
                                 Shadow(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color: Colors.white.withOpacity(0.5),
                                   offset: Offset(1, 1),
                                   blurRadius: 2,
                                 ),
@@ -319,48 +274,6 @@ class _ProductCardState extends State<ProductCard> {
                     ],
                   ),
                 ),
-                if (widget.product.likedByUserName != null)
-                  Positioned.fill(
-                      top: widget.isFullScreen ? 40 : 0,
-                      child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            child:
-                                Row(mainAxisSize: MainAxisSize.min, children: [
-                              SvgPicture.asset(
-                                "assets/icons/Heart Icon_2.svg",
-                                colorFilter: ColorFilter.mode(
-                                    Colors.white, BlendMode.srcIn),
-                                height: getProportionateScreenWidth(16),
-                              ),
-                              SizedBox(
-                                width: getProportionateScreenWidth(5),
-                              ),
-                              Text(
-                                "${widget.product.likedByUserName}'s Wishes",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: widget.isFullScreen ? 13 : 11,
-                                ),
-                              ),
-                            ]),
-                          ))),
                 if (widget.product.variants == null)
                   Positioned.fill(
                     child: Align(
@@ -372,30 +285,21 @@ class _ProductCardState extends State<ProductCard> {
                   Positioned(
                       right: widget.isFullScreen ? 10 : -10,
                       bottom: widget.isFullScreen ? 40 : 10,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _onCheckoutPressed();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          shape: CircleBorder(),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SvgPicture.asset(
-                            "assets/icons/buy_now.svg",
-                            colorFilter:
-                                ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                            height: widget.isFullScreen ? 50 : 25,
-                          ),
+                      child: BuyNowIcon(
+                        elevation: widget.isFullScreen ? 1.5 : 0.0,
+                        height: widget.isFullScreen ? 50 : 25,
+                        situation: widget.situation,
+                        product: widget.product,
+                        cursor: widget.cursor,
+                        recipientId: widget.isFullScreen
+                            ? GlobalManager().connectUserId
+                            : null,
+                      )),
 // Icon(
 //                             Icons.card_giftcard,
 //                             color: Colors.black,
 //                             size: widget.isFullScreen ? 50 : 25,
 //                           ),
-                        ),
-                      )),
                   if (!widget.isFullScreen && GlobalManager().signedIn)
                     Positioned(
                         left: -10,

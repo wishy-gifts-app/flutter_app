@@ -52,6 +52,7 @@ class _MessageCardState extends State<MessageCard> {
           backgroundColor: Colors.black.withOpacity(0.5),
           textAlign: TextAlign.center,
           style: TextStyle(
+            fontFamily: "Muli",
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,

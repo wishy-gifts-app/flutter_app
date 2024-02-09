@@ -5,7 +5,7 @@ import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
-import 'package:Wishy/screens/login_success/login_success_screen.dart';
+import 'package:Wishy/screens/success/success_screen.dart';
 import 'package:Wishy/screens/matches/matches_screen.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
 import 'package:Wishy/screens/profile/profile_screen.dart';
@@ -17,7 +17,7 @@ import 'package:Wishy/screens/likes/likes_screen.dart';
 // All our routes will be available here
 final Map<String, WidgetBuilder> routes = {
   SignInScreen.routeName: (context) => SignInScreen(),
-  LoginSuccessScreen.routeName: (context) => LoginSuccessScreen(),
+  SuccessScreen.routeName: (context) => SuccessScreen(),
   CompleteProfileScreen.routeName: (context) => CompleteProfileScreen(),
   OtpScreen.routeName: (context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;

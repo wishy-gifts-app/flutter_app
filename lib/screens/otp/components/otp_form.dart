@@ -52,6 +52,7 @@ class _OtpFormState extends State<OtpForm> {
           ),
           SizedBox(height: SizeConfig.screenHeight * 0.15),
           DefaultButton(
+            isPressed: _isPressed,
             text: "Continue",
             press: handleOtpSubmission,
           )

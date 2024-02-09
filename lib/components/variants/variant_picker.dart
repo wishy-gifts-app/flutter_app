@@ -95,9 +95,9 @@ class VariantElement extends StatelessWidget {
             : kPrimaryColor.withOpacity(0.4)
         : enable
             ? Colors.transparent
-            : Colors.grey.withOpacity(0.5);
+            : kSecondaryColor.withOpacity(0.5);
 
-    Color borderColor = enable ? kPrimaryColor : kSecondaryColor;
+    Color borderColor = enable ? kPrimaryColor : Colors.transparent;
 
     Color textColor = isSelected
         ? Colors.white

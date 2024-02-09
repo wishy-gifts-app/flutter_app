@@ -48,6 +48,7 @@ class _MainProductsState extends State<MainProducts> {
   bool _triggerByServer = false;
   bool _loadingInteractive = false;
   int? _userCardId = null;
+  bool _deliveryDialogCompleted = false;
 
   void _initializePaginationService(String? cursor) {
     _paginationService = new GraphQLPaginationService(
@@ -63,20 +64,15 @@ class _MainProductsState extends State<MainProducts> {
 
   @override
   void initState() {
-    super.initState();
-    _initializePaginationService(GlobalManager().firstFeedCursor);
-
-    Future.delayed(Duration(seconds: 6), () {
-      if (mounted) _showAvailabilityDialogIfNeeded();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await DeliveryAvailabilityDialog.show(context);
+      setState(() {
+        _deliveryDialogCompleted = true;
+      });
     });
-  }
 
-  void _showAvailabilityDialogIfNeeded() {
-    if (GlobalManager().isDeliveryAvailable == null &&
-        GlobalManager().userLocation != null &&
-        !this._showAnimation) {
-      DeliveryAvailabilityDialog.show(context);
-    }
+    _initializePaginationService(GlobalManager().firstFeedCursor);
+    super.initState();
   }
 
   void _onSwipeUp(Product product) {
@@ -250,6 +246,13 @@ class _MainProductsState extends State<MainProducts> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_deliveryDialogCompleted)
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
     return Container(
         height: SizeConfig.screenHeight,
         child: Stack(children: [

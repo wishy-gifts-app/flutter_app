@@ -1,5 +1,6 @@
 import 'package:Wishy/components/animated_hint_text_field.dart';
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/wishy_ai.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
@@ -53,6 +54,7 @@ class _QuestionCardState extends State<QuestionCard> {
           backgroundColor: Colors.black.withOpacity(0.5),
           textAlign: TextAlign.center,
           style: TextStyle(
+            fontFamily: "Muli",
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -77,6 +79,7 @@ class _QuestionCardState extends State<QuestionCard> {
                   "Your budget",
                   backgroundColor: Colors.black.withOpacity(0.5),
                   style: TextStyle(
+                    fontFamily: "Muli",
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

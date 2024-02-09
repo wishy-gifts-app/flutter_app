@@ -51,14 +51,24 @@ const Map<String, String> graphqlQueries = {
           is_like
           is_available
           liked_by_user_name
+          additional_data
+          refound
+          shipping
+          original_price
+          price
           variants {
             id
             title
             weight
+            original_price
             price
             inventory_quantity
             attributes
-            image_id
+            image {
+              id
+              url
+              alt
+            }
           }
           images {
             id
@@ -98,14 +108,24 @@ const Map<String, String> graphqlQueries = {
           tags
           is_like
           is_available
+          price
+          original_price
+          additional_data
+          refound
+          shipping
           variants {
             id
             title
             weight
             price
+            original_price
             inventory_quantity
             attributes
-            image_id
+            image {
+              id
+              url
+              alt
+            }
           }
           images {
             id
@@ -145,14 +165,24 @@ const Map<String, String> graphqlQueries = {
           follower_id
           follower_name
           is_available
+          original_price
+          price
+          additional_data
+          refound
+          shipping
           variants {
             id
             title
             weight
             price
+            original_price
             inventory_quantity
             attributes
-            image_id
+            image {
+              id
+              url
+              alt
+            }
           }
           images {
             id
@@ -202,14 +232,24 @@ const Map<String, String> graphqlQueries = {
             shop_id
             like_created_at
             tags
+            price
+            original_price
+            additional_data
+            refound
+            shipping
             variants {
               id
               title
               weight
               price
+              original_price
               inventory_quantity
               attributes
-              image_id
+              image {
+                id
+                url
+                alt
+              }
             }
             images {
               id
@@ -480,14 +520,24 @@ const Map<String, String> graphqlQueries = {
             shop_id
             like_created_at
             tags
+            price
+            original_price
+            additional_data
+            refound
+            shipping
             variants {
               id
               title
               weight
               price
+              original_price
               inventory_quantity
               attributes
-              image_id
+              image {
+                id
+                url
+                alt
+              }
             }
             images {
               id

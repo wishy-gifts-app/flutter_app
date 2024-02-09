@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/search_contact.dart';
+import 'package:Wishy/components/wishy_ai.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -133,6 +134,7 @@ class _InviteCardState extends State<InviteCard> {
             backgroundColor: Colors.black.withOpacity(0.5),
             textAlign: TextAlign.center,
             style: TextStyle(
+              fontFamily: "Muli",
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -159,11 +161,14 @@ class _InviteCardState extends State<InviteCard> {
         key: _formKey,
         child: Column(
           children: [
+            WishyAIWithBackground(),
+            SizedBox(height: getProportionateScreenHeight(5)),
             RoundedBackgroundText(
               widget.question,
               backgroundColor: Colors.black.withOpacity(0.5),
               textAlign: TextAlign.center,
               style: TextStyle(
+                fontFamily: "Muli",
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -190,7 +195,7 @@ class _InviteCardState extends State<InviteCard> {
                 title: RoundedBackgroundText(
                   "Invitation Watch: Get quick updates on friend’s gift choices",
                   backgroundColor: Colors.white.withOpacity(0.9),
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontFamily: "Muli", fontSize: 12),
                 ),
                 value: _giveNotificationPermission,
                 onChanged: (bool? value) {
@@ -206,7 +211,7 @@ class _InviteCardState extends State<InviteCard> {
               "Tap to send secret SMS invites to explore Wishy's wishlist!",
               backgroundColor: Colors.white.withOpacity(0.9),
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontFamily: "Muli", fontSize: 14),
             ),
             SizedBox(height: getProportionateScreenHeight(5)),
             DefaultButton(

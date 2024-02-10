@@ -1,5 +1,4 @@
 import 'package:Wishy/components/custom_tag.dart';
-import 'package:Wishy/components/delivery_availability_icon.dart';
 import 'package:Wishy/components/product_price.dart';
 import 'package:Wishy/components/request_modal.dart';
 import 'package:Wishy/components/variants/buy_now_widget.dart';
@@ -244,10 +243,6 @@ class _ProductCardState extends State<ProductCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      DeliveryAvailabilityIcon(
-                        size: widget.isFullScreen ? 20 : 15,
-                      ),
-                      SizedBox(height: 2),
                       ProductPrice(
                         product: widget.product,
                         fontSize: widget.isFullScreen ? 16 : 13,

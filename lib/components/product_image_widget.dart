@@ -16,7 +16,7 @@ class ProductImageWidget extends StatelessWidget {
         child: Column(children: [
           Image.network(
             image,
-            height: 120,
+            height: 105,
             fit: BoxFit.cover,
           ),
         ]));

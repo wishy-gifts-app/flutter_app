@@ -1,3 +1,4 @@
+import 'package:Wishy/components/delivery_availability_icon.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,9 @@ class ProductPrice extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          DeliveryAvailabilityIcon(
+            size: fontSize * 1.25,
+          ),
           if (product.shipping?["card"] != null)
             Container(
                 padding: EdgeInsets.all(2),
@@ -66,8 +70,7 @@ class ProductPrice extends StatelessWidget {
                           decorationColor: kPrimaryLightColor,
                           color: kPrimaryLightColor,
                           decorationThickness: 2,
-                          fontSize:
-                              fontSize * 0.75, // Smaller than the current price
+                          fontSize: fontSize * 0.75,
                           shadows: [
                             Shadow(
                               color: Colors.white,

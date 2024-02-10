@@ -1,5 +1,19 @@
+import 'package:Wishy/models/Address.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/models/utils.dart';
+
+class StageData {
+  final String title, subtitle;
+
+  StageData({required this.title, required this.subtitle});
+
+  factory StageData.fromJson(Map<String, dynamic> json) {
+    return StageData(
+      title: convertValue<String>(json, 'title', true),
+      subtitle: convertValue<String>(json, 'subtitle', true),
+    );
+  }
+}
 
 class Order {
   final int id;
@@ -8,10 +22,12 @@ class Order {
   final int variantId;
   final int? recipientUserId;
   final String? recipientUserName;
+  final StageData? receiveStage, deliverStage, approveStage;
   final double price;
-  final DateTime? closedAt, arrivedAt, paidAt, approvedAt;
+  final DateTime? closedAt, arrivedAt, paidAt, approvedAt, deliveredAt;
   final DateTime? forDate;
   final Product product;
+  final Address address;
 
   Order(
       {required this.id,
@@ -20,8 +36,13 @@ class Order {
       required this.variantId,
       required this.price,
       required this.product,
+      required this.address,
       this.recipientUserId,
+      this.receiveStage,
+      this.approveStage,
+      this.deliverStage,
       this.approvedAt,
+      this.deliveredAt,
       this.arrivedAt,
       this.closedAt,
       this.paidAt,
@@ -30,6 +51,7 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
+      address: Address.fromJson(json["address"]),
       product: Product.fromJson(json["product"]),
       id: convertValue<int>(json, 'id', true),
       userId: convertValue<int>(json, 'user_id', true),
@@ -39,6 +61,7 @@ class Order {
       paidAt: convertValue<DateTime?>(json, 'paid_at', false),
       closedAt: convertValue<DateTime?>(json, 'closed_at', false),
       arrivedAt: convertValue<DateTime?>(json, 'arrived_at', false),
+      deliveredAt: convertValue<DateTime?>(json, 'delivered_at', false),
       approvedAt: convertValue<DateTime?>(json, 'approved_at', false),
       recipientUserId: convertValue<int?>(
         json,
@@ -47,6 +70,15 @@ class Order {
       ),
       recipientUserName:
           convertValue<String?>(json, 'recipient_user_name', false),
+      receiveStage: json['receive_stage'] != null
+          ? StageData.fromJson(json['receive_stage'])
+          : null,
+      deliverStage: json['deliver_stage'] != null
+          ? StageData.fromJson(json['deliver_stage'])
+          : null,
+      approveStage: json['approve_stage'] != null
+          ? StageData.fromJson(json['approve_stage'])
+          : null,
       forDate: convertValue<DateTime?>(json, 'for_date', false),
     );
   }

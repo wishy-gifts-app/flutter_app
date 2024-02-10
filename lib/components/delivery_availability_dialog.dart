@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 class DeliveryAvailabilityDialog {
   static bool isOpen = false;
   static Future<void> show(BuildContext context) async {
-    if (GlobalManager().isDeliveryAvailable != null) return;
-    if (!isOpen) {
+    if (!isOpen && GlobalManager().isDeliveryAvailable != true) {
       isOpen = true;
       await showDialog(
         context: context,

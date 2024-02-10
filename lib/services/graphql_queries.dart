@@ -224,6 +224,25 @@ const Map<String, String> graphqlQueries = {
           approved_at,
           paid_at,
           arrived_at,
+          delivered_at
+          approve_stage,
+          deliver_stage,
+          receive_stage,
+          address {
+            id
+            country
+            country_code
+            name
+            phone_number
+            state
+            city
+            zip_code
+            street_address
+            street_number
+            apartment
+            extra_details
+            created_user_id
+          },
           product {          
             id
             title

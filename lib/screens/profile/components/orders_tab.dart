@@ -1,9 +1,8 @@
+import 'package:Wishy/components/active_orders_widget.dart';
 import 'package:Wishy/components/empty_state_widget.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/history_product_card.dart';
-import 'package:Wishy/components/order_state.dart';
-import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Order.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/size_config.dart';
@@ -25,19 +24,11 @@ class _OrdersTabState extends State<OrdersTab> {
           variables: {"limit": 5, "active_orders": false});
   List<Order> activeOrders = [];
   List<Order> historyOrders = [];
-  ScrollController _activeOrdersController = ScrollController();
   ScrollController _historyOrdersController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-
-    _activeOrdersController.addListener(() {
-      if (_activeOrdersController.position.pixels ==
-          _activeOrdersController.position.maxScrollExtent) {
-        fetchActiveData();
-      }
-    });
 
     _historyOrdersController.addListener(() {
       if (_historyOrdersController.position.pixels ==
@@ -106,50 +97,8 @@ class _OrdersTabState extends State<OrdersTab> {
           delegate: SliverChildListDelegate(
         [
           SizedBox(height: getProportionateScreenHeight(10)),
-          if (activeOrders.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Active Orders',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            Container(
-              height: 250,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                controller: _activeOrdersController,
-                children: activeOrders.map((order) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedOrderIndex = activeOrders.indexOf(order);
-                      });
-                    },
-                    child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: 170,
-                          decoration: BoxDecoration(
-                            border: activeOrders.indexOf(order) ==
-                                    selectedOrderIndex
-                                ? Border.all(color: kPrimaryColor, width: 2.0)
-                                : null,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: HistoryProductCard(
-                            product: order.product,
-                            variantId: order.variantId,
-                            price: order.price,
-                            recipientUserName: order.recipientUserName,
-                          ),
-                        )),
-                  );
-                }).toList(),
-              ),
-            ),
-            OrderStatusStepper(
-              order: activeOrders[selectedOrderIndex],
-            ),
-          ],
+          if (activeOrders.isNotEmpty)
+            ActiveOrdersWidget(orders: activeOrders, nextPage: fetchActiveData),
           if (historyOrders.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -170,10 +119,7 @@ class _OrdersTabState extends State<OrdersTab> {
                   padding: EdgeInsets.all(0),
                   children: historyOrders.map((order) {
                     return HistoryProductCard(
-                      product: order.product,
-                      variantId: order.variantId,
-                      price: order.price,
-                      recipientUserName: order.recipientUserName,
+                      order: order,
                     );
                   }).toList(),
                 )),

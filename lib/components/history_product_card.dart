@@ -1,26 +1,21 @@
+import 'package:Wishy/components/address.dart';
+import 'package:Wishy/models/Order.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
-import 'package:Wishy/models/Product.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 
 class HistoryProductCard extends StatelessWidget {
-  final Product product;
-  final int variantId;
-  final double price;
-  final String? recipientUserName;
+  final Order order;
 
   const HistoryProductCard({
     Key? key,
-    required this.product,
-    required this.variantId,
-    required this.price,
-    required this.recipientUserName,
+    required this.order,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final variant = product.variants?.firstWhere(
-      (element) => element.id == variantId,
+    final variant = order.product.variants?.firstWhere(
+      (element) => element.id == order.variantId,
     );
 
     return Container(
@@ -40,17 +35,19 @@ class HistoryProductCard extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (recipientUserName != null && recipientUserName!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Gift for: ${recipientUserName}",
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontStyle: FontStyle.italic,
-                    ),
+              // if (order.recipientUserName != null &&
+              //     order.recipientUserName!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  // "Gift for: ${order.recipientUserName}",
+                  order.address.name,
+                  style: TextStyle(
+                    color: kPrimaryColor,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
+              ),
               if (variant?.title != null) ...[
                 RoundedBackgroundText(
                   variant!.title,
@@ -62,24 +59,37 @@ class HistoryProductCard extends StatelessWidget {
                   height: 4,
                 )
               ],
-              if (product.images.isNotEmpty)
+              if (order.product.images.isNotEmpty)
                 Image.network(
-                  variant?.image?.url ?? product.images[0].url,
+                  variant?.image?.url ?? order.product.images[0].url,
                   fit: BoxFit.contain,
                   height: 90,
                 )
               else
                 Text("Image not available"),
-              SizedBox(height: 10),
               Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Text(
-                    product.title,
-                    style: TextStyle(),
+                    order.product.title,
+                    style: TextStyle(fontSize: 12),
                     textAlign: TextAlign.center,
                     maxLines: 4,
                   )),
-              Text("${marketDetails["symbol"]}${price}"),
+              Text(
+                "${marketDetails["symbol"]}${order.price}",
+                style: TextStyle(fontSize: 10),
+              ),
+              Divider(
+                height: 12,
+                color: kPrimaryLightColor,
+              ),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: AddressSubtitle(
+                    address: order.address,
+                    fontSize: 9.5,
+                    textAlign: TextAlign.center,
+                  )),
             ],
           ),
         ]));

@@ -21,7 +21,7 @@ class Order {
   final int productId;
   final int variantId;
   final int? recipientUserId;
-  final String? recipientUserName;
+  final String? recipientUserName, trackUri, trackMessage;
   final StageData? receiveStage, deliverStage, approveStage;
   final double price;
   final DateTime? closedAt, arrivedAt, paidAt, approvedAt, deliveredAt;
@@ -38,6 +38,8 @@ class Order {
       required this.product,
       required this.address,
       this.recipientUserId,
+      this.trackUri,
+      this.trackMessage,
       this.receiveStage,
       this.approveStage,
       this.deliverStage,
@@ -68,6 +70,8 @@ class Order {
         'recipient_user_id',
         false,
       ),
+      trackUri: convertValue<String?>(json, 'track_uri', false),
+      trackMessage: convertValue<String?>(json, 'track_message', false),
       recipientUserName:
           convertValue<String?>(json, 'recipient_user_name', false),
       receiveStage: json['receive_stage'] != null

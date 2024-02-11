@@ -103,6 +103,7 @@ class _OrdersTabState extends State<OrdersTab> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text('History Orders',
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             Padding(

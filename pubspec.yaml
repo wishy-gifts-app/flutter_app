@@ -58,13 +58,11 @@ dependencies:
   animated_text_kit: ^4.2.2
   rounded_background_text: ^0.4.3
   font_awesome_flutter: ^10.6.0
-  device_info_plus: ^9.1.1
-  android_id: ^0.3.6
   uuid: ^4.1.0
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.9
   firebase_crashlytics: ^3.4.8
-  flutter_branch_sdk: ^7.0.3
+  flutter_branch_sdk: ^7.0.4
   flutter_stripe: ^10.0.0
   flutter_hooks: ^0.20.5
 

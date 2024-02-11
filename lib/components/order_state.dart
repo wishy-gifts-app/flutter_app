@@ -38,18 +38,18 @@ class OrderStatusStepper extends StatelessWidget {
       showStepBorder: false,
       steps: [
         EasyStep(
-            customStep: _generateCustomStep(
-                Icons.approval, order.paidAt != null, order.approvedAt != null),
+            customStep: _generateCustomStep(Icons.approval,
+                order.approvedAt != null, order.approvedAt != null),
             customTitle: _generateCustomStepTitle(order.approveStage!.title,
-                order.approveStage!.subtitle, order.paidAt != null)),
+                order.approveStage!.subtitle, order.approvedAt != null)),
         EasyStep(
             customStep: _generateCustomStep(Icons.delivery_dining,
-                order.approvedAt != null, order.deliveredAt != null),
+                order.deliveredAt != null, order.deliveredAt != null),
             customTitle: _generateCustomStepTitle(order.deliverStage!.title,
                 order.deliverStage!.subtitle, order.deliveredAt != null)),
         EasyStep(
             customStep: _generateCustomStep(Icons.shopping_bag,
-                order.deliveredAt != null, order.arrivedAt != null),
+                order.arrivedAt != null, order.arrivedAt != null),
             customTitle: _generateCustomStepTitle(order.receiveStage!.title,
                 order.receiveStage!.subtitle, order.arrivedAt != null)),
       ],

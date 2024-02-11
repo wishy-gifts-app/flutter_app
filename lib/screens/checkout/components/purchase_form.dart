@@ -53,10 +53,14 @@ class _PurchaseFormState extends State<PurchaseForm> {
   int _selectedPaymentIndex = 0;
 
   Future<void> onSubmit() async {
-    if (_paymentMethod != null &&
-        _selectedAddress != null &&
-        _checkout != null) {
-      final result = await _paymentMethod!();
+    if (_selectedAddress != null && _checkout != null) {
+      final result = await payByType(
+          GlobalManager().user!.paymentMethods[_selectedPaymentIndex].type,
+          context,
+          _selectedPaymentIndex,
+          GlobalManager().user!.paymentMethods[_selectedPaymentIndex],
+          _checkout?.clientSecret,
+          _checkout?.payAmount);
 
       if (result != null) {
         Navigator.pushNamedAndRemoveUntil(
@@ -102,13 +106,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
     }
   }
 
-  void _onPaymentSelected(
-      Function? payHandler, Widget? suffixElement, int index) {
+  void _onPaymentSelected(int index) {
     if (mounted) {
       setState(() {
         _selectedPaymentIndex = index;
-        _paymentMethod = payHandler;
-        _payButtonElement = suffixElement;
+        _payButtonElement = getPayButtonSuffixByType(
+            GlobalManager().user!.paymentMethods[index].type,
+            GlobalManager().user!.paymentMethods[index]);
       });
     }
   }
@@ -139,18 +143,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
 
     if (_paymentMethod == null)
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _onPaymentSelected(
-            () => payByType(
-                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
-                context,
-                _selectedPaymentIndex,
-                globalManger.user!.paymentMethods[_selectedPaymentIndex],
-                _checkout?.clientSecret,
-                _checkout?.payAmount),
-            getPayButtonSuffixByType(
-                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
-                globalManger.user!.paymentMethods[_selectedPaymentIndex]),
-            _selectedPaymentIndex);
+        _onPaymentSelected(_selectedPaymentIndex);
       });
 
     return Center(
@@ -229,8 +222,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                                 element: _payButtonElement,
                                 price: _checkout?.totalPrice ?? variant.price,
                                 onSubmit: onSubmit,
-                                enable:
-                                    _checkout != null && _paymentMethod != null,
+                                enable: _checkout != null,
                               ),
                             )))),
               )

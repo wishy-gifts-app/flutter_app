@@ -1,5 +1,6 @@
 import 'package:Wishy/components/history_product_card.dart';
 import 'package:Wishy/components/order_state.dart';
+import 'package:Wishy/components/web_view_link.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Order.dart';
 import 'package:flutter/material.dart';
@@ -68,9 +69,19 @@ class _ActiveOrdersWidgetState extends State<ActiveOrdersWidget> {
           }).toList(),
         ),
       ),
+      if (widget.orders[_selectedOrderIndex].trackUri != null &&
+          widget.orders[_selectedOrderIndex].trackMessage != null)
+        WebViewLink(
+            data: WebViewLinkData(
+                linkText: widget.orders[_selectedOrderIndex].trackMessage!,
+                uri: widget.orders[_selectedOrderIndex].trackUri!,
+                webViewTitle: "Track Delivery Status")),
       OrderStatusStepper(
         order: widget.orders[_selectedOrderIndex],
       ),
+      SizedBox(
+        height: 25,
+      )
     ]);
   }
 }

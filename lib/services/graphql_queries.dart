@@ -224,7 +224,9 @@ const Map<String, String> graphqlQueries = {
           approved_at,
           paid_at,
           arrived_at,
-          delivered_at
+          delivered_at,
+          track_uri,
+          track_message,
           approve_stage,
           deliver_stage,
           receive_stage,
@@ -350,7 +352,7 @@ const Map<String, String> graphqlQueries = {
         payment_methods {
           id
           user_id
-          method
+          type
           last_digits
           payment_id
           last_updated_at
@@ -429,7 +431,7 @@ const Map<String, String> graphqlQueries = {
         payment_methods {
           id
           user_id
-          method
+          type
           last_digits
           payment_id
           last_updated_at

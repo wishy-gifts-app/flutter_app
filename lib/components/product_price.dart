@@ -34,11 +34,11 @@ class ProductPrice extends StatelessWidget {
                 ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.local_shipping,
-                      color: kShippingColor, size: fontSize),
+                      color: kAlertColor, size: fontSize),
                   SizedBox(width: 4),
                   Text(product.shipping!["card"],
                       style: TextStyle(
-                          color: kShippingColor, fontSize: fontSize * 0.8)),
+                          color: kAlertColor, fontSize: fontSize * 0.8)),
                 ])),
           Padding(
               padding: EdgeInsets.only(left: 6),

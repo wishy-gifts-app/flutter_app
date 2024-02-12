@@ -144,7 +144,7 @@ class _StepProgressBarState extends State<StepProgressBar> {
       case StepTypes.discount:
         return generateStepWrapper(
             Image.asset(
-              'assets/images/android_icon.png',
+              'assets/images/icon.png',
               width: width,
             ),
             tooltipText!,

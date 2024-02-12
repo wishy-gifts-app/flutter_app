@@ -93,8 +93,8 @@ class _InteractiveCardState extends State<InteractiveCard> {
               ? DecorationImage(
                   image: AssetImage(
                       widget.interactiveCardData.backgroundImagePath),
-                  fit: BoxFit.cover,
-                )
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.bottomCenter)
               : DecorationImage(
                   image: NetworkImage(
                       widget.interactiveCardData.backgroundImagePath),

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/search_contact.dart';
-import 'package:Wishy/components/wishy_ai.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -131,18 +131,18 @@ class _InviteCardState extends State<InviteCard> {
         children: [
           RoundedBackgroundText(
             "View ${widget.connectUser}'s Wishlist to find the perfect gift!",
-            backgroundColor: Colors.black.withOpacity(0.5),
+            backgroundColor: Colors.white.withOpacity(0.8),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: "Muli",
-              color: Colors.white,
+              color: kPrimaryColor,
               fontSize: 18,
               fontWeight: FontWeight.w600,
               wordSpacing: 1,
               height: 1.2,
               shadows: [
                 Shadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.white.withOpacity(0.8),
                   offset: Offset(1, 1),
                   blurRadius: 2,
                 ),
@@ -161,29 +161,28 @@ class _InviteCardState extends State<InviteCard> {
         key: _formKey,
         child: Column(
           children: [
-            WishyAIWithBackground(),
-            SizedBox(height: getProportionateScreenHeight(5)),
+            SizedBox(height: getProportionateScreenHeight(38)),
             RoundedBackgroundText(
               widget.question,
-              backgroundColor: Colors.black.withOpacity(0.5),
+              backgroundColor: Colors.white.withOpacity(0.8),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: "Muli",
-                color: Colors.white,
+                color: kPrimaryColor,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 wordSpacing: 1,
                 height: 1.2,
                 shadows: [
                   Shadow(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.white.withOpacity(0.5),
                     offset: Offset(1, 1),
                     blurRadius: 2,
                   ),
                 ],
               ),
             ),
-            SizedBox(height: getProportionateScreenHeight(30)),
+            SizedBox(height: getProportionateScreenHeight(80)),
             SearchContactWidget(
                 onNameChanged: _handleNameChanged,
                 onPhoneChanged: _handlePhoneChanged,
@@ -209,7 +208,7 @@ class _InviteCardState extends State<InviteCard> {
             SizedBox(height: getProportionateScreenHeight(20)),
             RoundedBackgroundText(
               "Tap to send secret SMS invites to explore Wishy's wishlist!",
-              backgroundColor: Colors.white.withOpacity(0.9),
+              backgroundColor: Colors.white.withOpacity(0.8),
               textAlign: TextAlign.center,
               style: TextStyle(fontFamily: "Muli", fontSize: 14),
             ),

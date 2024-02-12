@@ -4,7 +4,7 @@ class WishyAIWithBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: Colors.white.withOpacity(0.8),
         radius: 30,
         child: Padding(
             padding: EdgeInsets.all(8),

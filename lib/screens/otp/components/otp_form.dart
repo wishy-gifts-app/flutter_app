@@ -1,3 +1,4 @@
+import 'package:Wishy/utils/user_details.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/constants.dart';
@@ -90,6 +91,10 @@ class _OtpFormState extends State<OtpForm> {
       AnalyticsService.trackEvent(
         analyticEvents["OPT_SUBMITTED"]!,
       );
+
+      if (result.profileCompleted) {
+        setUserDetails();
+      }
 
       if (mounted) {
         RouterUtils.routeToHomePage();

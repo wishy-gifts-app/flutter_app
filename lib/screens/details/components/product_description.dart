@@ -35,23 +35,22 @@ class ProductDescription extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white, width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
+                      border: Border.all(color: kAlertColor, width: 2),
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.black.withOpacity(0.5),
+                      //     spreadRadius: 1,
+                      //     blurRadius: 2,
+                      //     offset: Offset(0, 1),
+                      //   ),
+                      // ],
                     ),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
                       SvgPicture.asset(
                         "assets/icons/Heart Icon_2.svg",
                         colorFilter:
-                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                            ColorFilter.mode(kAlertColor, BlendMode.srcIn),
                         height: getProportionateScreenWidth(16),
                       ),
                       SizedBox(
@@ -61,7 +60,7 @@ class ProductDescription extends StatelessWidget {
                         "${product.likedByUserName} Wishes",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: kAlertColor,
                           fontSize: 11,
                         ),
                       ),
@@ -97,12 +96,11 @@ class ProductDescription extends StatelessWidget {
                   ),
                   Column(mainAxisSize: MainAxisSize.min, children: [
                     if (product.shipping?["details"] != null) ...[
-                      Icon(Icons.local_shipping,
-                          color: kShippingColor, size: 16),
+                      Icon(Icons.local_shipping, color: kAlertColor, size: 16),
                       Text(product.shipping!["details"],
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: kShippingColor,
+                              color: kAlertColor,
                               fontSize: 13,
                               letterSpacing: 0.4,
                               height: 1.2)),
@@ -111,7 +109,7 @@ class ProductDescription extends StatelessWidget {
                     if (product.refound != null)
                       Text(product.refound!,
                           style: TextStyle(
-                              color: kShippingColor,
+                              color: kAlertColor,
                               fontSize: 10,
                               fontWeight: FontWeight.bold)),
                   ])

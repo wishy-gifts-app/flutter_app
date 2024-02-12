@@ -42,7 +42,8 @@ const analyticEvents = {
 };
 
 const kPrimaryColor = Colors.black;
-const kShippingColor = Color(0xFF1B5E20);
+const kAlertColor = Color.fromRGBO(245, 124, 0, 1);
+//  Color(0xFF1B5E20);
 const kPrimaryLightColor = Colors.grey;
 const kPrimaryGradientColor = LinearGradient(
   begin: Alignment.topLeft,

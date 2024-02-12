@@ -1,3 +1,4 @@
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,7 +29,7 @@ class CustomTag extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.black,
+              color: kAlertColor,
               fontWeight: FontWeight.bold,
               shadows: [
                 Shadow(
@@ -71,10 +72,10 @@ List<Widget> buildProductTags(Product product) {
           text: "${product.likedByUserName}'s Wishes",
           icon: SvgPicture.asset(
             "assets/icons/Heart Icon_2.svg",
-            colorFilter: ColorFilter.mode(Colors.red, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(kAlertColor, BlendMode.srcIn),
             height: 16,
           ),
-          color: Colors.red),
+          color: kAlertColor),
       SizedBox(
         height: 3,
       )

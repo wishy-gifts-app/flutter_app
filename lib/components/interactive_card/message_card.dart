@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
@@ -49,18 +50,18 @@ class _MessageCardState extends State<MessageCard> {
       children: [
         RoundedBackgroundText(
           widget.question,
-          backgroundColor: Colors.black.withOpacity(0.5),
+          backgroundColor: Colors.white.withOpacity(0.8),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: "Muli",
-            color: Colors.white,
+            color: kPrimaryColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             wordSpacing: 1,
             height: 1.2,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.white.withOpacity(0.8),
                 offset: Offset(1, 1),
                 blurRadius: 2,
               ),

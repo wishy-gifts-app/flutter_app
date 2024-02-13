@@ -1,4 +1,5 @@
 import 'package:Wishy/screens/requests/requests_screen.dart';
+import 'package:Wishy/screens/rewards/rewards_screen.dart';
 import 'package:Wishy/screens/success/components/body.dart';
 import 'package:flutter/widgets.dart';
 import 'package:Wishy/models/Product.dart';
@@ -6,6 +7,7 @@ import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/screens/complete_profile/complete_profile_screen.dart';
 import 'package:Wishy/screens/details/details_screen.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
+// import 'package:Wishy/screens/matches/matches_screen.dart';
 import 'package:Wishy/screens/success/success_screen.dart';
 import 'package:Wishy/screens/matches/matches_screen.dart';
 import 'package:Wishy/screens/otp/otp_screen.dart';
@@ -36,7 +38,7 @@ final Map<String, WidgetBuilder> routes = {
   },
   HomeScreen.routeName: (context) => HomeScreen(),
   LikesScreen.routeName: (context) => LikesScreen(),
-  MatchesScreen.routeName: (context) => MatchesScreen(),
+  RewardsScreen.routeName: (context) => RewardsScreen(),
   DetailsScreen.routeName: (context) => DetailsScreen(),
   ProfileScreen.routeName: (context) => ProfileScreen(),
   RequestsScreen.routeName: (context) => RequestsScreen(),

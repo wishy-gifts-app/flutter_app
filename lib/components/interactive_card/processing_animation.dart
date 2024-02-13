@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:Wishy/constants.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:flutter/material.dart';
 
@@ -95,16 +96,16 @@ class _ProcessingAnimationWidgetState extends State<ProcessingAnimationWidget>
               height: 250,
               alignment: Alignment.center,
               padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.transparent, Colors.white.withOpacity(0.1)],
-                ),
-              ),
+              // decoration: BoxDecoration(
+              //   gradient: LinearGradient(
+              //     begin: Alignment.topLeft,
+              //     end: Alignment.bottomRight,
+              //     // colors: [Colors.transparent, Colors.white.withOpacity(0.1)],
+              //   ),
+              // ),
               child: AnimatedCrossFade(
                 duration: const Duration(milliseconds: 500),
-                firstChild: _buildItem('assets/images/android_icon.png'),
+                firstChild: _buildItem('assets/images/icon.png'),
                 secondChild:
                     _buildItem('assets/images/recommendations-image.png'),
                 crossFadeState: widget.refetchProducts
@@ -126,17 +127,18 @@ class _ProcessingAnimationWidgetState extends State<ProcessingAnimationWidget>
         SizedBox(height: 20),
         RoundedBackgroundText(
           widget.message,
-          backgroundColor: Colors.black.withOpacity(0.5),
+          backgroundColor: Colors.white.withOpacity(0.8),
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white,
+            fontFamily: "Muli",
+            color: kPrimaryColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             wordSpacing: 1,
             height: 1.2,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.white.withOpacity(0.5),
                 offset: Offset(1, 1),
                 blurRadius: 2,
               ),

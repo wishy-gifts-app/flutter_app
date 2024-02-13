@@ -37,6 +37,7 @@ Future<dynamic> graphQLQueryHandler(
         "Content-Type": "application/json",
         "auth": token!,
         "user_country": GlobalManager().userLocation?.country ?? "",
+        "shipping_country": GlobalManager().shippingCountry ?? "",
         "iso_code": GlobalManager().userLocation?.isoCode ?? "",
         "session": GlobalManager().session ?? "",
       },

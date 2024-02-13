@@ -124,6 +124,7 @@ class _AddressesWidgetState extends State<AddressesWidget> {
                   _selectedAddressIndex = 0;
                 });
                 widget.onAddressSelected(address);
+                Navigator.of(context).pop();
               },
               defaultUser: widget.defaultUser,
             )));

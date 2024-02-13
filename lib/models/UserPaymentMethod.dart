@@ -1,6 +1,6 @@
 import 'utils.dart';
 
-enum PaymentMethods { card, google_pay, cash_app, new_version }
+enum PaymentMethods { card, google_pay, cashapp, new_version }
 
 PaymentMethods getPaymentMethodFromString(String methodString) {
   for (var method in PaymentMethods.values) {
@@ -12,7 +12,7 @@ PaymentMethods getPaymentMethodFromString(String methodString) {
 }
 
 class UserPaymentMethod {
-  final PaymentMethods method;
+  final PaymentMethods type;
   final int userId;
   final int? id;
   final String? paymentId, lastDigits;
@@ -20,7 +20,7 @@ class UserPaymentMethod {
   final DateTime? lastUpdatedAt;
 
   UserPaymentMethod({
-    required this.method,
+    required this.type,
     required this.userId,
     this.id,
     this.paymentId,
@@ -32,7 +32,7 @@ class UserPaymentMethod {
   factory UserPaymentMethod.fromJson(Map<String, dynamic> json) {
     return UserPaymentMethod(
       userId: convertValue<int>(json, 'user_id', true),
-      method: getPaymentMethodFromString(json["method"]),
+      type: getPaymentMethodFromString(json["type"]),
       id: convertValue<int?>(json, 'id', false),
       paymentId: convertValue<String?>(json, 'payment_id', false),
       lastDigits: convertValue<String?>(json, 'last_digits', false),

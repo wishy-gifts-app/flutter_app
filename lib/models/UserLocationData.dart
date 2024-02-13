@@ -2,11 +2,15 @@ import 'utils.dart';
 
 class UserLocationData {
   final String? country;
+  final String? shippingCountry;
   final String? isoCode;
   final bool isProductsAvailable;
 
   UserLocationData(
-      {this.country, this.isoCode, this.isProductsAvailable = true});
+      {this.country,
+      this.isoCode,
+      this.isProductsAvailable = true,
+      this.shippingCountry});
 
   factory UserLocationData.fromJson(Map<String, dynamic> json) {
     return UserLocationData(

@@ -51,14 +51,24 @@ const Map<String, String> graphqlQueries = {
           is_like
           is_available
           liked_by_user_name
+          additional_data
+          refound
+          shipping
+          original_price
+          price
           variants {
             id
             title
             weight
+            original_price
             price
             inventory_quantity
             attributes
-            image_id
+            image {
+              id
+              url
+              alt
+            }
           }
           images {
             id
@@ -98,14 +108,24 @@ const Map<String, String> graphqlQueries = {
           tags
           is_like
           is_available
+          price
+          original_price
+          additional_data
+          refound
+          shipping
           variants {
             id
             title
             weight
             price
+            original_price
             inventory_quantity
             attributes
-            image_id
+            image {
+              id
+              url
+              alt
+            }
           }
           images {
             id
@@ -145,14 +165,24 @@ const Map<String, String> graphqlQueries = {
           follower_id
           follower_name
           is_available
+          original_price
+          price
+          additional_data
+          refound
+          shipping
           variants {
             id
             title
             weight
             price
+            original_price
             inventory_quantity
             attributes
-            image_id
+            image {
+              id
+              url
+              alt
+            }
           }
           images {
             id
@@ -173,13 +203,13 @@ const Map<String, String> graphqlQueries = {
       \$limit: Int!,
       \$skip: Int
       \$cursor: String,
-      \$is_order_completed: Boolean!,
+      \$active_orders: Boolean!,
     ) {
       getUserOrders(
         limit: \$limit,
         skip: \$skip,
         cursor: \$cursor,
-        is_order_completed: \$is_order_completed
+        active_orders: \$active_orders
       ) {
         results {
           id,
@@ -190,9 +220,31 @@ const Map<String, String> graphqlQueries = {
           recipient_user_name,
           for_date,
           price,
-          is_order_completed,
-          is_order_approved,
-          is_in_delivery,
+          closed_at,
+          approved_at,
+          paid_at,
+          arrived_at,
+          delivered_at,
+          track_uri,
+          track_message,
+          approve_stage,
+          deliver_stage,
+          receive_stage,
+          address {
+            id
+            country
+            country_code
+            name
+            phone_number
+            state
+            city
+            zip_code
+            street_address
+            street_number
+            apartment
+            extra_details
+            created_user_id
+          },
           product {          
             id
             title
@@ -202,14 +254,24 @@ const Map<String, String> graphqlQueries = {
             shop_id
             like_created_at
             tags
+            price
+            original_price
+            additional_data
+            refound
+            shipping
             variants {
               id
               title
               weight
               price
+              original_price
               inventory_quantity
               attributes
-              image_id
+              image {
+                id
+                url
+                alt
+              }
             }
             images {
               id
@@ -287,6 +349,14 @@ const Map<String, String> graphqlQueries = {
         name
         phone_number
         email
+        payment_methods {
+          id
+          user_id
+          type
+          last_digits
+          payment_id
+          last_updated_at
+        }
         addresses {
           id
           country
@@ -361,7 +431,7 @@ const Map<String, String> graphqlQueries = {
         payment_methods {
           id
           user_id
-          method
+          type
           last_digits
           payment_id
           last_updated_at
@@ -480,14 +550,24 @@ const Map<String, String> graphqlQueries = {
             shop_id
             like_created_at
             tags
+            price
+            original_price
+            additional_data
+            refound
+            shipping
             variants {
               id
               title
               weight
               price
+              original_price
               inventory_quantity
               attributes
-              image_id
+              image {
+                id
+                url
+                alt
+              }
             }
             images {
               id

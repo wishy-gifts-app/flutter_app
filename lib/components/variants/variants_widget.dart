@@ -1,11 +1,7 @@
-import 'package:Wishy/components/delivery_availability_dialog.dart';
-import 'package:Wishy/global_manager.dart';
+import 'package:Wishy/components/product_image_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:Wishy/components/default_button.dart';
-import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/components/variants/variants_form.dart';
-import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/size_config.dart';
 import '../../../components/top_rounded_container.dart';
 
@@ -42,31 +38,6 @@ bool isAllAttributesExists(
   });
 }
 
-// Map<String, List<Attribute>> getAvailableAttributesByName(
-//     List<Attribute> attributes, List<Variant> variants) {
-//   List<Map<String, Attribute>> variantAttributesMaps = variants.map((variant) {
-//     return Map.fromIterable(variant.attributes ?? [],
-//         key: (attr) => attr.name as String, value: (attr) => attr as Attribute);
-//   }).toList();
-
-//   Map<String, Set<Attribute>> availableAttributesByName = {};
-
-//   for (var attribute in attributes) {
-//     Set<Attribute> availableAttributes = {};
-
-//     for (var variantAttributesMap in variantAttributesMaps) {
-//       if (variantAttributesMap.containsKey(attribute.name)) {
-//         availableAttributes.add(variantAttributesMap[attribute.name]!);
-//       }
-//     }
-
-//     availableAttributesByName[attribute.name] = availableAttributes;
-//   }
-
-//   return availableAttributesByName
-//       .map((key, value) => MapEntry(key, value.toList()));
-// }
-
 Map<String, List<Attribute>> getAvailableAttributesByName(
     List<Attribute> selectedAttributes, List<Variant> variants) {
   Map<String, List<Attribute>> availableAttributesByName = {};
@@ -101,21 +72,28 @@ Map<String, List<Attribute>> getAvailableAttributesByName(
 class VariantsWidget extends StatefulWidget {
   final String situation, buttonText;
   final Product product;
-  final int? variantId, recipientId;
-  final String? productTitle, cursor;
-  final bool withBuyButton;
+  final int? recipientId;
+  final Variant defaultVariant;
+  final String? cursor, title;
+  final Widget Function(Color, BuildContext)? buyButton;
   final Function(Variant? type)? onVariantChange;
+  final int? chosenVariantId;
+  final double firstMargin;
+  final Color startColor;
 
   const VariantsWidget({
     Key? key,
     required this.situation,
     required this.product,
-    this.productTitle,
     this.onVariantChange,
+    this.firstMargin = 20,
+    this.startColor = const Color(0xFFF6F7F9),
     this.buttonText = "Buy Now",
-    this.variantId,
-    this.withBuyButton = true,
+    required this.defaultVariant,
+    this.chosenVariantId,
     this.recipientId,
+    this.buyButton,
+    this.title,
     this.cursor = null,
   }) : super(key: key);
 
@@ -160,39 +138,16 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     });
   }
 
-  void _onBuyPressed(BuildContext context) async {
-    if (!GlobalManager().isDeliveryAvailable!) {
-      await DeliveryAvailabilityDialog.show(context);
-
-      if (!GlobalManager().isDeliveryAvailable!) {
-        return;
-      }
-    }
-
-    Navigator.pushNamed(
-      context,
-      CheckoutScreen.routeName,
-      arguments: {
-        'variant': this.selectedVariant,
-        'product': widget.product,
-        'recipientId': widget.recipientId,
-        'cursor': widget.cursor,
-      },
-    );
-  }
-
   @override
   void initState() {
-    chosenVariant = widget.variantId != null
-        ? getAttributesMapById(widget.variantId!, widget.product.variants!)
+    selectedVariant = widget.defaultVariant;
+    chosenVariant = widget.chosenVariantId != null
+        ? getAttributesMapById(
+            widget.chosenVariantId!, widget.product.variants!)
         : null;
-
-    selectedVariant = widget.variantId != null
-        ? widget.product.variants!
-            .firstWhere((element) => element.id == widget.variantId!)
-        : widget.product.variants![0];
-    currentAttributes =
-        selectedVariant!.attributes!.map((attribute) => attribute).toList();
+    currentAttributes = widget.defaultVariant.attributes!
+        .map((attribute) => attribute)
+        .toList();
     _handleVariantSelection(currentAttributes, null);
     super.initState();
   }
@@ -202,67 +157,73 @@ class _VariantsWidgetState extends State<VariantsWidget> {
     final variantsWithChildren =
         getVariantsDataWithChildren(widget.product.variants!);
 
-    return (buildVariantsSectionWithButton(
-        variantsWithChildren!, secondColor, context, chosenVariant));
+    return Stack(children: [
+      widget.title == null
+          ? buildVariantsSectionWithButton(
+              variantsWithChildren!, widget.startColor, context, chosenVariant,
+              isFirst: true, startMargin: widget.firstMargin)
+          : _buildVariantsWithTitle(
+              variantsWithChildren!, widget.startColor, context)
+    ]);
   }
 
-  TopRoundedContainer buildButton(Color color, BuildContext context) {
+  TopRoundedContainer _buildVariantsWithTitle(
+    Map<String, dynamic> variantsWithChildren,
+    Color color,
+    BuildContext context,
+  ) {
     return TopRoundedContainer(
-      color: color,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: SizeConfig.screenWidth * 0.15,
-          right: SizeConfig.screenWidth * 0.15,
-          bottom: getProportionateScreenWidth(40),
-          top: getProportionateScreenWidth(15),
-        ),
-        child: DefaultButton(
-          text:
-              "${widget.buttonText} ${marketDetails["symbol"]}${(this.selectedVariant ?? widget.product.variants![0]).price}",
-          eventName: analyticEvents["CHECKOUT_PRESSED"]!,
-          eventData: {
-            "Product Id": widget.product.id,
-            "Product Title": widget.productTitle,
-            "Situation": widget.situation,
-            "Variant Picked": true,
-            "Variants Exist": true,
-            "Delivery Availability": GlobalManager().isDeliveryAvailable
-          },
-          enable: selectedVariant != null,
-          press: () => _onBuyPressed(context),
-        ),
-      ),
-    );
+        margin: widget.firstMargin,
+        padding: 6,
+        color: color,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ProductImageWidget(product: widget.product, variant: selectedVariant),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            widget.title!,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          buildVariantsSectionWithButton(
+              variantsWithChildren, color, context, chosenVariant,
+              isFirst: true, startMargin: 10),
+        ]));
   }
 
   TopRoundedContainer buildVariantsSectionWithButton(
       Map<String, dynamic> variantsWithChildren,
       Color color,
       BuildContext context,
-      Map<String, dynamic>? chosenVariantMap) {
+      Map<String, dynamic>? chosenVariantMap,
+      {bool isFirst = false,
+      double startMargin = 20}) {
     Color nextColor = color == firstColor ? secondColor : firstColor;
 
     return TopRoundedContainer(
-      color: color,
-      child: Column(children: [
-        getVariantWidget(
-            variantsWithChildren["type"],
-            variantsWithChildren["values"],
-            _onVariantChange,
-            chosenVariantMap != null
-                ? chosenVariantMap[variantsWithChildren["type"]]
-                : null,
-            availableVariantsByName[variantsWithChildren["type"]]),
-        if (variantsWithChildren["child"] != null)
-          buildVariantsSectionWithButton(variantsWithChildren["child"],
-              nextColor, context, chosenVariantMap)
-        else
-          widget.withBuyButton
-              ? buildButton(nextColor, context)
-              : SizedBox(
-                  height: getProportionateScreenHeight(10),
-                )
-      ]),
-    );
+        margin: isFirst ? startMargin : 20,
+        color: color,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          getVariantWidget(
+              variantsWithChildren["type"],
+              variantsWithChildren["values"],
+              _onVariantChange,
+              chosenVariantMap != null
+                  ? chosenVariantMap[variantsWithChildren["type"]]
+                  : null,
+              availableVariantsByName[variantsWithChildren["type"]]),
+          if (variantsWithChildren["child"] != null)
+            buildVariantsSectionWithButton(variantsWithChildren["child"],
+                nextColor, context, chosenVariantMap)
+          else
+            widget.buyButton != null
+                ? widget.buyButton!(nextColor, context)
+                : SizedBox(
+                    height: getProportionateScreenHeight(10),
+                  )
+        ]));
   }
 }

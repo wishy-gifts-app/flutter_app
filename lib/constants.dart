@@ -42,6 +42,8 @@ const analyticEvents = {
 };
 
 const kPrimaryColor = Colors.black;
+const kAlertColor = Color.fromRGBO(245, 124, 0, 1);
+//  Color(0xFF1B5E20);
 const kPrimaryLightColor = Colors.grey;
 const kPrimaryGradientColor = LinearGradient(
   begin: Alignment.topLeft,
@@ -84,6 +86,7 @@ const marketDetails = {
   "symbol": "\$",
   "google_country": "us",
   "country": "USA",
+  "country_full_name": "United States",
   "currency": "usd",
   "short": "USD"
 };

@@ -1,12 +1,30 @@
 import 'utils.dart';
 
+class AdditionalData {
+  final List<String> aiRecommendations;
+  final String? anotherDetails;
+
+  AdditionalData(
+      {required this.aiRecommendations, required this.anotherDetails});
+
+  factory AdditionalData.fromJson(Map<String, dynamic> json) {
+    return AdditionalData(
+      aiRecommendations: convertList<String>(json["ai_recommendations"]),
+      anotherDetails: convertValue<String?>(json, 'another_details', false),
+    );
+  }
+}
+
 class Product extends Identifiable {
   final int id;
   final String title;
   final double price;
+  final double? originalPrice;
+  final Map<String, dynamic>? shipping;
+  final AdditionalData additionalData;
   final List<Variant>? variants;
   final List<ProductImage> images;
-  final String? vendorName, description, followerName, likedByUserName;
+  final String? vendorName, description, followerName, likedByUserName, refound;
   final DateTime? likeCreatedAt;
   final bool? isLike;
   final bool isAvailable;
@@ -21,6 +39,10 @@ class Product extends Identifiable {
     required this.images,
     required this.price,
     required this.variants,
+    required this.additionalData,
+    this.refound,
+    this.shipping,
+    this.originalPrice,
     this.vendorName,
     this.likeCreatedAt,
     this.isLike = null,
@@ -43,6 +65,10 @@ class Product extends Identifiable {
       followerId: convertValue<int?>(json, 'follower_id', false),
       followerName: convertValue<String?>(json, 'follower_name', false),
       price: convertValue<double>(json, 'price', true, defaultValue: 0),
+      originalPrice: convertValue<double?>(json, 'original_price', false),
+      additionalData: AdditionalData.fromJson(json["additional_data"]),
+      refound: convertValue<String?>(json, 'refound', false),
+      shipping: json["shipping"],
       images: json['images'] != null
           ? (json['images'] as List<dynamic>)
               .map((imageJson) => ProductImage.fromJson(imageJson))
@@ -60,8 +86,11 @@ class Product extends Identifiable {
         false,
       ),
       deletedAt: convertValue<DateTime?>(json, 'deleted_at', false),
-      tags:
-          (json['tags'] as List<dynamic>).map((tag) => tag.toString()).toList(),
+      tags: json["tags"] != null && json['tags'].length > 0
+          ? (json['tags'] as List<dynamic>)
+              .map((tag) => tag.toString())
+              .toList()
+          : [],
     );
   }
 }
@@ -108,9 +137,10 @@ class Variant {
   final String title;
   final List<Attribute>? attributes;
   final double price;
+  final double? originalPrice;
   final double? weight;
   final int inventoryQuantity;
-  final int? imageId;
+  final ProductImage? image;
 
   Variant({
     required this.id,
@@ -119,7 +149,8 @@ class Variant {
     required this.price,
     required this.inventoryQuantity,
     required this.attributes,
-    this.imageId,
+    this.image,
+    this.originalPrice,
   });
 
   factory Variant.fromJson(Map<String, dynamic> json) {
@@ -133,30 +164,10 @@ class Variant {
               .map((item) => Attribute.fromJson(item))
               .toList()
           : null,
-      imageId: convertValue<int?>(json, 'image_id', false),
+      image:
+          json["image"] != null ? ProductImage.fromJson(json["image"]) : null,
       inventoryQuantity: convertValue<int>(json, 'inventory_quantity', true),
     );
-  }
-
-  Map<String, dynamic> _toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'weight': weight,
-      'price': price,
-      'image_id': imageId,
-      'color': attributes,
-      'inventoryQuantity': inventoryQuantity,
-      'attributes': attributes
-    };
-  }
-
-  dynamic get(String propertyName) {
-    var _mapRep = _toMap();
-    if (_mapRep.containsKey(propertyName)) {
-      return _mapRep[propertyName];
-    }
-    throw ArgumentError('property not found');
   }
 }
 

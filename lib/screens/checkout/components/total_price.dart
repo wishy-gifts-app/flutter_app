@@ -47,8 +47,7 @@ class TotalPriceWidget extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (variantDescription != "" &&
-                        variantDescription != null) ...[
+                    if (variantDescription != "" && variantDescription != null)
                       TextSpan(
                         text: ", $variantDescription",
                         style: TextStyle(
@@ -56,17 +55,28 @@ class TotalPriceWidget extends StatelessWidget {
                           fontWeight: FontWeight.normal,
                         ),
                       ),
-                    ],
                   ],
                 ),
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              "${marketDetails["symbol"]}${variant.price}",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            )
+            Column(children: [
+              Text(
+                "${marketDetails["symbol"]}${variant.price}",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              if (variant.originalPrice != null)
+                Text(
+                  "${variant.originalPrice}",
+                  style: TextStyle(
+                      fontSize: 12,
+                      decoration: TextDecoration.lineThrough,
+                      decorationColor: kPrimaryLightColor,
+                      color: kPrimaryLightColor,
+                      decorationThickness: 2),
+                )
+            ])
           ]),
       if (showDeliveryPrice) ...[
         SizedBox(

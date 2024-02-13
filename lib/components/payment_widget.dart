@@ -23,7 +23,7 @@ Widget getPayButtonSuffixByType(
         height: 25,
       );
       break;
-    case PaymentMethods.cash_app:
+    case PaymentMethods.cashapp:
       customWidget = SvgPicture.asset(
         'assets/icons/cash-app-badge.svg',
         height: 25,
@@ -56,12 +56,13 @@ dynamic payByType(PaymentMethods type, BuildContext context, int index,
     UserPaymentMethod cardDetails, String? clientSecret, int? amount) async {
   final stripePaymentHandler = StripePaymentHandler();
   Function payMethod;
+
   switch (type) {
     case PaymentMethods.google_pay:
       payMethod = () => stripePaymentHandler.createGooglePayment(
           clientSecret!, amount!, context);
       break;
-    case PaymentMethods.cash_app:
+    case PaymentMethods.cashapp:
       payMethod = () =>
           stripePaymentHandler.createCashAppPayment(clientSecret!, context);
       break;
@@ -75,7 +76,7 @@ dynamic payByType(PaymentMethods type, BuildContext context, int index,
 
   final result = await payMethod();
   GlobalManager().setPaymentsAfterCheckout(index);
-  //TODO After payment iclude set correct selected payment
+  GlobalManager().setPaymentId(null);
 
   return result;
 }
@@ -124,7 +125,7 @@ class PaymentWidget extends StatelessWidget {
               lastDigits: result.card.last4!,
               lastUpdatedAt: new DateTime.now(),
               userId: GlobalManager().userId!,
-              method: PaymentMethods.card,
+              type: PaymentMethods.card,
               saved: false);
           GlobalManager().insertPaymentCard(paymentCard);
         }
@@ -135,7 +136,7 @@ class PaymentWidget extends StatelessWidget {
             lastDigits: result.card.last4!,
             lastUpdatedAt: new DateTime.now(),
             userId: GlobalManager().userId!,
-            method: PaymentMethods.card,
+            type: PaymentMethods.card,
             saved: false);
         GlobalManager().insertPaymentCard(paymentCard);
       }
@@ -145,10 +146,7 @@ class PaymentWidget extends StatelessWidget {
             PaymentMethods.card, context, 0, paymentCard, clientSecret, amount);
         if (handler != null) await handler!();
       } else {
-        final handler = () => payByType(
-            PaymentMethods.card, context, 0, paymentCard, clientSecret, amount);
-        onPaymentSelected(handler,
-            getPayButtonSuffixByType(PaymentMethods.card, paymentCard), 0);
+        onPaymentSelected(0);
       }
     }
   }
@@ -179,7 +177,7 @@ class PaymentWidget extends StatelessWidget {
                     .entries
                     .map((entry) {
                   return getPayCardByType(
-                      entry.value.method, context, entry.key, entry.value);
+                      entry.value.type, context, entry.key, entry.value);
                 }).toList()
               ],
             ),
@@ -220,11 +218,7 @@ class PaymentWidget extends StatelessWidget {
           'assets/icons/google-pay-logo.svg',
           height: 20,
         ),
-        () => onPaymentSelected(
-            () => payByType(PaymentMethods.google_pay, context, index, details,
-                this.clientSecret, this.amount),
-            getPayButtonSuffixByType(PaymentMethods.google_pay, details),
-            index),
+        () => onPaymentSelected(index),
         index);
   }
 
@@ -236,11 +230,7 @@ class PaymentWidget extends StatelessWidget {
           isBlack: true,
           size: CreditCardSize.small,
         ),
-        () => onPaymentSelected(
-            () => payByType(PaymentMethods.card, context, index, details,
-                this.clientSecret, this.amount),
-            getPayButtonSuffixByType(PaymentMethods.card, details),
-            index),
+        () => onPaymentSelected(index),
         index);
   }
 
@@ -251,11 +241,7 @@ class PaymentWidget extends StatelessWidget {
           'assets/icons/cash-app-pay.svg',
           height: 45,
         ),
-        () => onPaymentSelected(
-            () => payByType(PaymentMethods.cash_app, context, index, details,
-                this.clientSecret, this.amount),
-            getPayButtonSuffixByType(PaymentMethods.cash_app, details),
-            index),
+        () => onPaymentSelected(index),
         index);
   }
 
@@ -275,7 +261,7 @@ class PaymentWidget extends StatelessWidget {
     switch (type) {
       case PaymentMethods.google_pay:
         return _buildGooglePayCard(context, index, details);
-      case PaymentMethods.cash_app:
+      case PaymentMethods.cashapp:
         return _buildCashAppCard(context, index, details);
       case PaymentMethods.card:
         return _buildCreditCard(context, index, details);

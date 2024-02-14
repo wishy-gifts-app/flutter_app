@@ -156,7 +156,7 @@ class Variant {
   factory Variant.fromJson(Map<String, dynamic> json) {
     return Variant(
       id: convertValue<int>(json, 'id', true),
-      title: convertValue<String>(json, 'title', true),
+      title: convertValue<String>(json, 'title', true, defaultValue: ""),
       weight: convertValue<double?>(json, 'weight', false),
       price: convertValue<double>(json, 'price', true),
       attributes: json["attributes"] != null

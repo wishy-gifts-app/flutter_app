@@ -65,17 +65,17 @@ class _MainProductsState extends State<MainProducts> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (GlobalManager().isDeliveryAvailable != null) {
+      if (GlobalManager().isDeliveryAvailable == null) {
+        await DeliveryAvailabilityDialog.show(context);
+        setState(() {
+          _deliveryDialogCompleted = true;
+        });
+      } else {
         setState(() {
           _deliveryDialogCompleted = true;
         });
         return;
       }
-
-      await DeliveryAvailabilityDialog.show(context);
-      setState(() {
-        _deliveryDialogCompleted = true;
-      });
     });
 
     _initializePaginationService(GlobalManager().firstFeedCursor);

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/screens/likes/likes_screen.dart';
-// import 'package:Wishy/screens/matches/matches_screen.dart';
 import 'package:Wishy/screens/profile/profile_screen.dart';
 import '../constants.dart';
 import '../enums.dart';
@@ -49,16 +48,20 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       Container(
           padding: EdgeInsets.all(2),
           decoration: BoxDecoration(
-              color: menuState == widget.selectedMenu ? kPrimaryColor : null,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 2,
-                  offset: Offset(0, 1),
+                  color: kAlertColor.withOpacity(0.1),
+                  spreadRadius: 0.2,
+                  blurRadius: 10,
+                  offset: Offset(1, 1),
                 )
               ],
-              borderRadius: BorderRadius.circular(50)),
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: menuState == widget.selectedMenu
+                    ? kPrimaryColor
+                    : Colors.transparent,
+              )),
           child: Image.asset(
             imagePath,
             height: height,
@@ -114,9 +117,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                   HomeScreen.routeName, context),
               generateIconButton("assets/icons/Heart Icon.svg",
                   MenuState.favorite, LikesScreen.routeName, context),
-              generateImageButton("assets/images/android_icon.png",
-                  MenuState.rewards, RewardsScreen.routeName, context,
-                  height: 35),
+              generateImageButton("assets/images/reward.png", MenuState.rewards,
+                  RewardsScreen.routeName, context,
+                  height: 30),
               generateIconButton("assets/icons/Chat bubble Icon.svg",
                   MenuState.message, RequestsScreen.routeName, context),
               generateIconButton(

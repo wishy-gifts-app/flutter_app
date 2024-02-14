@@ -111,8 +111,6 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Your address has been successfully added')),
         );
-
-        Navigator.of(context).pop(result["id"]);
       } catch (error) {
         print(error);
         ScaffoldMessenger.of(context).showSnackBar(

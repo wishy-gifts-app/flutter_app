@@ -4,7 +4,6 @@ import 'package:Wishy/components/delivery_availability_dialog.dart';
 import 'package:Wishy/components/dynamic_size_draggable_sheet.dart';
 import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/components/variants/variants_widget.dart';
-import 'package:Wishy/components/wishy_ai.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Product.dart';
@@ -136,10 +135,6 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   Widget build(BuildContext context) {
     if (isVariantsExists(widget.product.variants)) {
       return Column(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(
-          height: getProportionateScreenHeight(5),
-        ),
-        WishyAIWithBackground(),
         SizedBox(
           height: getProportionateScreenHeight(5),
         ),

@@ -85,7 +85,6 @@ class StripePaymentHandler {
                     currencyCode: marketDetails["currency"]!,
                     merchantCountryCode: "US",
                     allowCreditCards: true,
-                    testEnv: true,
                     merchantName: "Wishy"))));
   }
 

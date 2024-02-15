@@ -5,6 +5,8 @@ import 'package:Wishy/components/stripe_powered.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/UserPaymentMethod.dart';
+import 'package:Wishy/screens/success/components/body.dart';
+import 'package:Wishy/screens/success/success_screen.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/stripe_payment.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -77,6 +79,12 @@ dynamic payByType(PaymentMethods type, BuildContext context, int index,
   final result = await payMethod();
   GlobalManager().setPaymentsAfterCheckout(index);
   GlobalManager().setPaymentId(null);
+
+  if (result != null) {
+    Navigator.pushNamedAndRemoveUntil(
+        context, SuccessScreen.routeName, (_) => false,
+        arguments: {"type": SuccessTypes.purchase});
+  }
 
   return result;
 }

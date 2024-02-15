@@ -7,8 +7,6 @@ import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/Product.dart';
 import 'package:Wishy/screens/checkout/components/address_widget.dart';
 import 'package:Wishy/screens/checkout/components/total_price.dart';
-import 'package:Wishy/screens/success/components/body.dart';
-import 'package:Wishy/screens/success/success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/constants.dart';
 import 'package:Wishy/models/Address.dart' as Wishy;
@@ -54,19 +52,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
 
   Future<void> onSubmit() async {
     if (_selectedAddress != null && _checkout != null) {
-      final result = await payByType(
+      await payByType(
           GlobalManager().user!.paymentMethods[_selectedPaymentIndex].type,
           context,
           _selectedPaymentIndex,
           GlobalManager().user!.paymentMethods[_selectedPaymentIndex],
           _checkout?.clientSecret,
           _checkout?.payAmount);
-
-      if (result != null) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, SuccessScreen.routeName, (_) => false,
-            arguments: {"type": SuccessTypes.purchase});
-      }
     }
   }
 

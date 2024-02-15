@@ -801,6 +801,11 @@ const Map<String, String> graphqlQueries = {
     mutation saveUserPaymentCard(\$payment_id: String!) {
       saveUserPaymentCard(payment_id: \$payment_id) {
           id
+          user_id
+          type
+          last_digits
+          payment_id
+          last_updated_at
         }
     }
   """,

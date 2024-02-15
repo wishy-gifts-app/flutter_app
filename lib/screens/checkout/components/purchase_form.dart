@@ -176,7 +176,9 @@ class _PurchaseFormState extends State<PurchaseForm> {
                             Text(
                               (_checkout?.additionalHighlights ?? ""),
                               style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold),
+                                  color: kAlertColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
                             )
                           ]),
                     child: _buildSection(

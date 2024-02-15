@@ -4,6 +4,7 @@ import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/UserDetails.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -107,6 +108,8 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
         });
         GlobalManager().setUser(UserDetails.fromJson(result));
         widget.afterAddressAdded(GlobalManager().user!.addresses![0]);
+        AnalyticsService.trackEvent(analyticEvents["ADDRESS_ADDED"]!,
+            properties: {"Address Id": GlobalManager().user!.addresses![0].id});
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Your address has been successfully added')),

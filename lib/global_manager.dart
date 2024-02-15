@@ -24,7 +24,7 @@ class GlobalManager with ChangeNotifier {
   bool? newConnectAvailable = null;
   String? connectUser = null;
   int? connectUserId = null;
-  String? firstFeedCursor = null;
+  String? feedCursor = null;
   bool navigateToRequest = false;
   String? paymentId;
   String? shippingCountry;
@@ -103,7 +103,7 @@ class GlobalManager with ChangeNotifier {
   void setSignInRelatedProductId(int? value) => signInRelatedProductId = value;
   void setConnectUser(String? value) => connectUser = value;
   void setConnectUserId(int? value) => connectUserId = value;
-  void setFirstFeedCursor(String? value) => firstFeedCursor = value;
+  void setFeedCursor(String? value) => feedCursor = value;
   void setNotificationToken(String? value) => notificationToken = value;
   void setNavigateToRequest(bool value) => navigateToRequest = value;
   void setPaymentId(String? value) {

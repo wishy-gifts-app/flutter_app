@@ -157,67 +157,68 @@ class _InviteCardState extends State<InviteCard> {
         ],
       );
 
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            SizedBox(height: getProportionateScreenHeight(38)),
-            RoundedBackgroundText(
-              widget.question,
-              backgroundColor: Colors.white.withOpacity(0.8),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: "Muli",
-                color: kPrimaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                wordSpacing: 1,
-                height: 1.2,
-                shadows: [
-                  Shadow(
-                    color: Colors.white.withOpacity(0.5),
-                    offset: Offset(1, 1),
-                    blurRadius: 2,
+    return SafeArea(
+        child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: getProportionateScreenHeight(38)),
+                RoundedBackgroundText(
+                  widget.question,
+                  backgroundColor: Colors.white.withOpacity(0.8),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: "Muli",
+                    color: kPrimaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    wordSpacing: 1,
+                    height: 1.2,
+                    shadows: [
+                      Shadow(
+                        color: Colors.white.withOpacity(0.5),
+                        offset: Offset(1, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: getProportionateScreenHeight(80)),
+                SearchContactWidget(
+                    onNameChanged: _handleNameChanged,
+                    onPhoneChanged: _handlePhoneChanged,
+                    onUserSelected: _handleUserSelected,
+                    defaultUser: widget.suggestUser,
+                    withIcon: false),
+                if (GlobalManager().notificationAvailable == null) ...[
+                  CheckboxListTile(
+                    title: RoundedBackgroundText(
+                      "Invitation Watch: Get quick updates on friend’s gift choices",
+                      backgroundColor: Colors.white.withOpacity(0.9),
+                      style: TextStyle(fontFamily: "Muli", fontSize: 12),
+                    ),
+                    value: _giveNotificationPermission,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _giveNotificationPermission = value!;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
                   ),
                 ],
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(80)),
-            SearchContactWidget(
-                onNameChanged: _handleNameChanged,
-                onPhoneChanged: _handlePhoneChanged,
-                onUserSelected: _handleUserSelected,
-                defaultUser: widget.suggestUser,
-                withIcon: false),
-            if (GlobalManager().notificationAvailable == null) ...[
-              CheckboxListTile(
-                title: RoundedBackgroundText(
-                  "Invitation Watch: Get quick updates on friend’s gift choices",
-                  backgroundColor: Colors.white.withOpacity(0.9),
-                  style: TextStyle(fontFamily: "Muli", fontSize: 12),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                RoundedBackgroundText(
+                  "Tap to send secret SMS invites to explore Wishy's wishlist!",
+                  backgroundColor: Colors.white.withOpacity(0.8),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontFamily: "Muli", fontSize: 14),
                 ),
-                value: _giveNotificationPermission,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _giveNotificationPermission = value!;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-            ],
-            SizedBox(height: getProportionateScreenHeight(20)),
-            RoundedBackgroundText(
-              "Tap to send secret SMS invites to explore Wishy's wishlist!",
-              backgroundColor: Colors.white.withOpacity(0.8),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: "Muli", fontSize: 14),
-            ),
-            SizedBox(height: getProportionateScreenHeight(5)),
-            DefaultButton(
-              press: _handleSendInvitation,
-              text: widget.CTA,
-            ),
-          ],
-        ));
+                SizedBox(height: getProportionateScreenHeight(5)),
+                DefaultButton(
+                  press: _handleSendInvitation,
+                  text: widget.CTA,
+                ),
+              ],
+            )));
   }
 }

@@ -1,5 +1,7 @@
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 
 class Body extends StatelessWidget {
@@ -17,8 +19,12 @@ class Body extends StatelessWidget {
           child: Padding(
               padding: EdgeInsets.all(20),
               child: DefaultButton(
-                press: () =>
-                    Navigator.of(context).pushNamed(HomeScreen.routeName),
+                press: () {
+                  AnalyticsService.trackEvent(
+                    analyticEvents["REWARD_CTA_PRESSED"]!,
+                  );
+                  Navigator.of(context).pushNamed(HomeScreen.routeName);
+                },
                 text: "Start Shopping",
               )))
     ]));

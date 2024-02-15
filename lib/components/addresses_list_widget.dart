@@ -1,6 +1,8 @@
 import 'package:Wishy/components/address.dart';
 import 'package:Wishy/constants.dart';
+import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Address.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 
 class AddressesListWidget extends StatelessWidget {
@@ -19,6 +21,11 @@ class AddressesListWidget extends StatelessWidget {
     this.isGift = false,
     this.emptyMessage = "You haven't added an address yet.",
   });
+  void _onSelect(int index) {
+    onTap!(index);
+    AnalyticsService.trackEvent(analyticEvents["ADDRESS_SELECTED"]!,
+        properties: {"Address Id": GlobalManager().user!.addresses![index].id});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +46,7 @@ class AddressesListWidget extends StatelessWidget {
                       trailing: idx == selectedIndex
                           ? Icon(Icons.check_circle, color: kPrimaryColor)
                           : null,
-                      onTap: onTap != null ? () => onTap!(idx) : null);
+                      onTap: onTap != null ? () => _onSelect(idx) : null);
                 }).toList(),
               ),
             )

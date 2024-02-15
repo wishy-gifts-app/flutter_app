@@ -47,7 +47,8 @@ class _QuestionCardState extends State<QuestionCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SafeArea(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         WishyAIWithBackground(),
@@ -157,6 +158,6 @@ class _QuestionCardState extends State<QuestionCard> {
           press: _onSubmit,
         ),
       ],
-    );
+    ));
   }
 }

@@ -78,7 +78,7 @@ class _MainProductsState extends State<MainProducts> {
       }
     });
 
-    _initializePaginationService(GlobalManager().firstFeedCursor);
+    _initializePaginationService(GlobalManager().feedCursor);
     super.initState();
   }
 
@@ -134,6 +134,8 @@ class _MainProductsState extends State<MainProducts> {
             : null);
     if (GlobalManager().signInRelatedProductId != null)
       GlobalManager().setSignInRelatedProductId(null);
+
+    GlobalManager().setFeedCursor(_paginationService.cursor);
 
     List<Product>? formattedResult =
         result["data"] != null ? formatResponse(result["data"]) : null;
@@ -196,7 +198,7 @@ class _MainProductsState extends State<MainProducts> {
 
     if (_isInteractiveClose) return;
 
-    GlobalManager().setFirstFeedCursor(cursor);
+    GlobalManager().setFeedCursor(cursor);
     _initializePaginationService(cursor);
 
     widget.setConnectUser(connectUser, connectUserId);

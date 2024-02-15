@@ -83,7 +83,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
       "payment_session": _paymentSession + addressId.toString(),
       "price": variant.price,
       "quantity": 1,
-      "cursor": GlobalManager().firstFeedCursor,
+      "cursor": GlobalManager().feedCursor,
     });
 
     if (mounted && _selectedAddress?.id == addressId) {

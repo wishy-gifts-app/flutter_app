@@ -1,6 +1,7 @@
 import 'package:Wishy/components/animated_hint_text_field.dart';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/delivery_availability_dialog.dart';
+import 'package:Wishy/components/dynamic_size_draggable_sheet.dart';
 import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/components/variants/variants_widget.dart';
 import 'package:Wishy/constants.dart';
@@ -125,18 +126,24 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
   }
 
   @override
+  void initState() {
+    _selectedVariant = widget.product.variants![0];
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (isVariantsExists(widget.product.variants)) {
-      return SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
+      return Column(mainAxisSize: MainAxisSize.min, children: [
         SizedBox(
-          height: getProportionateScreenHeight(10),
+          height: getProportionateScreenHeight(5),
         ),
         Text(
           "Make a Wish Known",
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
         Stepper(
+          physics: NeverScrollableScrollPhysics(),
           currentStep: _currentStep,
           controlsBuilder: (BuildContext context, ControlsDetails details) {
             void Function()? onStepCancel;
@@ -144,9 +151,11 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             String continueMessage = "Continue";
 
             if (_currentStep == 0) {
-              onStepContinue = () => setState(() {
-                    _currentStep += 1;
-                  });
+              onStepContinue = _selectedVariant != null
+                  ? () => setState(() {
+                        _currentStep += 1;
+                      })
+                  : null;
               onStepCancel = () => Navigator.pop(context);
             } else {
               continueMessage = "Send a Hint";
@@ -164,6 +173,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                         width: 130,
                         height: 43,
                         child: DefaultButton(
+                          enable: _selectedVariant != null,
                           press: onStepContinue,
                           text: continueMessage,
                         )),
@@ -186,8 +196,9 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
                 ),
               ),
               content: VariantsWidget(
+                  firstMargin: 0,
+                  defaultVariant: widget.product.variants![0],
                   product: widget.product,
-                  withBuyButton: false,
                   situation: widget.situation,
                   onVariantChange: _onVariantChange),
             ),
@@ -205,7 +216,7 @@ class _VariantsAndRequestModalState extends State<VariantsAndRequestModal> {
             ),
           ],
         )
-      ]));
+      ]);
     } else {
       return Container(
           height: MediaQuery.of(context).size.height * 0.69,
@@ -300,23 +311,15 @@ void showRequestModal(BuildContext context, Product product, String situation,
     return;
   }
 
-  if (GlobalManager().isDeliveryAvailable != true) {
-    await DeliveryAvailabilityDialog.show(context);
+  await DeliveryAvailabilityDialog.show(context);
 
-    if (GlobalManager().isDeliveryAvailable != true) return;
-  }
+  if (GlobalManager().isDeliveryAvailable != true) return;
 
   showModalBottomSheet<void>(
       isScrollControlled: true,
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(40),
-          topRight: Radius.circular(40),
-        ),
-      ),
       builder: (BuildContext context) {
-        return Padding(
+        return DynamicSizeDraggableSheet(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: VariantsAndRequestModal(

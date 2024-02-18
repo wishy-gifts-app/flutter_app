@@ -45,14 +45,21 @@ class _PurchaseFormState extends State<PurchaseForm> {
   final secondColor = Color(0xFFF6F7F9);
   final double sectionMargin = 10;
   late Variant variant;
-  final String _paymentSession = Uuid().v1();
+  String _paymentSession = Uuid().v1();
   Function? _paymentMethod = null;
   Widget? _payButtonElement = null;
   int _selectedPaymentIndex = 0;
 
   Future<void> onSubmit() async {
-    if (_paymentMethod != null && _selectedAddress != null && _checkout != null)
-      await _paymentMethod!();
+    if (_selectedAddress != null && _checkout != null) {
+      await payByType(
+          GlobalManager().user!.paymentMethods[_selectedPaymentIndex].type,
+          context,
+          _selectedPaymentIndex,
+          GlobalManager().user!.paymentMethods[_selectedPaymentIndex],
+          _checkout?.clientSecret,
+          _checkout?.payAmount);
+    }
   }
 
   Future<void> _setCheckout() async {
@@ -68,7 +75,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
       "payment_session": _paymentSession + addressId.toString(),
       "price": variant.price,
       "quantity": 1,
-      "cursor": GlobalManager().firstFeedCursor,
+      "cursor": GlobalManager().feedCursor,
     });
 
     if (mounted && _selectedAddress?.id == addressId) {
@@ -91,13 +98,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
     }
   }
 
-  void _onPaymentSelected(
-      Function? payHandler, Widget? suffixElement, int index) {
+  void _onPaymentSelected(int index) {
     if (mounted) {
       setState(() {
         _selectedPaymentIndex = index;
-        _paymentMethod = payHandler;
-        _payButtonElement = suffixElement;
+        _payButtonElement = getPayButtonSuffixByType(
+            GlobalManager().user!.paymentMethods[index].type,
+            GlobalManager().user!.paymentMethods[index]);
       });
     }
   }
@@ -128,18 +135,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
 
     if (_paymentMethod == null)
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _onPaymentSelected(
-            () => payByType(
-                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
-                context,
-                _selectedPaymentIndex,
-                globalManger.user!.paymentMethods[_selectedPaymentIndex],
-                _checkout?.clientSecret,
-                _checkout?.payAmount),
-            getPayButtonSuffixByType(
-                globalManger.user!.paymentMethods[_selectedPaymentIndex].method,
-                globalManger.user!.paymentMethods[_selectedPaymentIndex]),
-            _selectedPaymentIndex);
+        _onPaymentSelected(_selectedPaymentIndex);
       });
 
     return Center(
@@ -172,7 +168,9 @@ class _PurchaseFormState extends State<PurchaseForm> {
                             Text(
                               (_checkout?.additionalHighlights ?? ""),
                               style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold),
+                                  color: kAlertColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
                             )
                           ]),
                     child: _buildSection(
@@ -218,8 +216,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
                                 element: _payButtonElement,
                                 price: _checkout?.totalPrice ?? variant.price,
                                 onSubmit: onSubmit,
-                                enable:
-                                    _checkout != null && _paymentMethod != null,
+                                enable: _checkout != null,
                               ),
                             )))),
               )
@@ -230,7 +227,7 @@ class _PurchaseFormState extends State<PurchaseForm> {
       {double margin = 10,
       String? title,
       Widget? child,
-      double elementRightPadding = 30}) {
+      double elementRightPadding = 20}) {
     return TopRoundedContainer(
         margin: margin,
         padding: 12,
@@ -247,11 +244,13 @@ class _PurchaseFormState extends State<PurchaseForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                    padding: EdgeInsets.all(15), child: Icon(icon, size: 30)),
+                    padding: EdgeInsets.only(
+                        top: 15, bottom: 15, left: 15, right: 0),
+                    child: Icon(icon, size: 30)),
                 Container(
                     width: 280,
                     padding:
-                        EdgeInsets.only(right: elementRightPadding, left: 5),
+                        EdgeInsets.only(right: elementRightPadding, left: 0),
                     child: element),
               ]),
           if (child != null) child

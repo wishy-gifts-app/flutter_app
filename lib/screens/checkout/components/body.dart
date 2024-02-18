@@ -1,4 +1,4 @@
-import 'package:Wishy/screens/checkout/components/product_widget.dart';
+import 'package:Wishy/components/product_image_widget.dart';
 import 'package:Wishy/screens/checkout/components/purchase_form.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/models/Product.dart';
@@ -16,7 +16,7 @@ class Body extends StatelessWidget {
         child: SingleChildScrollView(
       child: Column(
         children: [
-          ProductWidget(
+          ProductImageWidget(
             product: product,
             variant: variant,
           ),

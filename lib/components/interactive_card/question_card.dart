@@ -1,5 +1,7 @@
 import 'package:Wishy/components/animated_hint_text_field.dart';
 import 'package:Wishy/components/default_button.dart';
+import 'package:Wishy/components/wishy_ai.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
@@ -45,22 +47,26 @@ class _QuestionCardState extends State<QuestionCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SafeArea(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        WishyAIWithBackground(),
+        SizedBox(height: getProportionateScreenHeight(5)),
         RoundedBackgroundText(
           widget.question,
-          backgroundColor: Colors.black.withOpacity(0.5),
+          backgroundColor: Colors.white.withOpacity(0.8),
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white,
+            fontFamily: "Muli",
+            color: kPrimaryColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             wordSpacing: 1,
             height: 1.2,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.white.withOpacity(0.8),
                 offset: Offset(1, 1),
                 blurRadius: 2,
               ),
@@ -75,14 +81,15 @@ class _QuestionCardState extends State<QuestionCard> {
               child: Column(children: [
                 RoundedBackgroundText(
                   "Your budget",
-                  backgroundColor: Colors.black.withOpacity(0.5),
+                  backgroundColor: Colors.white.withOpacity(0.8),
                   style: TextStyle(
-                    color: Colors.white,
+                    fontFamily: "Muli",
+                    color: kPrimaryColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     shadows: [
                       Shadow(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.white.withOpacity(0.8),
                         offset: Offset(1, 1),
                         blurRadius: 2,
                       ),
@@ -151,6 +158,6 @@ class _QuestionCardState extends State<QuestionCard> {
           press: _onSubmit,
         ),
       ],
-    );
+    ));
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:Wishy/components/default_button.dart';
 import 'package:Wishy/components/search_contact.dart';
+import 'package:Wishy/constants.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/services/graphql_service.dart';
@@ -130,17 +131,18 @@ class _InviteCardState extends State<InviteCard> {
         children: [
           RoundedBackgroundText(
             "View ${widget.connectUser}'s Wishlist to find the perfect gift!",
-            backgroundColor: Colors.black.withOpacity(0.5),
+            backgroundColor: Colors.white.withOpacity(0.8),
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white,
+              fontFamily: "Muli",
+              color: kPrimaryColor,
               fontSize: 18,
               fontWeight: FontWeight.w600,
               wordSpacing: 1,
               height: 1.2,
               shadows: [
                 Shadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.white.withOpacity(0.8),
                   offset: Offset(1, 1),
                   blurRadius: 2,
                 ),
@@ -155,65 +157,68 @@ class _InviteCardState extends State<InviteCard> {
         ],
       );
 
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            RoundedBackgroundText(
-              widget.question,
-              backgroundColor: Colors.black.withOpacity(0.5),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                wordSpacing: 1,
-                height: 1.2,
-                shadows: [
-                  Shadow(
-                    color: Colors.black.withOpacity(0.5),
-                    offset: Offset(1, 1),
-                    blurRadius: 2,
+    return SafeArea(
+        child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: getProportionateScreenHeight(38)),
+                RoundedBackgroundText(
+                  widget.question,
+                  backgroundColor: Colors.white.withOpacity(0.8),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: "Muli",
+                    color: kPrimaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    wordSpacing: 1,
+                    height: 1.2,
+                    shadows: [
+                      Shadow(
+                        color: Colors.white.withOpacity(0.5),
+                        offset: Offset(1, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: getProportionateScreenHeight(80)),
+                SearchContactWidget(
+                    onNameChanged: _handleNameChanged,
+                    onPhoneChanged: _handlePhoneChanged,
+                    onUserSelected: _handleUserSelected,
+                    defaultUser: widget.suggestUser,
+                    withIcon: false),
+                if (GlobalManager().notificationAvailable == null) ...[
+                  CheckboxListTile(
+                    title: RoundedBackgroundText(
+                      "Invitation Watch: Get quick updates on friend’s gift choices",
+                      backgroundColor: Colors.white.withOpacity(0.9),
+                      style: TextStyle(fontFamily: "Muli", fontSize: 12),
+                    ),
+                    value: _giveNotificationPermission,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _giveNotificationPermission = value!;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
                   ),
                 ],
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(30)),
-            SearchContactWidget(
-                onNameChanged: _handleNameChanged,
-                onPhoneChanged: _handlePhoneChanged,
-                onUserSelected: _handleUserSelected,
-                defaultUser: widget.suggestUser,
-                withIcon: false),
-            if (GlobalManager().notificationAvailable == null) ...[
-              CheckboxListTile(
-                title: RoundedBackgroundText(
-                  "Invitation Watch: Get quick updates on friend’s gift choices",
-                  backgroundColor: Colors.white.withOpacity(0.9),
-                  style: TextStyle(fontSize: 12),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                RoundedBackgroundText(
+                  "Tap to send secret SMS invites to explore Wishy's wishlist!",
+                  backgroundColor: Colors.white.withOpacity(0.8),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontFamily: "Muli", fontSize: 14),
                 ),
-                value: _giveNotificationPermission,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _giveNotificationPermission = value!;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-            ],
-            SizedBox(height: getProportionateScreenHeight(20)),
-            RoundedBackgroundText(
-              "Tap to send secret SMS invites to explore Wishy's wishlist!",
-              backgroundColor: Colors.white.withOpacity(0.9),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
-            ),
-            SizedBox(height: getProportionateScreenHeight(5)),
-            DefaultButton(
-              press: _handleSendInvitation,
-              text: widget.CTA,
-            ),
-          ],
-        ));
+                SizedBox(height: getProportionateScreenHeight(5)),
+                DefaultButton(
+                  press: _handleSendInvitation,
+                  text: widget.CTA,
+                ),
+              ],
+            )));
   }
 }

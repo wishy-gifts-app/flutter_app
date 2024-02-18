@@ -1,21 +1,10 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-T convertValue<T>(dynamic json, String key, bool required,
-    {T? defaultValue = null}) {
-  bool isTypeOf<T, V, Z>() => T == V || T == Z;
+bool isTypeOf<T, V, Z>() => T == V || T == Z;
 
-  final value = json[key];
-  if (value == null) {
-    if (defaultValue != null) {
-      return defaultValue;
-    } else if (required) {
-      FirebaseCrashlytics.instance.recordError(
-          Exception('${key} is required but is null'), StackTrace.current);
-      throw Exception('${key} is required but is null');
-    } else if (!required) {
-      return null as T;
-    }
-  }
+T convertToType<T>(
+  dynamic value,
+) {
   if (isTypeOf<T, String, String?>()) {
     if (value == null) {
       return '' as T;
@@ -61,6 +50,31 @@ T convertValue<T>(dynamic json, String key, bool required,
   } else {
     throw ArgumentError('Unsupported type: ${T.toString()}');
   }
+}
+
+List<T> convertList<T>(dynamic value, {List<T>? defaultValue = const []}) {
+  if (null is T) {
+    return defaultValue as List<T>;
+  }
+  return (value as List).map((v) => convertToType<T>(v)).toList();
+}
+
+T convertValue<T>(dynamic json, String key, bool required,
+    {T? defaultValue = null}) {
+  final value = json[key];
+  if (value == null) {
+    if (defaultValue != null) {
+      return defaultValue;
+    } else if (required) {
+      FirebaseCrashlytics.instance.recordError(
+          Exception('${key} is required but is null'), StackTrace.current);
+      throw Exception('${key} is required but is null');
+    } else if (!required) {
+      return null as T;
+    }
+  }
+
+  return convertToType<T>(value);
 }
 
 abstract class Identifiable {

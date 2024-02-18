@@ -4,6 +4,7 @@ import 'package:Wishy/components/search_contact.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
 import 'package:Wishy/models/UserDetails.dart';
+import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -105,15 +106,16 @@ class _LocationDialogFormState extends State<LocationDialogForm> {
           "name": _name,
           "allow_share": _allowShareAddress,
         });
+        GlobalManager().setUser(UserDetails.fromJson(result));
+        widget.afterAddressAdded(GlobalManager().user!.addresses![0]);
+        AnalyticsService.trackEvent(analyticEvents["ADDRESS_ADDED"]!,
+            properties: {"Address Id": GlobalManager().user!.addresses![0].id});
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Your address has been successfully added')),
         );
-
-        GlobalManager().setUser(UserDetails.fromJson(result));
-        widget.afterAddressAdded(GlobalManager().user!.addresses![0]);
-
-        Navigator.of(context).pop(result["id"]);
       } catch (error) {
+        print(error);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address. Please try again.')),
         );

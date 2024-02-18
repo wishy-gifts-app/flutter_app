@@ -1,9 +1,10 @@
+import 'package:Wishy/screens/success/components/body.dart';
 import 'package:Wishy/utils/notification.dart';
 import 'package:Wishy/utils/user_details.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/components/custom_surfix_icon.dart';
 import 'package:Wishy/components/default_button.dart';
-import 'package:Wishy/screens/login_success/login_success_screen.dart';
+import 'package:Wishy/screens/success/success_screen.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/services/graphql_service.dart';
 import 'package:Wishy/utils/analytics.dart';
@@ -62,7 +63,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         });
         setUserDetails();
 
-        Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+        Navigator.pushNamed(context, SuccessScreen.routeName,
+            arguments: {"type": SuccessTypes.login});
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

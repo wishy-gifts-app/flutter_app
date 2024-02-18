@@ -288,12 +288,6 @@ class _PurchaseFormState extends State<PurchaseForm> {
                         }
 
                         if (_recipientId != null || phoneNumber != null) {
-                          AnalyticsService.trackEvent(
-                              analyticEvents["ADD_ADDRESS_PRESSED"]!,
-                              properties: {
-                                "Variant Id": widget.variantId,
-                                "Is Gift": _isGift
-                              });
                           showDialog<int>(
                             context: context,
                             builder: (context) => Dialog.fullscreen(

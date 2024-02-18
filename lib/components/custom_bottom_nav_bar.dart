@@ -1,10 +1,10 @@
 import 'package:Wishy/screens/requests/requests_screen.dart';
+import 'package:Wishy/screens/rewards/rewards_screen.dart';
 import 'package:Wishy/utils/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Wishy/screens/home/home_screen.dart';
 import 'package:Wishy/screens/likes/likes_screen.dart';
-import 'package:Wishy/screens/matches/matches_screen.dart';
 import 'package:Wishy/screens/profile/profile_screen.dart';
 import '../constants.dart';
 import '../enums.dart';
@@ -27,14 +27,56 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       {double? height}) {
     final Color inActiveIconColor = Color(0xFFB6B6B6);
 
-    return IconButton(
-        icon: SvgPicture.asset(iconPath,
-            height: height,
-            colorFilter: ColorFilter.mode(
-                menuState == widget.selectedMenu
+    return generateButton(
+      SvgPicture.asset(
+        iconPath,
+        height: height,
+        color: menuState == widget.selectedMenu
+            ? kPrimaryColor
+            : inActiveIconColor,
+      ),
+      menuState,
+      routPath,
+      context,
+    );
+  }
+
+  IconButton generateImageButton(String imagePath, MenuState menuState,
+      String routPath, BuildContext context,
+      {double? height}) {
+    return generateButton(
+      Container(
+          padding: EdgeInsets.all(2),
+          decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: kAlertColor.withOpacity(0.1),
+                  spreadRadius: 0.2,
+                  blurRadius: 10,
+                  offset: Offset(1, 1),
+                )
+              ],
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: menuState == widget.selectedMenu
                     ? kPrimaryColor
-                    : inActiveIconColor,
-                BlendMode.srcIn)),
+                    : Colors.transparent,
+              )),
+          child: Image.asset(
+            imagePath,
+            height: height,
+          )),
+      menuState,
+      routPath,
+      context,
+    );
+  }
+
+  IconButton generateButton(
+      Widget child, MenuState menuState, String routPath, BuildContext context,
+      {double? height}) {
+    return IconButton(
+        icon: child,
         onPressed: () {
           AnalyticsService.trackEvent(
             analyticEvents["PAGE_OPENED"]!,
@@ -75,12 +117,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                   HomeScreen.routeName, context),
               generateIconButton("assets/icons/Heart Icon.svg",
                   MenuState.favorite, LikesScreen.routeName, context),
-              generateIconButton(
-                "assets/icons/matches.svg",
-                MenuState.matches,
-                MatchesScreen.routeName,
-                context,
-              ),
+              generateImageButton("assets/images/reward.png", MenuState.rewards,
+                  RewardsScreen.routeName, context,
+                  height: 30),
               generateIconButton("assets/icons/Chat bubble Icon.svg",
                   MenuState.message, RequestsScreen.routeName, context),
               generateIconButton(

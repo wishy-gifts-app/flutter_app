@@ -33,13 +33,16 @@ class _SupportWidgetState extends State<SupportWidget> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        IconButton(
-          icon: Icon(Icons.support_agent),
-          onPressed: () {
-            SupportWidget.newSupportMessage = false;
-            _showSupportDialog(context);
-          },
-        ),
+        CircleAvatar(
+            backgroundColor: Colors.white,
+            child: IconButton(
+              icon: Icon(Icons.support_agent),
+              color: Colors.black,
+              onPressed: () {
+                SupportWidget.newSupportMessage = false;
+                _showSupportDialog(context);
+              },
+            )),
         if (SupportWidget.newSupportMessage == true)
           Positioned(
             top: 0,

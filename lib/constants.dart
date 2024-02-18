@@ -25,7 +25,7 @@ const analyticEvents = {
   "SHOW_MORE_PRODUCT_DESCRIPTION": "Show More Product Description",
   "INSTAGRAM_AUTH_SUBMITTED": "Instagram Auth Submitted",
   "ADDRESS_ADDED": "Address Added",
-  "ADD_ADDRESS_PRESSED": "Add Address Pressed",
+  "ADDRESS_SELECTED": "Address Selected",
   "PAY_PRESSED": "Pay Pressed",
   "NEW_PURCHASE": "New Purchase",
   "PRODUCT_REQUESTED": "Product Requested",
@@ -39,9 +39,12 @@ const analyticEvents = {
   "NOTIFICATION_SIGN_IN": "Notification Sign In",
   "INTERACTIVE_CARD_HANDLED": "Interactive Card Handled",
   "INTERACTIVE_CARD_DISPLAYED": "Interactive Card Displayed",
+  "REWARD_CTA_PRESSED": "Reward CTA Pressed",
 };
 
 const kPrimaryColor = Colors.black;
+const kAlertColor = Color.fromRGBO(245, 124, 0, 1);
+//  Color(0xFF1B5E20);
 const kPrimaryLightColor = Colors.grey;
 const kPrimaryGradientColor = LinearGradient(
   begin: Alignment.topLeft,
@@ -84,6 +87,7 @@ const marketDetails = {
   "symbol": "\$",
   "google_country": "us",
   "country": "USA",
+  "country_full_name": "United States",
   "currency": "usd",
   "short": "USD"
 };

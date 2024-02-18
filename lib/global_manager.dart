@@ -24,10 +24,10 @@ class GlobalManager with ChangeNotifier {
   bool? newConnectAvailable = null;
   String? connectUser = null;
   int? connectUserId = null;
-  String? firstFeedCursor = null;
+  String? feedCursor = null;
   bool navigateToRequest = false;
-  String? paymentSession;
   String? paymentId;
+  String? shippingCountry;
 
   factory GlobalManager() {
     return _singleton;
@@ -93,15 +93,19 @@ class GlobalManager with ChangeNotifier {
   void setSession(String value) => session = value;
   void setDeliveryAvailability(bool value) => isDeliveryAvailable = value;
   void setNewConnectAvailable(bool value) => newConnectAvailable = value;
-  void setUserLocation(UserLocationData value) => userLocation = value;
+  void setUserLocation(UserLocationData value) {
+    userLocation = value;
+    shippingCountry = value.country;
+  }
+
+  void setShippingCountry(String? value) => shippingCountry = value;
   void setRecommendationExists(bool value) => recommendationExists = value;
   void setSignInRelatedProductId(int? value) => signInRelatedProductId = value;
   void setConnectUser(String? value) => connectUser = value;
   void setConnectUserId(int? value) => connectUserId = value;
-  void setFirstFeedCursor(String? value) => firstFeedCursor = value;
+  void setFeedCursor(String? value) => feedCursor = value;
   void setNotificationToken(String? value) => notificationToken = value;
   void setNavigateToRequest(bool value) => navigateToRequest = value;
-  void setPaymentSession(String? value) => paymentSession = value;
   void setPaymentId(String? value) {
     paymentId = value;
     notifyListeners();

@@ -48,6 +48,7 @@ class _MainProductsState extends State<MainProducts> {
   bool _triggerByServer = false;
   bool _loadingInteractive = false;
   int? _userCardId = null;
+  bool _deliveryDialogCompleted = false;
 
   void _initializePaginationService(String? cursor) {
     _paginationService = new GraphQLPaginationService(
@@ -63,20 +64,22 @@ class _MainProductsState extends State<MainProducts> {
 
   @override
   void initState() {
-    super.initState();
-    _initializePaginationService(GlobalManager().firstFeedCursor);
-
-    Future.delayed(Duration(seconds: 6), () {
-      if (mounted) _showAvailabilityDialogIfNeeded();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (GlobalManager().isDeliveryAvailable == null) {
+        await DeliveryAvailabilityDialog.show(context);
+        setState(() {
+          _deliveryDialogCompleted = true;
+        });
+      } else {
+        setState(() {
+          _deliveryDialogCompleted = true;
+        });
+        return;
+      }
     });
-  }
 
-  void _showAvailabilityDialogIfNeeded() {
-    if (GlobalManager().isDeliveryAvailable == null &&
-        GlobalManager().userLocation != null &&
-        !this._showAnimation) {
-      DeliveryAvailabilityDialog.show(context);
-    }
+    _initializePaginationService(GlobalManager().feedCursor);
+    super.initState();
   }
 
   void _onSwipeUp(Product product) {
@@ -131,6 +134,8 @@ class _MainProductsState extends State<MainProducts> {
             : null);
     if (GlobalManager().signInRelatedProductId != null)
       GlobalManager().setSignInRelatedProductId(null);
+
+    GlobalManager().setFeedCursor(_paginationService.cursor);
 
     List<Product>? formattedResult =
         result["data"] != null ? formatResponse(result["data"]) : null;
@@ -193,7 +198,7 @@ class _MainProductsState extends State<MainProducts> {
 
     if (_isInteractiveClose) return;
 
-    GlobalManager().setFirstFeedCursor(cursor);
+    GlobalManager().setFeedCursor(cursor);
     _initializePaginationService(cursor);
 
     widget.setConnectUser(connectUser, connectUserId);
@@ -250,6 +255,13 @@ class _MainProductsState extends State<MainProducts> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_deliveryDialogCompleted)
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
     return Container(
         height: SizeConfig.screenHeight,
         child: Stack(children: [

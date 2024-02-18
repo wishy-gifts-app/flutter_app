@@ -4,6 +4,7 @@ import 'package:Wishy/components/custom_dialog.dart';
 import 'package:Wishy/components/location_dialog_form.dart';
 import 'package:Wishy/global_manager.dart';
 import 'package:Wishy/models/Follower.dart';
+import 'package:Wishy/screens/checkout/checkout_screen.dart';
 import 'package:Wishy/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:Wishy/models/Address.dart';
@@ -103,7 +104,6 @@ class _AddressesWidgetState extends State<AddressesWidget> {
                     });
 
                     widget.onAddressSelected(addresses[idx]);
-                    Navigator.of(context).pop();
                   },
                 ),
                 SizedBox(
@@ -124,6 +124,8 @@ class _AddressesWidgetState extends State<AddressesWidget> {
                   _selectedAddressIndex = 0;
                 });
                 widget.onAddressSelected(address);
+                Navigator.of(context).popUntil(
+                    (route) => route.settings.name == CheckoutScreen.routeName);
               },
               defaultUser: widget.defaultUser,
             )));

@@ -16,7 +16,7 @@ class Body extends StatelessWidget {
             CircleAvatar(
               backgroundColor: Colors.black,
               radius: getProportionateScreenWidth(65),
-              backgroundImage: AssetImage('assets/images/android_icon.png'),
+              backgroundImage: AssetImage('assets/images/icon.png'),
             ),
             SizedBox(height: getProportionateScreenHeight(15)),
             Text(

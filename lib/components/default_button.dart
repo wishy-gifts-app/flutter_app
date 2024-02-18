@@ -137,7 +137,7 @@ class _DefaultButtonState extends State<DefaultButton>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          widget.text!,
+                          widget.text ?? "",
                           style: defaultButtonTextStyle,
                         ),
                         if (widget.element != null) ...[

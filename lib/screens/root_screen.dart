@@ -54,7 +54,7 @@ class RootScreen extends StatefulWidget {
 class _RootScreenState extends State<RootScreen> {
   final authServices = AuthServices();
 
-  void _handleUserLocation() async {
+  Future<void> _handleUserLocation() async {
     try {
       final userLocation = await authServices.userLocationData();
       GlobalManager().setUserLocation(userLocation);
@@ -68,13 +68,18 @@ class _RootScreenState extends State<RootScreen> {
     }
   }
 
+  void _onStart() async {
+    if (GlobalManager().userLocation == null) await _handleUserLocation();
+
+    initUniLinks();
+    updateNotificationPermission();
+    if (GlobalManager().userId != null) setUserDetails();
+  }
+
   @override
   void initState() {
-    initUniLinks();
-    _handleUserLocation();
-    updateNotificationPermission();
+    _onStart();
 
-    if (GlobalManager().userId != null) setUserDetails();
     super.initState();
   }
 

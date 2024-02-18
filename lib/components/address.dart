@@ -3,20 +3,30 @@ import 'package:flutter/material.dart';
 
 class AddressTitle extends StatelessWidget {
   final Address address;
-  AddressTitle({required this.address});
+  final double fontSize;
+  final TextAlign? textAlign;
+
+  AddressTitle({required this.address, this.fontSize = 16, this.textAlign});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       address.name,
-      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      textAlign: textAlign,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }
 
 class AddressSubtitle extends StatelessWidget {
   final Address address;
-  AddressSubtitle({required this.address});
+  final double fontSize;
+  final TextAlign? textAlign;
+
+  AddressSubtitle({required this.address, this.fontSize = 13, this.textAlign});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +43,8 @@ class AddressSubtitle extends StatelessWidget {
           address.state +
           ", " +
           address.country,
-      style: TextStyle(fontSize: 13),
+      textAlign: textAlign,
+      style: TextStyle(fontSize: fontSize),
     );
   }
 }

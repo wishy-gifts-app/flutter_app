@@ -173,19 +173,20 @@ class Variant {
 
 class ProductImage {
   final int id;
-  final String url, alt;
+  final String url;
+  final String? alt;
 
   ProductImage({
     required this.id,
     required this.url,
-    required this.alt,
+    this.alt,
   });
 
   factory ProductImage.fromJson(Map<String, dynamic> json) {
     return ProductImage(
       id: convertValue<int>(json, 'id', true),
       url: convertValue<String>(json, 'url', true),
-      alt: convertValue<String>(json, 'alt', true),
+      alt: convertValue<String?>(json, 'alt', false),
     );
   }
 }
